@@ -1,0 +1,25 @@
+{
+  "featureFlags": {
+    "USE_HYBRID_SEARCH": true,
+    "USE_CONFIDENCE_FILTERING": true,
+    "AUTO_CONTEXT_INJECTION": true
+  },
+  "hybridSearch": {
+    "semanticWeight": 0.7,
+    "keywordWeight": 0.3,
+    "boostPinned": true,
+    "boostRecent": true,
+    "minConfidence": 0.7
+  },
+  "contextInjection": {
+    "maxMemories": 10,
+    "tokenBudget": 2000,
+    "autoLoadTypes": ["preference", "decision", "project_context", "fact"],
+    "recencyBoost": true
+  },
+  "monitoring": {
+    "logLevel": "info",
+    "alertOnError": true,
+    "metricsEnabled": true
+  }
+}

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Data files (user generated)
+data/
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Archives (for reference only)
+archive/

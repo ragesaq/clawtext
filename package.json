@@ -1,0 +1,30 @@
+{
+  "name": "clawtext",
+  "version": "1.0.0",
+  "description": "Context Layer Augmentation With Text Enhancement Technology for OpenClaw",
+  "main": "diagnostics.js",
+  "type": "module",
+  "scripts": {
+    "test": "node diagnostics.js",
+    "benchmark": "node benchmark-comparison.js"
+  },
+  "keywords": [
+    "openclaw",
+    "rag",
+    "memory",
+    "context",
+    "hybrid-search",
+    "ai",
+    "agent"
+  ],
+  "author": "ragesaq",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ragesaq/clawtext.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ragesaq/clawtext/issues"
+  },
+  "homepage": "https://github.com/ragesaq/clawtext#readme"
+}
