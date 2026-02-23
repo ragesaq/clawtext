@@ -317,10 +317,6 @@ node benchmark-comparison.js
 - Node.js ≥ 18.x
 - memory-core plugin enabled (default)
 
-## Not sqlite-memory
-
-Clawtext is **not** related to the deprecated sqlite-memory plugin. It uses OpenClaw's native memory-core with pure TypeScript augmentation layers. No async register, no plugin conflicts.
-
 ## Documentation
 
 - [Full Technical Documentation](HYBRID_RAG_DOCUMENTATION.md)
