@@ -2,12 +2,18 @@
   "name": "clawtext",
   "version": "1.0.0",
   "description": "Context Layer Augmentation With Text Enhancement Technology for OpenClaw",
-  "main": "diagnostics.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "test": "node diagnostics.js",
     "benchmark": "node benchmark-comparison.js",
-    "benchmark-simple": "node benchmark-simple.js"
+    "benchmark-simple": "node benchmark-simple.js",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
   },
   "keywords": [
     "openclaw",
