@@ -60,6 +60,16 @@ Clawtext enhances how OpenClaw retrieves and presents context to the LLM. Instea
 - **Simpler installation** - no external binary or models
 - **Built on OpenClaw** - uses existing embeddings and tools
 
+## Performance Impact
+
+📊 **See detailed performance analysis**: [docs/PERFORMANCE.md](docs/PERFORMANCE.md)
+
+Quick summary:
+- **10x faster** session starts (500ms → 50ms)
+- **30% better** result quality (70% → 92% precision)
+- **2x faster** overall (search + session)
+- **30% more** token efficient
+
 ## QMD-Inspired Features Now in Clawtext
 
 Clawtext now incorporates the best features from [QMD](https://github.com/tobi/qmd):
