@@ -47,6 +47,25 @@
     },
     "preWarm": false
   },
+  "adaptive": {
+    "enabled": true,
+    "strategy": "auto", // "auto" | "speed" | "quality" | "balanced"
+    "thresholds": {
+      "minResults": 3,
+      "minConfidence": 0.6,
+      "escalateOnLowRecall": true
+    },
+    "features": {
+      "queryExpansion": "auto", // "auto" | "always" | "never"
+      "llmReranking": "auto",
+      "temporalDecay": "auto"
+    },
+    "learning": {
+      "enabled": true,
+      "trackPerformance": true,
+      "adaptThresholds": true
+    }
+  },
   "monitoring": {
     "logLevel": "info",
     "alertOnError": true,

@@ -108,6 +108,33 @@ Clawtext now incorporates the best features from [QMD](https://github.com/tobi/q
 }
 ```
 
+### ✅ Adaptive Feature Selection (NEW)
+Automatically use expensive features only when beneficial:
+```json
+{
+  "adaptive": {
+    "enabled": true,
+    "strategy": "auto", // "speed" | "quality" | "balanced"
+    "features": {
+      "queryExpansion": "auto", // Only for ambiguous queries
+      "llmReranking": "auto",   // Only for complex queries
+      "temporalDecay": "auto"   // Only for large result sets
+    }
+  }
+}
+```
+
+**How it works:**
+1. **Fast path**: Use O(1) clusters + basic hybrid search
+2. **Analyze**: Check result quality (confidence, count)
+3. **Escalate**: Enable expensive features only if needed
+4. **Learn**: Track which queries benefit from escalation
+
+**Benefits:**
+- ⚡ **Fast by default**: ~50ms for simple queries
+- 🎯 **Smart escalation**: Only pay for features when they help
+- 📈 **Self-improving**: Learns your query patterns over time
+
 ## Why Use Clawtext?
 
 ✅ **High-frequency sessions** - Every interaction benefits from O(1) lookup  
