@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node diagnostics.js",
-    "benchmark": "node benchmark-comparison.js"
+    "benchmark": "node benchmark-comparison.js",
+    "benchmark-simple": "node benchmark-simple.js"
   },
   "keywords": [
     "openclaw",
