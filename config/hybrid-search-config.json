@@ -3,7 +3,7 @@
     "USE_HYBRID_SEARCH": true,
     "USE_CONFIDENCE_FILTERING": true,
     "AUTO_CONTEXT_INJECTION": true,
-    "USE_QUERY_EXPANSION": true,
+    "USE_QUERY_EXPANSION": false,
     "USE_LLM_RERANKING": false
   },
   "hybridSearch": {
@@ -13,9 +13,9 @@
     "boostRecent": true,
     "minConfidence": 0.7,
     "queryExpansion": {
-      "enabled": true,
-      "method": "hybrid", // "rule" | "llm" | "hybrid"
-      "maxExpansions": 5
+      "enabled": false,  // ← DISABLE for speed
+      "method": "rule",  // ← Use "rule" only (fast) when enabled
+      "maxExpansions": 3
     },
     "llmReranking": {
       "enabled": false,
