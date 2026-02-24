@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-specifier-resolution=node tests/run-all.ts",
-    "test:unit": "node --experimental-specifier-resolution=node tests/unit/query-expansion.test.ts && node --experimental-specifier-resolution=node tests/unit/rrf.test.ts && node --experimental-specifier-resolution=node tests/unit/temporal-decay.test.ts",
+    "test:unit": "node --experimental-specifier-resolution=node tests/unit/query-expansion.test.ts && node --experimental-specifier-resolution=node tests/unit/rrf.test.ts && node --experimental-specifier-resolution=node tests/unit/temporal-decay.test.ts && node --experimental-specifier-resolution=node tests/unit/adaptive-features.test.ts",
     "test:integration": "node --experimental-specifier-resolution=node tests/integration/hybrid-search.test.ts",
     "benchmark": "node benchmark-comparison.js",
     "benchmark-simple": "node benchmark-simple.js",
