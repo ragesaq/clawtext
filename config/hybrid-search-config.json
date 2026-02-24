@@ -2,20 +2,42 @@
   "featureFlags": {
     "USE_HYBRID_SEARCH": true,
     "USE_CONFIDENCE_FILTERING": true,
-    "AUTO_CONTEXT_INJECTION": true
+    "AUTO_CONTEXT_INJECTION": true,
+    "USE_QUERY_EXPANSION": true,
+    "USE_LLM_RERANKING": false
   },
   "hybridSearch": {
     "semanticWeight": 0.7,
     "keywordWeight": 0.3,
     "boostPinned": true,
     "boostRecent": true,
-    "minConfidence": 0.7
+    "minConfidence": 0.7,
+    "queryExpansion": {
+      "enabled": true,
+      "method": "hybrid", // "rule" | "llm" | "hybrid"
+      "maxExpansions": 5
+    },
+    "llmReranking": {
+      "enabled": false,
+      "provider": "none", // "openrouter" | "ollama" | "none"
+      "model": "openrouter/google/gemini-2.0-flash-001",
+      "threshold": 4 // Minimum results to trigger re-ranking
+    }
   },
   "contextInjection": {
     "maxMemories": 10,
     "tokenBudget": 2000,
     "autoLoadTypes": ["preference", "decision", "project_context", "fact"],
     "recencyBoost": true
+  },
+  "qmdFeatures": {
+    "externalDirectories": [],
+    "autoIndexing": {
+      "enabled": false,
+      "interval": "5m",
+      "patterns": ["**/*.md", "**/*.txt"]
+    },
+    "preWarm": false
   },
   "monitoring": {
     "logLevel": "info",

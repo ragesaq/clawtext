@@ -5,6 +5,9 @@
  * No new dependencies, no database changes
  */
 
+import { expandQueryForSearch } from './query-expansion';
+import { rerankSearchResults, getRerankConfigFromOpenClaw, shouldRerank } from './llm-rerank';
+
 interface HybridSearchResult {
   path: string;
   startLine: number;
@@ -21,6 +24,9 @@ interface HybridSearchOptions {
   keywordWeight?: number;
   boostPinned?: boolean;
   boostRecent?: boolean;
+  expandQuery?: boolean; // NEW: Enable query expansion
+  rerankResults?: boolean; // NEW: Enable LLM re-ranking
+  rerankProvider?: 'openrouter' | 'ollama' | 'none';
 }
 
 /**
@@ -35,23 +41,36 @@ export async function searchHybrid(
     semanticWeight = 0.7,
     keywordWeight = 0.3,
     boostPinned = true,
-    boostRecent = true
+    boostRecent = true,
+    expandQuery = false,
+    rerankResults = false,
+    rerankProvider = 'none'
   } = options;
+
+  // NEW: Query expansion (inspired by QMD)
+  let expandedQueries = [query];
+  if (expandQuery) {
+    expandedQueries = await expandQueryForSearch(query, 'hybrid');
+  }
 
   // Step 1: Get semantic results from OpenClaw's memory_search
   // This is done via the memory_search tool call
   
   // Step 2: Score keywords in the query
-  const keywords = extractKeywords(query);
+  const keywords = expandedQueries.flatMap(q => extractKeywords(q));
   
   // Step 3: Results will be enhanced by the agent using this function
   // The actual memory_search call happens at the agent level
   
   return {
     query,
+    expandedQueries,
     keywords,
     weights: { semantic: semanticWeight, keyword: keywordWeight },
     boosts: { pinned: boostPinned, recent: boostRecent },
+    expandQuery,
+    rerankResults,
+    rerankProvider,
     maxResults
   } as any;
 }
@@ -120,9 +139,9 @@ export function keywordScore(snippet: string, keywords: string[]): number {
 }
 
 /**
- * Apply hybrid scoring to memory_search results
+ * Apply hybrid scoring to memory_search results with QMD-inspired features
  */
-export function applyHybridScoring(
+export async function applyHybridScoring(
   semanticResults: any[],
   query: string,
   options: {
@@ -130,29 +149,42 @@ export function applyHybridScoring(
     keywordWeight?: number;
     boostPinned?: boolean;
     boostRecent?: boolean;
+    expandQuery?: boolean;
+    rerankResults?: boolean;
+    rerankProvider?: 'openrouter' | 'ollama' | 'none';
   } = {}
-): HybridSearchResult[] {
+): Promise<HybridSearchResult[]> {
   const {
     semanticWeight = 0.7,
     keywordWeight = 0.3,
     boostPinned = true,
-    boostRecent = true
+    boostRecent = true,
+    expandQuery = false,
+    rerankResults = false,
+    rerankProvider = 'none'
   } = options;
 
-  const keywords = extractKeywords(query);
+  // NEW: Query expansion (QMD-inspired)
+  let keywords = extractKeywords(query);
+  let expandedQueries = [query];
   
+  if (expandQuery) {
+    expandedQueries = await expandQueryForSearch(query, 'hybrid');
+    keywords = expandedQueries.flatMap(q => extractKeywords(q));
+  }
+
   // Find max semantic score for normalization
   const maxSemanticScore = Math.max(
     ...semanticResults.map(r => r.score || 0),
     0.001 // Avoid division by zero
   );
 
-  return semanticResults.map(result => {
+  let hybridResults = semanticResults.map(result => {
     // Normalize semantic score to 0-1
     const normSemanticScore = (result.score || 0) / maxSemanticScore;
     
-    // Compute keyword score
-    const kwScore = keywordScore(result.snippet || '', keywords);
+    // Compute keyword score across ALL expanded queries
+    const kwScore = Math.max(...keywords.map(kw => keywordScore(result.snippet || '', [kw])));
     
     // Combine scores
     let hybridScore = (normSemanticScore * semanticWeight) + (kwScore * keywordWeight);
@@ -163,21 +195,65 @@ export function applyHybridScoring(
     }
     
     if (boostRecent) {
-      // Boost if from recent memory files
-      const isRecent = result.path?.includes('2026-02-23') || 
-                       result.path?.includes('2026-02-22');
+      // Boost if from recent memory files (last 7 days)
+      const isRecent = isMemoryRecent(result.path);
       if (isRecent) hybridScore *= 1.1;
     }
 
     return {
+      id: `${result.path}:${result.startLine}`,
       path: result.path,
       startLine: result.startLine,
       endLine: result.endLine,
       snippet: result.snippet,
       score: hybridScore,
-      source: kwScore > 0.3 ? 'hybrid' : 'semantic'
+      source: kwScore > 0.3 ? 'hybrid' : 'semantic',
+      metadata: result.metadata || {}
     };
   }).sort((a, b) => b.score - a.score);
+
+  // NEW: LLM re-ranking (QMD-inspired)
+  if (rerankResults && hybridResults.length > 3) {
+    try {
+      const reranked = await rerankSearchResults(
+        query,
+        hybridResults,
+        { provider: rerankProvider }
+      );
+      
+      if (reranked.reranked) {
+        console.log(`[HybridSearch] Re-ranked ${hybridResults.length} results using ${reranked.providerUsed}`);
+        hybridResults = reranked.results;
+      }
+    } catch (error) {
+      console.warn('[HybridSearch] Re-ranking failed, using original order:', error);
+    }
+  }
+
+  // Cast back to expected type
+  return hybridResults.map(r => ({
+    path: r.path,
+    startLine: r.startLine,
+    endLine: r.endLine,
+    snippet: r.snippet,
+    score: r.score,
+    source: r.source
+  }));
+}
+
+/**
+ * Check if memory file is recent (last 7 days)
+ */
+function isMemoryRecent(path: string): boolean {
+  // Extract date from path like memory/2026-02-23.md
+  const match = path.match(/memory\/(\d{4}-\d{2}-\d{2})\.md$/);
+  if (!match) return false;
+  
+  const memoryDate = new Date(match[1]);
+  const now = new Date();
+  const diffDays = (now.getTime() - memoryDate.getTime()) / (1000 * 60 * 60 * 24);
+  
+  return diffDays <= 7;
 }
 
 /**

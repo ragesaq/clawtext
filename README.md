@@ -37,14 +37,66 @@ Clawtext enhances how OpenClaw retrieves and presents context to the LLM. Instea
 
 > If your OpenClaw agent handles frequent sessions or large memory stores, Clawtext turns every context load from a search problem into a lookup problem.
 
-## Performance vs Default
+## Performance vs Alternatives
 
-| Metric | OpenClaw Default | With Clawtext | Improvement |
-|--------|-----------------|---------------|-------------|
-| **Session Start** | 500ms | 50ms | **10x faster** |
-| **Result Quality** | 70% | 90% | **+20% relevance** |
-| **Token Cost** | 2000 | 2050 | +2.5% (minimal) |
-| **Efficiency** | 1x | 13x | **12x net gain** |
+| Feature | OpenClaw Default | QMD | **Clawtext** |
+|---------|-----------------|-----|--------------|
+| **Search Type** | Semantic only | BM25 + semantic + LLM re-ranking | **BM25 + semantic + confidence filtering** |
+| **Session Start** | 500ms | ~100ms | **50ms (O(1) clusters)** |
+| **Query Expansion** | ❌ No | ✅ Yes | ✅ **Yes (rule + optional LLM)** |
+| **LLM Re-ranking** | ❌ No | ✅ Yes | ✅ **Yes (optional)** |
+| **Memory Clusters** | ❌ No | ❌ No | ✅ **Yes (pre-computed groups)** |
+| **Confidence Filtering** | ❌ No | ❌ No | ✅ **Yes (auto-quality control)** |
+| **Auto-context Injection** | ❌ No | ❌ No | ✅ **Yes (session hooks)** |
+| **External Directories** | ❌ No | ✅ Yes | ✅ **Yes (configurable)** |
+| **Installation** | Built-in | `bun install -g qmd` | `git clone + install.sh` |
+| **Dependencies** | None | 3 GGUF models (~2GB) | **None (uses OpenClaw's)** |
+| **Privacy** | Config-dependent | ✅ Always local | Config-dependent |
+
+**Clawtext Advantages:**
+- **10x faster** session starts with O(1) cluster lookup
+- **Auto-quality control** via confidence filtering  
+- **Project isolation** prevents context pollution
+- **Simpler installation** - no external binary or models
+- **Built on OpenClaw** - uses existing embeddings and tools
+
+## QMD-Inspired Features Now in Clawtext
+
+Clawtext now incorporates the best features from [QMD](https://github.com/tobi/qmd):
+
+### ✅ Query Expansion
+```json
+{
+  "queryExpansion": {
+    "enabled": true,
+    "method": "hybrid", // "rule" | "llm" | "hybrid"
+    "maxExpansions": 5
+  }
+}
+```
+**Example:** `"gateway setup"` → `["server configuration", "port forwarding", "network setup"]`
+
+### ✅ Optional LLM Re-ranking
+```json
+{
+  "llmReranking": {
+    "enabled": false, // Enable for higher quality
+    "provider": "openrouter", // "openrouter" | "ollama"
+    "model": "gemini-2.0-flash-001",
+    "threshold": 4
+  }
+}
+```
+
+### ✅ External Directory Indexing
+```json
+{
+  "externalDirectories": [
+    {"path": "~/notes", "pattern": "**/*.md"},
+    {"path": "~/work/docs", "pattern": "**/*.md"}
+  ]
+}
+```
 
 ## Why Use Clawtext?
 
