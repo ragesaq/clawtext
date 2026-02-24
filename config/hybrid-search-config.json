@@ -22,6 +22,14 @@
       "provider": "none", // "openrouter" | "ollama" | "none"
       "model": "openrouter/google/gemini-2.0-flash-001",
       "threshold": 4 // Minimum results to trigger re-ranking
+    },
+    "temporalDecay": {
+      "enabled": true,
+      "decayRate": 0.1, // 10% per day
+      "maxAgeDays": 90,
+      "minScore": 0.1,
+      "recencyBoost": true,
+      "recencyWindowDays": 7
     }
   },
   "contextInjection": {
