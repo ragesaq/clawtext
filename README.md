@@ -17,7 +17,30 @@ Clawtext enhances how OpenClaw retrieves and presents context to the LLM. Instea
 3. **Confidence Filtering** - Quality-controlled context injection
 4. **360° Views** - Rich context with relationships
 
-It does **not** replace OpenClaw's native memory-core; it augments it with faster retrieval, better ranking, and richer context.
+## OpenClaw Integration: What Kind of Project is This?
+
+**Clawtext is a TypeScript library**, not a skill, extension, or plugin in OpenClaw's nomenclature:
+
+| Type | Definition | Clawtext? |
+|------|-----------|-----------|
+| **Skill** | Instructions + tools in `SKILL.md` | ❌ No |
+| **Extension** | Node.js module with `async register()` | ❌ No |
+| **Plugin** | Built-in functionality via config | ❌ No |
+| **Library** | Importable code to enhance OpenClaw | ✅ **YES** |
+
+**How it integrates:**
+1. Install alongside OpenClaw (not inside it)
+2. Configure OpenClaw to call Clawtext functions
+3. Replace default memory search with Clawtext's hybrid approach
+4. Keep all existing OpenClaw memory storage and tools
+
+**Key integration points:**
+- **Session start hooks** - Faster context loading
+- **Memory search replacement** - Better relevance
+- **Cluster management** - Pre-computed groups
+- **Quality filtering** - Confidence-based injection
+
+> Clawtext doesn't replace OpenClaw's memory-core; it augments it with faster retrieval, better ranking, and richer context.
 
 > If your OpenClaw agent handles frequent sessions or large memory stores, Clawtext turns every context load from a search problem into a lookup problem.
 
