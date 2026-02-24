@@ -17,16 +17,9 @@ Clawtext enhances how OpenClaw retrieves and presents context to the LLM. Instea
 3. **Confidence Filtering** - Quality-controlled context injection
 4. **360° Views** - Rich context with relationships
 
-## OpenClaw Integration: What Kind of Project is This?
+## OpenClaw Integration: Library Architecture
 
-**Clawtext is a TypeScript library**, not a skill, extension, or plugin in OpenClaw's nomenclature:
-
-| Type | Definition | Clawtext? |
-|------|-----------|-----------|
-| **Skill** | Instructions + tools in `SKILL.md` | ❌ No |
-| **Extension** | Node.js module with `async register()` | ❌ No |
-| **Plugin** | Built-in functionality via config | ❌ No |
-| **Library** | Importable code to enhance OpenClaw | ✅ **YES** |
+**Clawtext is a TypeScript library** that enhances OpenClaw's memory system without replacing it. It integrates alongside OpenClaw as an enhancement layer.
 
 **How it integrates:**
 1. Install alongside OpenClaw (not inside it)
