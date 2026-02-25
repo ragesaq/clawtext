@@ -231,7 +231,16 @@ export async function register(runtime: any): Promise<void> {
       console.log('[Clawtext] ✅ Compaction hook installed');
     }
     
-    // 5. Schedule background tasks
+    // 5. Initialize new automatic modules
+    const { getSearchMonitor } = await import('../lib/search-monitor');
+    const { getSelfHealingModule } = await import('../lib/self-healing');
+    const { getMemoryConsolidator } = await import('../lib/memory-consolidation');
+    
+    const searchMonitor = getSearchMonitor();
+    const healingModule = getSelfHealingModule();
+    const consolidator = getMemoryConsolidator();
+    
+    // 6. Schedule background tasks
     if (runtime.scheduler?.schedule) {
       // Daily cluster optimization
       runtime.scheduler.schedule('0 2 * * *', async () => {
@@ -247,7 +256,48 @@ export async function register(runtime: any): Promise<void> {
       // Hourly entity save (backup)
       runtime.scheduler.schedule('0 * * * *', async () => {
         entityManager.save();
-        console.log('[Clawtext] 💾 Entity state backed up');
+        searchMonitor.save();
+        console.log('[Clawtext] 💾 State backed up');
+      });
+      
+      // Daily health check (self-healing)
+      runtime.scheduler.schedule('0 3 * * *', async () => {
+        console.log('[Clawtext] 🏥 Running health check...');
+        try {
+          const health = await healingModule.runHealthCheck();
+          const overall = healingModule.getOverallHealth();
+          
+          if (overall.state === 'healthy') {
+            console.log('[Clawtext] ✅ All systems healthy');
+          } else if (overall.state === 'degraded') {
+            console.log(`[Clawtext] ⚠️  System degraded (score: ${overall.score.toFixed(2)})`);
+          } else {
+            console.log(`[Clawtext] 🔧 Recovery in progress...`);
+          }
+        } catch (error) {
+          console.error('[Clawtext] Health check failed:', error);
+        }
+      });
+      
+      // Weekly memory consolidation
+      runtime.scheduler.schedule('0 4 * * 0', async () => {
+        console.log('[Clawtext] 📦 Running memory consolidation...');
+        try {
+          const result = await consolidator.runConsolidation();
+          console.log(`[Clawtext] 📊 Consolidated ${result.consolidated} files, saved ${(result.saved / 1024).toFixed(1)}KB`);
+        } catch (error) {
+          console.error('[Clawtext] Consolidation failed:', error);
+        }
+      });
+      
+      // Daily weight tuning check
+      runtime.scheduler.schedule('0 5 * * *', async () => {
+        const metrics = searchMonitor.getMetrics();
+        const weights = searchMonitor.getCurrentWeights();
+        
+        if (metrics.avgEffectiveness < 0.6 && metrics.totalSearches > 50) {
+          console.log(`[Clawtext] 🔧 Auto-tuned weights: semantic=${weights.semantic.toFixed(2)}, keyword=${weights.keyword.toFixed(2)}`);
+        }
       });
       
       console.log('[Clawtext] ✅ Background tasks scheduled');
@@ -286,7 +336,91 @@ export async function register(runtime: any): Promise<void> {
         }
       });
       
-      console.log('[Clawtext] ✅ CLI commands registered');
+      // NEW: Search effectiveness commands
+      runtime.commands.register('clawtext-search-metrics', async () => {
+        const metrics = searchMonitor.getMetrics();
+        const weights = searchMonitor.getCurrentWeights();
+        return {
+          content: `🔍 Search Metrics:\n` +
+            `- Total searches: ${metrics.totalSearches}\n` +
+            `- Avg effectiveness: ${(metrics.avgEffectiveness * 100).toFixed(1)}%\n` +
+            `- Current weights: semantic=${weights.semantic.toFixed(2)}, keyword=${weights.keyword.toFixed(2)}\n` +
+            `- Last adjusted: ${weights.lastAdjusted}`,
+          type: 'text'
+        };
+      });
+      
+      runtime.commands.register('clawtext-search-weights', async () => {
+        const weights = searchMonitor.getCurrentWeights();
+        return {
+          content: `⚖️  Search Weights:\n` +
+            `- Semantic: ${(weights.semantic * 100).toFixed(0)}%\n` +
+            `- Keyword: ${(weights.keyword * 100).toFixed(0)}%\n` +
+            `- Reason: ${weights.adjustmentReason}\n` +
+            `- Adjusted: ${weights.lastAdjusted}`,
+          type: 'text'
+        };
+      });
+      
+      // NEW: Self-healing commands
+      runtime.commands.register('clawtext-health', async () => {
+        const overall = healingModule.getOverallHealth();
+        const lines = [
+          `🏥 System Health: ${overall.state.toUpperCase()}`,
+          `Score: ${(overall.score * 100).toFixed(1)}%`,
+          '',
+          'Components:'
+        ];
+        for (const check of overall.checks) {
+          const emoji = check.state === 'healthy' ? '✅' : check.state === 'degraded' ? '⚠️' : '❌';
+          lines.push(`${emoji} ${check.component}: ${check.state} (${(check.score * 100).toFixed(0)}%)`);
+          if (check.issues.length > 0) {
+            lines.push(`   Issues: ${check.issues.join(', ')}`);
+          }
+          if (check.autoFixed && check.autoFixed.length > 0) {
+            lines.push(`   Fixed: ${check.autoFixed.join(', ')}`);
+          }
+        }
+        return { content: lines.join('\n'), type: 'text' };
+      });
+      
+      runtime.commands.register('clawtext-heal', async () => {
+        console.log('[Clawtext] Running manual health check and repair...');
+        await healingModule.runHealthCheck();
+        const overall = healingModule.getOverallHealth();
+        return {
+          content: `🔧 Health check complete. Status: ${overall.state.toUpperCase()} (${(overall.score * 100).toFixed(1)}%)`,
+          type: 'text'
+        };
+      });
+      
+      // NEW: Memory consolidation commands
+      runtime.commands.register('clawtext-consolidate', async () => {
+        console.log('[Clawtext] Running memory consolidation...');
+        const result = await consolidator.runConsolidation();
+        const stats = consolidator.getStats();
+        return {
+          content: `📦 Consolidation Complete:\n` +
+            `- Scanned: ${result.scanned}\n` +
+            `- Consolidated: ${result.consolidated}\n` +
+            `- Space saved: ${(result.saved / 1024).toFixed(1)}KB\n` +
+            `- Total archives: ${stats.totalConsolidated}`,
+          type: 'text'
+        };
+      });
+      
+      runtime.commands.register('clawtext-consolidation-stats', async () => {
+        const stats = consolidator.getStats();
+        return {
+          content: `📊 Consolidation Stats:\n` +
+            `- Total consolidated: ${stats.totalConsolidated}\n` +
+            `- Total space saved: ${(stats.totalSpaceSaved / 1024).toFixed(1)}KB\n` +
+            `- Avg compression: ${(stats.avgCompression * 100).toFixed(1)}%`,
+          type: 'text'
+        };
+      });
+      
+      console.log('[Clawtext] ✅ CLI commands registered (9 total)');
     }
     
     console.log('[Clawtext] 🎉 Fully integrated and ready!');
