@@ -34,6 +34,20 @@ All notable changes to Clawtext will be documented in this file.
   - Balances relevance with diversity
   - Prevents redundant results
 
+#### Entity State Tracking (Memvid-inspired)
+- **Automatic entity extraction** from memory text
+  - Pattern-based extraction (no LLM required)
+  - Extracts: people, organizations, projects, technologies
+  - Example: "Alice works at Anthropic" → `{name: "Alice", employer: "Anthropic"}`
+- **State aggregation** across multiple memories
+  - Merges entity properties over time
+  - Tracks state changes (role changes, location updates)
+  - Confidence scoring based on source count
+- **Structured queries** against extracted entities
+  - `entityState.get("Alice")` returns full state
+  - `entityState.query({type: "person", employer: "Anthropic"})` finds all Anthropic employees
+- **Human-readable storage**: `memory/entities.json`
+
 #### Auto-Integration Extension
 - **One-command installation** with `./install.sh`
 - **Auto-integrating extension** for OpenClaw
