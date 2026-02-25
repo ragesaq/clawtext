@@ -66,6 +66,24 @@
       "adaptThresholds": true
     }
   },
+  "entityTracking": {
+    "enabled": true,
+    "storagePath": "memory/entities.json",
+    "extractOnWrite": true,
+    "supportedTypes": ["person", "organization", "project", "technology", "concept"],
+    "confidenceThreshold": 0.7,
+    "mergeStrategy": "merge", // "overwrite" | "merge" | "keep-newer"
+    "patterns": {
+      "person": {
+        "enabled": true,
+        "extract": ["employer", "role", "location"]
+      },
+      "technology": {
+        "enabled": true,
+        "extract": ["version", "status"]
+      }
+    }
+  },
   "monitoring": {
     "logLevel": "info",
     "alertOnError": true,

@@ -108,6 +108,28 @@ Clawtext now incorporates the best features from [QMD](https://github.com/tobi/q
 }
 ```
 
+### ✅ Entity State Tracking (NEW - Memvid-inspired)
+Extract structured entities from unstructured memories:
+```json
+{
+  "entityTracking": {
+    "enabled": true,
+    "extractOnWrite": true
+  }
+}
+```
+**Example:**
+- Memory: "Alice works at Anthropic as Senior Engineer"
+- Extracted: `{ name: "Alice", employer: "Anthropic", role: "Senior Engineer" }`
+- Query: `entityState.get("Alice")` → Returns structured state
+
+**Features:**
+- Automatic entity extraction from memory text
+- State merging (tracks changes over time)
+- Query by entity type, property, or value
+- Confidence scoring
+- Source memory tracking
+
 ### ✅ Adaptive Feature Selection (NEW)
 Automatically use expensive features only when beneficial:
 ```json
@@ -179,6 +201,28 @@ After Decay: 6 memories @ 0.78 avg confidence (recent prioritized)
 Features Used: Clusters + Hybrid + Temporal decay
 Time: 58ms
 Quality: Better (filtered out stale memories)
+```
+
+**Scenario 5: Entity State Query (NEW)**
+```
+Query: "What do we know about Alice?"
+Entity Extraction: Found from past memories
+- Memory 1: "Alice works at Anthropic as Senior Engineer"
+- Memory 2: "Alice moved to San Francisco last month"
+Entity State: {
+  name: "Alice",
+  type: "person",
+  state: {
+    employer: "Anthropic",
+    role: "Senior Engineer",
+    location: "San Francisco"
+  },
+  confidence: 0.95,
+  sourceMemories: ["mem-1", "mem-2"]
+}
+Features Used: Entity extraction + State aggregation
+Time: 45ms
+Quality: Structured data from unstructured memories
 ```
 
 ### Feature Decision Matrix
