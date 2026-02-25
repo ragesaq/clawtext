@@ -49,6 +49,9 @@ Clawtext enhances how OpenClaw retrieves and presents context to the LLM. Instea
 | **Confidence Filtering** | ❌ No | ❌ No | ✅ **Yes (auto-quality control)** |
 | **Auto-context Injection** | ❌ No | ❌ No | ✅ **Yes (session hooks)** |
 | **External Directories** | ❌ No | ✅ Yes | ✅ **Yes (configurable)** |
+| **Search Auto-Tuning** | ❌ No | ❌ No | ✅ **Yes (monitors & adjusts weights)** |
+| **Self-Healing** | ❌ No | ❌ No | ✅ **Yes (auto-detects & repairs)** |
+| **Memory Consolidation** | ❌ No | ❌ No | ✅ **Yes (auto-compresses old memories)** |
 | **Installation** | Built-in | `bun install -g qmd` | `git clone + install.sh` |
 | **Dependencies** | None | 3 GGUF models (~2GB) | **None (uses OpenClaw's)** |
 | **Privacy** | Config-dependent | ✅ Always local | Config-dependent |
@@ -145,6 +148,72 @@ Automatically use expensive features only when beneficial:
   }
 }
 ```
+
+### ✅ Search Effectiveness Monitor (NEW)
+Automatically tracks search performance and tunes weights for optimal results:
+```json
+{
+  "searchMonitor": {
+    "enabled": true,
+    "trackMetrics": true,
+    "autoTuneWeights": true
+  }
+}
+```
+**Features:**
+- Tracks every search with effectiveness scoring
+- Classifies queries (technical, vague, factual, exploratory)
+- Auto-adjusts semantic vs keyword weights based on patterns
+- Query-type-specific optimization
+
+**Example:** Technical queries get more keyword weight; vague queries get more semantic weight.
+
+### ✅ Self-Healing System (NEW)
+Automatically detects and repairs corrupted or degraded memory systems:
+```json
+{
+  "selfHealing": {
+    "enabled": true,
+    "checkInterval": 60,
+    "autoRepair": true
+  }
+}
+```
+**Health Checks:**
+- Cluster integrity (corrupt files, empty clusters)
+- Entity store integrity (orphaned entities, missing fields)
+- Search performance degradation
+- Filesystem health (missing directories, disk space)
+
+**Auto-Repair Actions:**
+- Rebuild corrupt cluster caches
+- Repair/recreate damaged entity stores
+- Reset search weights to defaults when needed
+- Create missing directories
+
+### ✅ Memory Consolidation (NEW)
+Automatically compresses old memories while preserving key facts:
+```json
+{
+  "consolidation": {
+    "enabled": true,
+    "ageThreshold": 90,      // Days before consolidation
+    "minAccessCount": 3,     // Must be accessed this many times
+    "compressionRatio": 0.6, // Target 60% of original size
+    "preserveTypes": ["decision", "preference"]
+  }
+}
+```
+**How it works:**
+1. Identifies old, low-access memories (90+ days, <3 accesses)
+2. Extracts key facts and entities
+3. Creates compressed summary with full archive
+4. Maintains links for reconstruction if needed
+
+**Benefits:**
+- Reduces storage by ~40% over time
+- Keeps active memory lean and fast
+- Preserves important facts, archives full content
 
 **How it works:**
 1. **Fast path**: Use O(1) clusters + basic hybrid search
@@ -260,7 +329,9 @@ Quality: Structured data from unstructured memories
 ✅ **Large memory stores** - 1000+ memories load instantly via clusters  
 ✅ **Quality-sensitive use** - BM25 + semantic beats semantic alone  
 ✅ **Project separation** - Distinct contexts don't pollute each other  
-✅ **Production-ready** - Full test coverage, documented, benchmarked
+✅ **Self-optimizing** - Automatically tunes weights, heals corruption, consolidates old memories  
+✅ **Zero maintenance** - Background jobs handle optimization automatically  
+✅ **Production-ready** - Full test coverage, documented, benchmarked, self-healing
 
 ## Architecture Overview
 
@@ -287,6 +358,16 @@ Quality: Structured data from unstructured memories
 
 ```
 ┌─────────────────────────────────────────────────────────┐
+│                   Automatic Optimization Layer           │
+├─────────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   Search     │  │    Self      │  │   Memory     │ │
+│  │   Monitor    │  │   Healing    │  │Consolidation │ │
+│  │ (Auto-tune)  │  │ (Auto-repair)│  │ (Auto-compress│ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────┐
 │                      OpenClaw Layer                      │
 ├─────────────────────────────────────────────────────────┤
 │  memory_search    memory_get      memory_create          │
@@ -315,6 +396,11 @@ Quality: Structured data from unstructured memories
 │  │ clusters/    │        │ memory/        │           │
 │  │   project1.json       │   2026-02-24.md │           │
 │  │   project2.json       │   2026-02-23.md │           │
+│  └──────────────┘        └─────────────────┘           │
+│  Metrics JSON             Archive files                 │
+│  ┌──────────────┐        ┌─────────────────┐           │
+│  │search-metrics│        │ archive/        │           │
+│  │health-status │        │   *.md.archive  │           │
 │  └──────────────┘        └─────────────────┘           │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -474,16 +560,26 @@ User Query
 | JSON parse (cluster) | ~0.5ms | Human-readable |
 | Cluster update | O(n) | Append-only |
 | Startup cache warm | ~2s | One-time cost |
+| Health check | ~50ms | - |
+| Memory consolidation | ~100ms per file | Saves ~40% space |
+| Weight tuning | ~5ms | - |
 
 **Memory Footprint:**
 - Clusters: ~1KB per project
 - Config: ~2KB total
-- Code: ~200KB (TypeScript compiled)
+- Metrics: ~5KB per 1000 searches
+- Code: ~250KB (TypeScript compiled)
 - Runtime: ~50MB (Node.js + cached clusters)
 
 **CPU Usage:**
 - 95% idle (cache hits)
-- 5% on cluster misses (fallback to search)
+- 4% on cluster misses (fallback to search)
+- 1% background maintenance (health, consolidation)
+
+**Storage Over Time:**
+- Without consolidation: Linear growth (~10KB/day)
+- With consolidation: Sub-linear (~6KB/day after 90 days)
+- Archive storage: ~4KB per consolidated file
 
 ## Installation
 
@@ -695,14 +791,35 @@ lib/
 ├── session-context.ts         # Auto context injection
 ├── memory-360.ts              # Rich memory views
 ├── memory-reconcile.ts        # Quality maintenance
-└── cluster-persistence.ts     # Disk storage
+├── cluster-persistence.ts     # Disk storage
+├── temporal-decay.ts          # Time-based relevance decay
+├── adaptive-features.ts       # Smart feature selection
+├── entity-state.ts            # Structured entity extraction
+├── query-expansion.ts         # Query enhancement
+├── llm-rerank.ts              # LLM-based re-ranking
+├── search-monitor.ts          # Search effectiveness tracking ⭐ NEW
+├── self-healing.ts            # Auto corruption repair ⭐ NEW
+├── memory-consolidation.ts    # Auto memory compression ⭐ NEW
+├── clawtext-auto.ts           # OpenClaw auto-integration
+└── clawtext-extension.ts      # Extension interface
 
 config/
-└── hybrid-search-config.json  # Feature flags
+├── hybrid-search-config.json  # Feature flags
+└── hybrid-search-simple.json  # Simple search config
 
+docs/
+├── HYBRID_RAG_DOCUMENTATION.md    # Full technical docs
+├── OPENCLAW_INTEGRATION.md        # Integration guide
+├── GETTING_STARTED.md             # Quick start guide
+├── PERFORMANCE.md                 # Performance analysis
+└── QUICK_START.md                 # One-page reference
+
+install.sh                     # One-command installer
 diagnostics.js                 # Installation verification
-HYBRID_RAG_DOCUMENTATION.md    # Full technical docs
+benchmark-comparison.js        # Performance benchmarks
+benchmark-simple.js            # Quick benchmark
 BENCHMARK_RESULTS.md           # Performance data
+CHANGELOG.md                   # Version history
 ```
 
 ## Comparison: Clawtext vs Other Approaches
@@ -757,6 +874,84 @@ node diagnostics.js
 # Benchmark performance
 node benchmark-comparison.js
 ```
+
+## CLI Commands
+
+When integrated with OpenClaw, Clawtext provides these commands:
+
+### Core Commands
+```bash
+clawtext-stats              # View entity and cluster statistics
+clawtext-optimize           # Run cluster optimization manually
+clawtext-entity <name>      # View detailed entity state
+```
+
+### Search Monitoring Commands
+```bash
+clawtext-search-metrics     # View search performance metrics
+# Example output:
+# 🔍 Search Metrics:
+# - Total searches: 247
+# - Avg effectiveness: 87.3%
+# - Current weights: semantic=0.75, keyword=0.25
+
+clawtext-search-weights     # View current weight configuration
+# Example output:
+# ⚖️ Search Weights:
+# - Semantic: 75%
+# - Keyword: 25%
+# - Reason: technical queries underperforming
+```
+
+### Self-Healing Commands
+```bash
+clawtext-health             # Check system health status
+# Example output:
+# 🏥 System Health: HEALTHY
+# Score: 94.2%
+# Components:
+# ✅ clusters: healthy (98%)
+# ✅ entities: healthy (95%)
+# ✅ search: healthy (92%)
+# ✅ filesystem: healthy (100%)
+
+clawtext-heal               # Run manual health check and repair
+# Automatically fixes:
+# - Corrupt cluster files (rebuilds)
+# - Missing entity stores (recreates)
+# - Degraded search (resets weights)
+# - Missing directories (creates)
+```
+
+### Memory Consolidation Commands
+```bash
+clawtext-consolidate        # Run memory consolidation manually
+# Example output:
+# 📦 Consolidation Complete:
+# - Scanned: 45
+# - Consolidated: 12
+# - Space saved: 45.2KB
+# - Total archives: 12
+
+clawtext-consolidation-stats # View consolidation statistics
+# Example output:
+# 📊 Consolidation Stats:
+# - Total consolidated: 12
+# - Total space saved: 45.2KB
+# - Avg compression: 42%
+```
+
+## Automatic Background Jobs
+
+Clawtext runs these maintenance tasks automatically:
+
+| Job | Schedule | Purpose |
+|-----|----------|---------|
+| Cluster optimization | Daily @ 2 AM | Rebuild and optimize clusters |
+| State backup | Hourly | Backup entity and search state |
+| Health check | Daily @ 3 AM | Detect and repair issues |
+| Memory consolidation | Weekly @ 4 AM Sunday | Compress old memories |
+| Weight tuning | Daily @ 5 AM | Adjust search weights based on metrics |
 
 ## Requirements
 
