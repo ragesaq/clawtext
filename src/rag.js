@@ -103,7 +103,7 @@ export class ClawTextRAG {
    * Find relevant memories for a query with project-aware scoring
    */
   findRelevantMemories(query, projectKeywords = []) {
-    if (this.config.enabled || !query) return [];
+    if (!this.config.enabled || !query) return [];
 
     let targetProjects = projectKeywords.length > 0
       ? Array.from(this.clusters.keys()).filter(p =>
