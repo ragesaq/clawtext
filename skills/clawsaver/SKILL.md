@@ -1,6 +1,6 @@
 ---
 name: clawsaver
-description: Automatically batch user messages to reduce model API calls by 20–40%. Set it and forget it.
+description: Reduce model API costs by 20–40% through intelligent message batching. Buffer related messages, send once.
 metadata:
   clawdbot:
     emoji: "⚡"
@@ -12,54 +12,48 @@ metadata:
 
 # ClawSaver
 
-**The problem:** Users send multiple messages quickly. Each message triggers a separate API call to your model. That gets expensive.
+**Reduce model API costs by 20–40% through intelligent message batching.**
 
-**The solution:** Wait a moment, combine the messages, send one call instead. Cost drops 20–40%. Users notice zero difference.
+Most agent systems waste money on redundant API calls. When users send follow-up messages, you call the model separately for each one. ClawSaver fixes this by waiting ~800ms to collect related messages, then sending them together in a single optimized request. Same response quality. Lower cost. No user friction.
 
-## What It Does
+## The Problem
 
-ClawSaver watches incoming messages. When it detects multiple messages from the same user arriving close together, it batches them. Then it sends them all at once to your model.
-
-**Example:**
 ```
-User sends: "What is machine learning?"
-(300ms passes)
-User sends: "Give an example"
-
-Without ClawSaver: 2 API calls ($0.02)
-With ClawSaver: 1 API call ($0.01)
-Savings: 50% ✅
+User: "What is machine learning?"
+(pause)
+User: "Give an example"
+(pause)
+User: "How does that apply to healthcare?"
 ```
 
-Across thousands of conversations, this adds up fast.
+Without optimization: **3 API calls = 3x cost**  
+With ClawSaver: **1 batched call = 1/3 the price**
 
-## Key Numbers
+Across thousands of conversations, this compounds fast.
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| Cost savings | 20–40% | Typical usage patterns |
-| Setup time | 20 minutes | Copy file, add 10 lines of code |
-| Maintenance | Zero | Set it, forget it |
-| User friction | None | Feels instant to end users |
-| Code size | 4.2 KB | One file, no dependencies |
-| Latency added | +800ms | Configurable, fast enough for most uses |
+## How It Works
 
-## How to Use It
+1. User sends message → ClawSaver buffers it
+2. Waits ~800ms for follow-ups from same user
+3. If more messages arrive → keep buffering
+4. Timer expires → send all messages together
+5. Model responds once → you get complete answer
 
-### Install
+**Why users don't notice:** They're already waiting for your model response. Buffering input doesn't feel slower because the response comes right after the batch sends.
+
+## Install
+
 ```bash
 clawhub install clawsaver
-# or
-npm install clawsaver
 ```
 
-### Basic Integration
+## Quick Start (10 lines)
+
 ```javascript
 import SessionDebouncer from 'clawsaver';
 
 const debouncers = new Map();
 
-// When you get a message:
 function handleMessage(userId, text) {
   if (!debouncers.has(userId)) {
     debouncers.set(userId, new SessionDebouncer(
@@ -69,143 +63,88 @@ function handleMessage(userId, text) {
   }
   debouncers.get(userId).enqueue({ text });
 }
-
-// When you call the model:
-async function callModel(userId, messages) {
-  const combined = messages
-    .map((m, i) => `Message ${i+1}: ${m.text}`)
-    .join('\n\n');
-  
-  const response = await yourModel.complete(combined);
-  await sendResponse(userId, response);
-}
 ```
 
-That's the whole integration.
+## Impact
 
-### See Savings
-```javascript
-const { metrics } = debouncer.getState();
-console.log(`Saved ${metrics.totalSavedCalls} calls`);
-```
+| Metric | Value |
+|--------|-------|
+| **Cost reduction** | 20–40% typical |
+| **Setup time** | 10 minutes |
+| **Code added** | ~10 lines |
+| **Dependencies** | 0 |
+| **File size** | 4.2 KB |
+| **Latency added** | +800ms (user-imperceptible) |
+| **Maintenance** | None |
+
+## Three Profiles
+
+Choose based on your use case:
+
+### Balanced (Default)
+- 25–35% savings
+- 800ms buffer
+- Chat, Q&A, general conversation
+
+### Aggressive
+- 35–45% savings
+- 1.5s buffer
+- Batch workflows, high-volume ingestion
+
+### Real-Time
+- 5–10% savings
+- 200ms buffer
+- Interactive, voice-first systems
 
 ## When to Use
 
-**Great fit:**
-- Chat applications (users send back-to-back messages)
-- Customer support bots
-- Q&A systems
-- Any stateful conversation
+✅ Chat applications  
+✅ Customer support bots  
+✅ Multi-turn Q&A  
+✅ Any conversation with follow-ups  
 
-**Less useful for:**
-- Single-message workflows
-- Voice assistants expecting sub-100ms latency
-- Systems already optimized
-
-## Configurations
-
-Three built-in profiles:
-
-### Balanced (Default)
-```javascript
-new SessionDebouncer(userId, handler);
-```
-- 25–35% savings
-- +800ms latency
-- Works for most cases
-
-### Aggressive
-```javascript
-new SessionDebouncer(userId, handler, {
-  debounceMs: 1500,
-  maxWaitMs: 4000,
-  maxMessages: 8
-});
-```
-- 35–45% savings
-- +1.5s latency
-- Good for batch operations
-
-### Real-Time
-```javascript
-new SessionDebouncer(userId, handler, {
-  debounceMs: 200,
-  maxWaitMs: 1000,
-  maxMessages: 2
-});
-```
-- 5–10% savings
-- +200ms latency
-- Good for interactive flows
-
-## What Happens to Messages
-
-ClawSaver preserves message order and context:
-
-**Input:**
-```
-Message 1: "What's the capital of France?"
-Message 2: "How many people live there?"
-```
-
-**Sent to model:**
-```
-Message 1: What's the capital of France?
-
-Message 2: How many people live there?
-
-_Please treat the above as a single combined user input._
-```
-
-Model sees them as separate but related. Answers both comprehensively.
+❌ Single-request workflows  
+❌ Sub-100ms response requirements  
 
 ## API
 
-### Constructor
 ```javascript
-new SessionDebouncer(sessionKey, handler, options?)
+new SessionDebouncer(userId, handler, {
+  debounceMs: 800,      // wait time
+  maxWaitMs: 3000,      // absolute max
+  maxMessages: 5,       // batch size cap
+  maxTokens: 2048       // reserved
+})
+
+// Methods
+debouncer.enqueue(message)      // add to batch
+debouncer.forceFlush(reason)    // send now
+debouncer.getState()            // buffer + metrics
+debouncer.getStatusString()     // human-readable
 ```
-- `sessionKey` (string) — User/room ID
-- `handler` (function) — Called when batch is ready
-- `options` (object, optional):
-  - `debounceMs` (800) — Wait time
-  - `maxWaitMs` (3000) — Max wait
-  - `maxMessages` (5) — Batch size
-  - `maxTokens` (2048) — Reserved
 
-### Methods
-- `enqueue(message)` — Add message to batch
-- `forceFlush(reason)` — Send batch now
-- `getState()` — Check buffer and metrics
-- `getStatusString()` — Human-readable status
-- `resetMetrics()` — Clear counters
+## Docs
 
-## FAQ
+- **START_HERE.md** — Navigation (pick your role/timeline)
+- **QUICKSTART.md** — 5-minute integration
+- **INTEGRATION.md** — Patterns, edge cases, full config
+- **SUMMARY.md** — Metrics and ROI (decision makers)
+- **SKILL.md** — Full API reference
+- **example-integration.js** — Copy-paste templates
 
-**Q: Will users notice the delay?**  
-A: No. Users are waiting for your model to respond anyway. You're not adding delay to their experience.
+## Security
 
-**Q: What if messages are unrelated?**  
-A: Still works fine. Model handles multiple questions in one request.
+- **No telemetry** — Doesn't phone home
+- **No network calls** — Runs locally
+- **No dependencies** — Pure JavaScript
+- **You control output** — You decide what goes to your model
 
-**Q: How much will I actually save?**  
-A: 20–40% depending on message patterns. Check the metrics after a day.
+Data never leaves your machine.
 
-**Q: Can I use streaming?**  
-A: Yes. Batching delays input, not output.
+## License
 
-**Q: What if a user sends one message then waits?**  
-A: ClawSaver automatically flushes after 3 seconds.
+MIT
 
-## Documentation
+---
 
-- **README.md** — Full guide with examples and deep dive
-- **QUICKSTART.md** — 5-minute walkthrough
-- **INTEGRATION.md** — Patterns and edge cases
-- **SUMMARY.md** — Metrics and ROI
-
-## Support
-
-- Issues: GitHub
-- Docs: See included guides
-- Community: OpenClaw Discord
+**Start here:** Pick your path in **START_HERE.md**, or jump to **QUICKSTART.md** for 5-minute setup.
