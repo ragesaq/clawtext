@@ -108,7 +108,7 @@ export class ClawTextRAG {
    */
   findRelevantMemories(query, projectKeywords = []) {
     // If disabled or empty query
-    if (this.config.injectMode === 'off' || !query) return [];
+    if (this.config.injectMode === 'off' || !this.config.enabled || !query) return [];
 
     // 1) BM25 / cluster results
     const bm25Results = this._findBM25(query, projectKeywords);
