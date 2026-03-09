@@ -6,7 +6,41 @@ OpenClaw agents have basic memory with MEMORY.md, but it doesn't scale—it requ
 
 ---
 
-## The Problem: Agents Without Memory Are Limited
+## Why ClawText: Engineering & Technology
+
+ClawText isn't just a basic memory cache. It's a production-grade system with sophisticated retrieval and maintenance:
+
+### Retrieval & Search
+- **BM25 scoring** — Term frequency, confidence weighting, project-aware ranking
+- **Semantic clustering** — Memories grouped by topic, not just timestamp
+- **Hybrid retrieval** — Hot cache (sub-1ms) + cluster search (indexed, scalable)
+- **Deduplication** — SHA1-based content hashing prevents re-storing the same memory
+
+### Tiered Architecture
+- **L1 Hot Cache** — In-memory with configurable TTL and sticky retention (recent high-value items stay)
+- **L2 Curated** — Validated, ranked memories ready for injection
+- **L3 Archive** — Full historical searchability (for deep recalls)
+- **L4 Staging** — Buffer for bulk ingest and conversational capture
+
+### Automatic Maintenance
+- **Auto-promotion** — Memories promoted from staging → curated → hot based on usage patterns
+- **Staleness detection** — Knowledge repos flagged at 30/90 day thresholds
+- **Deduplication pipeline** — Removes redundant entries, keeps canonical versions
+- **Token budgeting** — Never exceeds configured prompt context budget
+
+### Compared to Alternatives
+
+| Feature | ClawText | mem0 | QMD | Standard LLM + MEMORY.md |
+|---------|----------|------|-----|------------------------|
+| **Multi-tier retrieval** | ✅ (4 tiers) | ⚠️ (basic) | ✅ (3 tiers) | ❌ |
+| **BM25 + clustering** | ✅ | ❌ | ✅ | ❌ |
+| **Knowledge repo support** | ✅ (bulk ingest, separate from agent memory) | ⚠️ (basic ingest) | ✅ | ❌ |
+| **Agent-assisted maintenance** | ✅ (staleness alerts, health checks) | ⚠️ (manual) | ⚠️ (manual) | ❌ |
+| **Hot cache optimization** | ✅ (<1ms retrieval) | ⚠️ (vector DB latency) | ⚠️ (DB latency) | ❌ |
+| **Built for OpenClaw** | ✅ | ❌ | ❌ | ✅ (but limited) |
+| **No external dependencies** | ✅ | ❌ (API calls) | ❌ (vector service) | ✅ |
+
+---
 
 Every time you talk to an AI agent, it processes your message in isolation. It doesn't know:
 - What project you were working on yesterday
