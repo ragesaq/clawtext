@@ -4,6 +4,12 @@
 
 ---
 
+## Elevator Pitch
+
+Your AI agents forget everything after each session. **ClawText fixes that** — giving agents persistent, instantly-accessible memory that's automatically curated to stay relevant and fast. Conversational insights injected into every prompt. Bulk knowledge loaded on-demand. Built for agents that actually learn.
+
+---
+
 ## The Problem: Agents Without Memory Are Limited
 
 Every time you talk to an AI agent, it processes your message in isolation. It doesn't know:
