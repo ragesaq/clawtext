@@ -24,7 +24,8 @@
     "operational:promote": "node scripts/operational-cli.mjs promote",
     "operational:capture:error": "node scripts/operational-cli.mjs capture:error",
     "operational:capture:success": "node scripts/operational-cli.mjs capture:success",
-    "operational:transfer-check": "node scripts/operational-cli.mjs transfer-check"
+    "operational:transfer-check": "node scripts/operational-cli.mjs transfer-check",
+    "operational:aggregation:stats": "node scripts/operational-cli.mjs aggregation:stats"
   },
   "keywords": [
     "memory",

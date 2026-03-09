@@ -11,18 +11,20 @@
  * - operational:capture:error - Manually capture an error pattern
  * - operational:capture:success - Manually capture a success pattern
  * - operational:transfer-check <task> - Check for relevant operational patterns before a task
+ * - operational:aggregation:stats - Show aggregation statistics
  */
 
 import { OperationalMemoryManager } from '../dist/operational.js';
+import { OperationalCaptureManager } from '../dist/operational-capture.js';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import fs from 'fs';
+import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const workspacePath = process.env.HOME + '/.openclaw/workspace';
 
-const manager = new OperationalMemoryManager(workspacePath);
+const memoryManager = new OperationalMemoryManager(workspacePath);
+const captureManager = new OperationalCaptureManager(workspacePath);
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -54,10 +56,10 @@ switch (command) {
     promotePattern(args[1]);
     break;
   case 'capture:error':
-    captureError();
+    captureErrorInteractive();
     break;
   case 'capture:success':
-    captureSuccess();
+    captureSuccessInteractive();
     break;
   case 'transfer-check':
     if (!args[1]) {
@@ -65,6 +67,9 @@ switch (command) {
       process.exit(1);
     }
     transferCheck(args.slice(1).join(' '));
+    break;
+  case 'aggregation:stats':
+    showAggregationStats();
     break;
   default:
     console.error(`Unknown command: ${command}`);
@@ -83,9 +88,10 @@ Commands:
   operational:review              Show review queue (candidates awaiting review)
   operational:search <query>      Search operational memories
   operational:promote <patternKey> Promote pattern to workspace guidance
-  operational:capture:error       Manually capture an error pattern
-  operational:capture:success     Manually capture a success pattern
+  operational:capture:error       Interactively capture an error pattern
+  operational:capture:success     Interactively capture a success pattern
   operational:transfer-check <task> Check for relevant patterns before a task
+  operational:aggregation:stats   Show aggregation statistics
 
 Examples:
   npm run operational:status
@@ -93,11 +99,12 @@ Examples:
   npm run operational:search -- "compaction failure"
   npm run operational:promote -- "tool.exec.invalid_workdir"
   npm run operational:transfer-check -- "deploying gateway config"
+  npm run operational:capture:error
 `);
 }
 
 function showStatus() {
-  const stats = manager.getStats();
+  const stats = memoryManager.getStats();
 
   console.log(`
 📊 ClawText Operational Memory Status
@@ -131,8 +138,23 @@ High recurrence (≥3): ${stats.highRecurrence}
 `);
 }
 
+function showAggregationStats() {
+  const stats = captureManager.getAggregationStats();
+
+  console.log(`
+📈 Operational Memory Aggregation Stats
+========================================
+
+Total unique signatures: ${stats.totalSignatures}
+Patterns with recurrence: ${stats.patternsWithRecurrence}
+Candidates awaiting review: ${stats.candidates}
+
+Note: Patterns are auto-promoted to candidate status when they repeat (≥2 occurrences).
+`);
+}
+
 function showReviewQueue() {
-  const candidates = manager.getReviewQueue();
+  const candidates = memoryManager.getReviewQueue();
 
   if (candidates.length === 0) {
     console.log('✅ Review queue is empty. No candidates awaiting review.');
@@ -165,7 +187,7 @@ function showReviewQueue() {
 }
 
 function searchMemories(query) {
-  const results = manager.search(query, { limit: 20 });
+  const results = memoryManager.search(query, { limit: 20 });
 
   if (results.length === 0) {
     console.log(`No operational memories found matching: "${query}"`);
@@ -200,7 +222,7 @@ function searchMemories(query) {
 }
 
 function promotePattern(patternKey) {
-  const entry = manager.get(patternKey);
+  const entry = memoryManager.get(patternKey);
   if (!entry) {
     console.error(`Pattern not found: ${patternKey}`);
     process.exit(1);
@@ -211,14 +233,13 @@ function promotePattern(patternKey) {
     return;
   }
 
-  // Ask for target
   const target = promptForTarget(entry);
   if (!target) {
     console.log('Promotion cancelled.');
     return;
   }
 
-  const updated = manager.promote(patternKey, target);
+  const updated = memoryManager.promote(patternKey, target);
   if (updated) {
     console.log(`✅ Pattern promoted: ${patternKey}`);
     console.log(`   Target: ${target}`);
@@ -235,7 +256,6 @@ function promptForTarget(entry) {
   console.log('5. ClawText docs (general memory lesson)');
   console.log('');
   
-  // For now, just use a default based on scope
   const scopeToTarget = {
     'tool': 'TOOLS.md',
     'agent': 'AGENTS.md',
@@ -247,76 +267,73 @@ function promptForTarget(entry) {
   return scopeToTarget[entry.scope] || 'SOUL.md';
 }
 
-function captureError() {
+function captureErrorInteractive() {
   console.log(`
-📝 Manual Error Pattern Capture
-================================
+📝 Interactive Error Pattern Capture
+=====================================
 
-Please provide the following information:
+This will guide you through capturing an error pattern.
 
-1. Summary (one-line description):
-2. Symptom (what you see):
-3. Trigger (what causes it):
-4. Root cause (why it happens):
-5. Fix (how to resolve/avoid):
-6. Scope (tool/agent/project/gateway/global):
-7. Evidence (optional, comma-separated):
-
-For now, this is a placeholder. Full interactive capture coming in v1.5.
+Step 1: Basic Information
+--------------------------
 `);
 
-  // Create a minimal entry for now
-  const entry = manager.create({
+  // For now, create a simple placeholder
+  const entry = captureManager.capture({
     type: 'error-pattern',
-    status: 'raw',
-    summary: 'Manual capture placeholder',
-    symptom: 'TBD',
+    summary: 'Interactive error capture (placeholder)',
+    symptom: 'TBD - Use programmatic capture or edit manually',
     trigger: 'TBD',
     rootCause: 'TBD',
     fix: 'TBD',
     scope: 'global',
-    confidence: 0.5,
-    recurrenceCount: 1,
-    evidence: [],
+    evidence: ['Interactive capture placeholder'],
+    timestamp: new Date().toISOString(),
   });
 
-  console.log(`\n✅ Created raw entry: ${entry.patternKey}`);
-  console.log(`   Run "npm run operational:review" to see it in the raw queue.`);
+  console.log(`
+✅ Created error pattern: ${entry.patternKey}
+   Status: ${entry.status}
+   
+Next steps:
+  - Edit the YAML file to add details
+  - Or use programmatic capture from hooks/wrappers
+  - Run "npm run operational:review" to see it in the queue
+`);
 }
 
-function captureSuccess() {
+function captureSuccessInteractive() {
   console.log(`
-📝 Manual Success Pattern Capture
-==================================
+📝 Interactive Success Pattern Capture
+======================================
 
-Please provide the following information:
+This will guide you through capturing a success pattern.
 
-1. Summary (one-line description):
-2. What worked:
-3. Context (when/where it worked):
-4. Why it worked:
-5. Scope (tool/agent/project/gateway/global):
-6. Evidence (optional, comma-separated):
-
-For now, this is a placeholder. Full interactive capture coming in v1.5.
+Step 1: Basic Information
+--------------------------
 `);
 
-  const entry = manager.create({
+  const entry = captureManager.capture({
     type: 'success-pattern',
-    status: 'raw',
-    summary: 'Manual success capture placeholder',
+    summary: 'Interactive success capture (placeholder)',
     symptom: 'Workflow completed successfully',
     trigger: 'TBD',
     rootCause: 'TBD',
     fix: 'Follow this approach',
     scope: 'global',
-    confidence: 0.7,
-    recurrenceCount: 1,
-    evidence: [],
+    evidence: ['Interactive capture placeholder'],
+    timestamp: new Date().toISOString(),
   });
 
-  console.log(`\n✅ Created raw entry: ${entry.patternKey}`);
-  console.log(`   Run "npm run operational:review" to see it in the raw queue.`);
+  console.log(`
+✅ Created success pattern: ${entry.patternKey}
+   Status: ${entry.status}
+   
+Next steps:
+  - Edit the YAML file to add details
+  - Or use programmatic capture from hooks/wrappers
+  - Run "npm run operational:review" to see it in the queue
+`);
 }
 
 function transferCheck(task) {
@@ -328,8 +345,7 @@ Checking for relevant operational patterns before this task...
 
 `);
 
-  // Search for patterns related to the task
-  const relevantPatterns = manager.search(task, { 
+  const relevantPatterns = memoryManager.search(task, { 
     status: 'reviewed',
     limit: 10
   });
@@ -352,3 +368,6 @@ Checking for relevant operational patterns before this task...
 
   console.log('Consider these patterns before proceeding.');
 }
+
+// Export for programmatic use
+export { memoryManager, captureManager };

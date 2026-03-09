@@ -300,8 +300,32 @@ export class OperationalMemoryManager {
    * Update index entry (for non-save operations)
    */
   private updateIndex(entry: OperationalMemory): void {
-    const dir = this.getDirectoryForStatus(entry.status);
-    const relativeDir = path.relative(this.operationalDir, dir);
+    let relativeDir: string;
+    
+    switch (entry.status) {
+      case 'raw':
+        relativeDir = 'raw';
+        break;
+      case 'candidate':
+        relativeDir = 'candidates';
+        break;
+      case 'reviewed':
+      case 'promoted':
+        relativeDir = 'patterns';
+        break;
+      case 'archived':
+        relativeDir = 'archive';
+        break;
+      default:
+        relativeDir = 'raw';
+    }
+
+    // Add date subdirectory for raw entries
+    if (entry.status === 'raw') {
+      const date = entry.createdAt?.slice(0, 10) || 'unknown';
+      relativeDir = path.join(relativeDir, date);
+    }
+
     const filename = `${entry.id}.yaml`;
     const relativePath = path.join(relativeDir, filename);
     
