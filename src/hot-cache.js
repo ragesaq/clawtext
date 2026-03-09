@@ -32,8 +32,8 @@ export class HotMemoryCache {
       maxResultsPerQuery: 5,
       defaultTtlDays: 14,
       stickyTtlDays: 60,
-      admissionConfidence: 0.78,
-      admissionScore: 1.5,
+      admissionConfidence: 0.60,  // TUNING: Lowered from 0.78 to admit more cluster results
+      admissionScore: 0.8,        // TUNING: Lowered from 1.5 to capture more BM25 matches
       persistEveryAdmissions: 5,
       persistEveryHits: 10,
       ...config,
