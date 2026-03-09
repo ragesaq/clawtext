@@ -21,116 +21,87 @@ This works fine for one-off questions. But for agents that tackle real work—co
 
 ## How Agent Memory Works
 
-To understand why memory matters, let's look at how agentic systems like OpenClaw actually work, then see where memory fits in.
+Every time an agent processes a request, it builds a prompt from:
+- **System instructions** — Core rules and identity
+- **Context** — Conversation history, background information
+- **Current request** — What the user is asking
 
-### The Anatomy of an Agentic System
+Memory's job is to intelligently populate the "context" layer.
 
-Every time you interact with an agent (OpenClaw, ChatGPT, Claude, etc.), the same basic flow happens:
+### OpenClaw's Approach
 
-```
-User Input
-    ↓
-[System builds a prompt]
-    ↓
-[Prompt sent to LLM]
-    ↓
-[LLM generates response]
-    ↓
-Agent Action/Output
-```
+OpenClaw agents already use static system prompts to define who they are:
+- **SOUL.md** — Personality and core values
+- **AGENTS.md** — Role and capabilities
+- **USER.md** — Who you're helping
+- **MEMORY.md** — Long-term knowledge (currently static, limited)
 
-The prompt is the critical piece. It contains:
-- **System instructions** — "You are a helpful coding assistant"
-- **Conversation history** — Recent messages for context
-- **Current request** — What the user is asking right now
+These files work well for stable context. But they don't capture:
+- **Decisions made during this project** — "We chose PostgreSQL because X"
+- **Lessons from past sessions** — "That approach failed last time; here's why"
+- **Current state** — "We're blocked on the Redis cache issue"
+- **Other agents' work** — "Agent-B already fixed similar problem yesterday"
 
-The LLM processes all of this and generates a response based on what's in the prompt.
+ClawText fills this gap.
 
-### Without a Memory System
+### The Prompt Before Memory
 
 ```
-System instructions
-+ Recent conversation
-+ User request
-       ↓
-    [LLM]
-       ↓
-    Response
-```
-
-**Problem:** If your project is old, the LLM only sees recent messages. Important context (past decisions, architectural patterns, lessons learned) is gone.
-
-Example:
-```
-User: "Fix the authentication bug"
-Agent: *searches recent history* "I don't see any architecture notes. What's your auth setup?"
-User: *explains the entire architecture again*
-```
-
-You're constantly re-explaining things that the agent should already know.
-
-### With a General Memory System
-
-```
-System instructions
-+ Recent conversation
-+ [Memories retrieved from storage] ← NEW
-+ User request
-       ↓
-    [LLM]
-       ↓
-    Response
-```
-
-**Improvement:** Before processing the request, a memory system searches storage and injects relevant context into the prompt.
-
-```
-System instructions
-+ Recent conversation
-+ [Context from memory:
-    - Decision: JWT with 24h expiry
-    - Bug: Redis cache invalidation issue
-    - Pattern: Use async/await]
+[SOUL.md: Your personality/values]
+[AGENTS.md: Your role]
+[USER.md: Who you're helping]
+[Recent conversation]
 + User request: "Fix the authentication bug"
-       ↓
-    [LLM]
-       ↓
-    Response: "I see the Redis invalidation problem..."
+     ↓
+  [LLM]
+     ↓
+  Response: "What's your auth architecture?"
 ```
 
-The agent now has background information and can make informed decisions immediately.
+**Problem:** The LLM doesn't know past decisions or lessons. You re-explain context every session.
 
-### The Memory System Challenge
-
-A basic memory system works, but it creates new problems:
-
-1. **Slow retrieval** — Searching all old memories takes time. Adding latency to every prompt hurts agent responsiveness.
-2. **Noise** — Irrelevant memories clutter the prompt, wasting tokens and confusing the LLM.
-3. **Duplicate memories** — The same thing gets stored multiple times. Which version is current?
-4. **No prioritization** — Old memories get mixed with important ones. The system can't tell what matters.
-5. **Grows without bound** — Over months, memory accumulates into an unmaintainable pile.
-
-### Where ClawText Comes In
-
-ClawText solves these problems with a **tiered architecture** and **intelligent curation**:
-
-- **L1 (Hot cache)** — Instant retrieval of high-value memories (microseconds, not milliseconds)
-- **L2 (Curated)** — Validated, deduplicated memories ready for injection
-- **L3 (Archive)** — Historical context you might need later but don't query often
-- **L4 (Staging)** — Raw captures awaiting review and promotion
-
-The result: Your agent gets the right context, fast, without noise or duplicates.
+### The Prompt With ClawText
 
 ```
-System instructions
-+ Recent conversation
-+ [ClawText: Fast, relevant memories injected here]
-+ User request
-       ↓
-    [LLM]
-       ↓
-    Better response (context-aware, informed, consistent)
+[SOUL.md: Your personality/values]
+[AGENTS.md: Your role]
+[USER.md: Who you're helping]
+[Recent conversation]
+[ClawText injected memories:
+  - Decision: JWT with 24h expiry
+  - Bug: Redis invalidation failing
+  - Pattern: Async/await preferred]
++ User request: "Fix the authentication bug"
+     ↓
+  [LLM]
+     ↓
+  Response: "I see the Redis issue. Here's the fix..."
 ```
+
+**Benefit:** Memory adds dynamic context that evolves with your project. Your static system prompts stay clean; memories handle the specific, changeable stuff.
+
+### Why a Simple Memory System Isn't Enough
+
+A basic "store everything" approach creates problems:
+
+- **Speed** — Searching all old memories adds latency. Your agent gets slower over time.
+- **Noise** — Irrelevant memories waste tokens and confuse the LLM.
+- **Duplicates** — "Use async/await" gets stored 10 times. Which is current?
+- **No ranking** — Old memories mix with important ones. System can't prioritize.
+- **Unbounded growth** — Memory becomes an unmaintainable pile of entries.
+
+### What ClawText Does Differently
+
+ClawText is a **tiered memory system** that solves these problems:
+
+| Tier | Purpose | Speed |
+|------|---------|-------|
+| **L1: Hot Cache** | Active project context, recent decisions, current blockers | <1ms |
+| **L2: Curated** | Validated, deduplicated, ranked memories | ~10ms |
+| **L3: Archive** | Historical context for deep searches | ~100ms |
+| **L4: Staging** | Raw captures awaiting review | Write-only |
+
+Your agent gets fast, relevant context. Memory stays maintainable. Your system prompts stay focused on who you are; ClawText handles what you've learned.
 
 ---
 
