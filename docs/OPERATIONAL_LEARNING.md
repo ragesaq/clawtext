@@ -1,7 +1,7 @@
 # ClawText Operational Learning Lane
 
-**Status:** Phase 1 — Scope & Architecture  
-**Version:** 0.1.0 (design draft)  
+**Status:** Implemented through review, promotion, and scheduled maintenance  
+**Version:** 1.3.0  
 **Last Updated:** 2026-03-09
 
 ---
@@ -17,6 +17,37 @@ ClawText adds a **third memory path** for operational learning:
 This lane captures **how the system itself behaves**, not just what the user is working on.
 
 ---
+
+
+## Current Implementation Status
+
+The operational learning lane is no longer just a design draft. Current implemented capabilities include:
+- automatic operational retrieval gating on risky/operational tasks
+- automatic tool/command failure capture via runtime hooks
+- agent-owned review packets + review actions
+- deferral-aware candidate maturation
+- agent-owned promotion proposals and approval-gated apply flow
+- scheduled maintenance/review orchestration
+
+### Ownership model
+- **automatic**: capture, retrieval gating, failure capture, scheduled execution once configured
+- **agent-owned**: review, promotion, ingest, maintenance orchestration
+- **user-discretion gated**: review approvals, promotion approvals, cadence approval when needed
+- **backend/admin only**: raw CLI plumbing
+
+### Activation / verification
+This lane depends on ClawText being loaded as a plugin from the canonical path:
+`~/.openclaw/workspace/skills/clawtext`
+
+Verification:
+```bash
+openclaw plugins list
+openclaw gateway status
+```
+
+Expected:
+- `ClawText | clawtext | loaded`
+- gateway running + RPC probe ok
 
 ## Why Separate?
 
@@ -268,11 +299,14 @@ raw → candidate → reviewed → promoted → archive
 # Status
 npm run operational:status
 
-# Review queue
+# Review queue / agent-facing packet
 npm run operational:review
+npm run operational:review:packet -- 5
+npm run operational:review:apply -- approve 1 "Looks stable now"
 
-# Promote pattern
+# Show promotion proposal / apply promotion
 npm run operational:promote -- <patternKey>
+npm run operational:promote:apply -- <patternKey>
 
 # Search operational memories
 npm run operational:search -- "compaction failure"
@@ -283,6 +317,10 @@ npm run operational:capture:success
 
 # Transfer check (before complex task)
 npm run operational:transfer-check -- "deploying gateway config"
+
+# Scheduled maintenance
+npm run operational:maintenance:status
+npm run operational:maintenance:run review-digest
 ```
 
 ### Health Report Additions
@@ -347,58 +385,26 @@ npm run health
 
 ---
 
-## Next Phases
+## Phase Status
 
-**Phase 2 (v1.4):** Data model + storage
-- Schema implementation
-- Directory structure
-- YAML parsing
-- Index management
+Completed:
+- Phase 2: Data model + storage
+- Phase 3: Capture pipeline
+- Phase 4: Aggregation + synthesis
+- Phase 5: Review workflow
+- Phase 6: Retrieval + injection policy + runtime gating
+- Phase 7B: Agent-owned review UX
+- Phase 7C: Agent-owned promotion workflow
+- Scheduled maintenance / review orchestration
 
-**Phase 3 (v1.4):** Capture pipeline
-- Hook-based capture
-- Wrapper-based capture
-- Manual CLI capture
-- Evidence collection
+Current documentation phase:
+- activation path
+- allowlist / enablement story
+- restart / verification story
+- ownership model
 
-**Phase 4 (v1.5):** Aggregation + synthesis
-- Pattern clustering
-- Recurrence tracking
-- Candidate generation
-- PatternKey assignment
-
-**Phase 5 (v1.5):** Review workflow
-- Review queue UI/CLI
-- Review actions (approve/reject/merge/promote)
-- Evidence presentation
-
-**Phase 6 (v1.5):** Retrieval + injection
-- Task classification
-- Operational memory retrieval
-- Merging with normal memory (when relevant)
-- Injection rules
-
-**Phase 7 (v1.6):** Promotion targets
-- SOUL.md integration
-- TOOLS.md integration
-- AGENTS.md integration
-- Project docs integration
-
-**Phase 8 (v1.6):** Operator tooling
-- All CLI commands
-- Health report integration
-- Transfer check command
-
-**Phase 9 (v1.6):** Documentation
-- OPERATIONAL_LEARNING.md (this doc)
-- README section
-- Examples
-- CLI reference
-
-**Phase 10 (v1.6):** Rollout
-- v1.4: Schema, storage, capture, review
-- v1.5: Aggregation, retrieval, injection
-- v1.6: Promotion, tooling, docs, rollout
+Remaining:
+- final rollout / publication polish
 
 ---
 

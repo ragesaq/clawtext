@@ -1,364 +1,366 @@
-# ClawText - Comprehensive Memory Skill for OpenClaw Agents
+# ClawText — Comprehensive Memory Platform for OpenClaw
 
-**Type:** Skill | **Version:** 1.3.0 | **Status:** Production
+**Version:** 1.4.0 | **Status:** Production | **Type:** OpenClaw Skill/Plugin
 
-OpenClaw agents have basic memory with MEMORY.md, but it doesn't scale—it requires manual maintenance and can't grow beyond a few hundred entries. **ClawText transforms that into a robust, tiered system** — automatically captured from conversations, intelligently curated for speed, continuously tuned. Memory that grows with your project.
-
----
-
-## Why ClawText: Engineering & Technology
-
-ClawText isn't just a basic memory cache. It's a production-grade system with sophisticated retrieval and maintenance:
-
-### Retrieval & Search
-- **BM25 scoring** — Term frequency, confidence weighting, project-aware ranking
-- **Semantic clustering** — Memories grouped by topic, not just timestamp
-- **Hybrid retrieval** — Hot cache (sub-1ms) + cluster search (indexed, scalable)
-- **Deduplication** — SHA1-based content hashing prevents re-storing the same memory
-
-### Tiered Architecture
-- **L1 Hot Cache** — In-memory with configurable TTL and sticky retention (recent high-value items stay)
-- **L2 Curated** — Validated, ranked memories ready for injection
-- **L3 Archive** — Full historical searchability (for deep recalls)
-- **L4 Staging** — Buffer for bulk ingest and conversational capture
-
-### Automatic Maintenance
-- **Auto-promotion** — Memories promoted from staging → curated → hot based on usage patterns
-- **Staleness detection** — Knowledge repos flagged at 30/90 day thresholds
-- **Deduplication pipeline** — Removes redundant entries, keeps canonical versions
-- **Token budgeting** — Never exceeds configured prompt context budget
-
-### Compared to Alternatives
-
-| Feature | ClawText | mem0 | QMD | Standard LLM + MEMORY.md |
-|---------|----------|------|-----|------------------------|
-| **Multi-tier retrieval** | ✅ (4 tiers) | ⚠️ (basic) | ✅ (3 tiers) | ❌ |
-| **BM25 + clustering** | ✅ | ❌ | ✅ | ❌ |
-| **Knowledge repo support** | ✅ (bulk ingest, separate from agent memory) | ⚠️ (basic ingest) | ✅ | ❌ |
-| **Agent-assisted maintenance** | ✅ (staleness alerts, health checks) | ⚠️ (manual) | ⚠️ (manual) | ❌ |
-| **Hot cache optimization** | ✅ (<1ms retrieval) | ⚠️ (vector DB latency) | ⚠️ (DB latency) | ❌ |
-| **Built for OpenClaw** | ✅ | ❌ | ❌ | ✅ (but limited) |
-| **No external dependencies** | ✅ | ❌ (API calls) | ❌ (vector service) | ✅ |
+> Memory that captures, ingests, retrieves, curates, and learns — without letting `MEMORY.md` become your whole memory store.
 
 ---
 
-Every time you talk to an AI agent, it processes your message in isolation. It doesn't know:
-- What project you were working on yesterday
-- What decisions you already made
-- What mistakes to avoid
-- Your preferences or style
-- What other agents have learned
+## What Is ClawText?
 
-This works fine for one-off questions. But for agents that tackle real work—coding, debugging, managing projects, collaborating with other agents—this lack of continuity is crippling.
+OpenClaw agents already have basic memory through `MEMORY.md`. It works for small projects. It doesn't scale.
 
-**The core issue:** Without memory, every agent interaction starts from zero. You're constantly re-explaining context. The agent can't build on past work. Knowledge is lost between sessions.
+ClawText replaces that with a **three-lane memory platform**:
 
----
+| Lane | What It Does |
+|------|-------------|
+| **Working Memory** | Captures conversation context automatically. Tiered retrieval injects the right memories at prompt time. |
+| **Knowledge Ingest** | Bulk-loads repos, docs, Discord threads, exports, and data sources into a searchable knowledge base. |
+| **Operational Learning** | Captures tool failures, recurring errors, and successful patterns. Reviews, promotes, and applies durable lessons to make the system more self-healing over time. |
 
-## How Agent Memory Works
-
-Every time an agent processes a request, it builds a prompt from:
-- **System instructions** — Core rules and identity
-- **Context** — Conversation history, background information
-- **Current request** — What the user is asking
-
-Memory's job is to intelligently populate the "context" layer.
-
-### OpenClaw's Approach
-
-OpenClaw agents already use static system prompts to define who they are:
-- **SOUL.md** — Personality and core values
-- **AGENTS.md** — Role and capabilities
-- **USER.md** — Who you're helping
-- **MEMORY.md** — Long-term knowledge (currently static, limited)
-
-These files work well for stable context. But they don't capture:
-- **Decisions made during this project** — "We chose PostgreSQL because X"
-- **Lessons from past sessions** — "That approach failed last time; here's why"
-- **Current state** — "We're blocked on the Redis cache issue"
-- **Other agents' work** — "Agent-B already fixed similar problem yesterday"
-
-ClawText fills this gap.
-
-### The Prompt Before Memory
-
-```
-[SOUL.md: Your personality/values]
-[AGENTS.md: Your role]
-[USER.md: Who you're helping]
-[Recent conversation]
-+ User request: "Fix the authentication bug"
-     ↓
-  [LLM]
-     ↓
-  Response: "What's your auth architecture?"
-```
-
-**Problem:** The LLM doesn't know past decisions or lessons. You re-explain context every session.
-
-### The Prompt With ClawText
-
-```
-[SOUL.md: Your personality/values]
-[AGENTS.md: Your role]
-[USER.md: Who you're helping]
-[Recent conversation]
-[ClawText injected memories:
-  - Decision: JWT with 24h expiry
-  - Bug: Redis invalidation failing
-  - Pattern: Async/await preferred]
-+ User request: "Fix the authentication bug"
-     ↓
-  [LLM]
-     ↓
-  Response: "I see the Redis issue. Here's the fix..."
-```
-
-**Benefit:** Memory adds dynamic context that evolves with your project. Your static system prompts stay clean; memories handle the specific, changeable stuff.
-
-### The Architecture: Four Tiers
-
-A simple "store everything" approach creates problems:
-- **Speed** — Searching all old memories adds latency
-- **Noise** — Irrelevant memories waste tokens
-- **Duplicates** — The same decision stored multiple times
-- **No ranking** — Old memories mix with important ones
-- **Unbounded growth** — Memory becomes unmaintainable
-
-ClawText solves this with a **tiered architecture**:
-
-| Tier | Purpose | Latency | Size |
-|------|---------|---------|------|
-| **L1: Hot Cache** | Active project context, recent decisions, current blockers | <1ms | ~50-300 items |
-| **L2: Curated** | Validated, deduplicated, ranked memories | ~10ms | Indexed, searchable |
-| **L3: Archive** | Historical context for deep searches | ~100ms | Full history |
-| **L4: Staging** | Raw captures awaiting review; also buffer for bulk ingest | Write-only | Temporary |
-
-Your agent queries L1 first (instant), then L2 if needed. Archive is there for deep searches. L4 feeds both conversational capture and bulk ingestion.
+**One install. One plugin. All three lanes.**
 
 ---
 
-## Two Memory Paths: Conversational vs. Bulk
+## Why This Matters
 
-ClawText handles two distinct types of knowledge, each optimized for its use case.
+### The Problem
 
-### Agent Memory (Conversational)
-Captures from your ongoing conversations. Automatically promoted through the tiers. Injected into every prompt.
+Every agent session starts from zero. Without persistent memory:
+- You re-explain context every session
+- The same mistakes happen again
+- Knowledge built in one session disappears in the next
+- Importing a codebase or doc set requires custom scripting every time
+- Tool failures leave no trace — they just repeat
 
-**Examples:** Decisions, lessons learned, project state, current blockers
+### The Solution
 
-### Knowledge Repositories (Bulk Ingest)
-Large information sources loaded in bulk. Organized by project. Queryable on-demand (not in every prompt).
+```
+Without ClawText:
+  Session 1 → learns something → lost
+  Session 2 → starts over → re-learns same thing
 
-**Examples:** Codebases, documentation, Discord thread exports, wikis, design docs
+With ClawText:
+  Session 1 → auto-captured → tiered memory
+  Session 2 → injected context → builds on session 1
+  Session N → patterns reviewed → promoted to durable guidance
+```
 
-### Why Separate?
+ClawText runs in the background. Your agents get smarter every session — and the system gets more self-healing over time.
 
-Injecting a 500KB codebase into every prompt wastes tokens and confuses the LLM. Instead, knowledge repos live separately:
+---
+
+## Three Lanes in Depth
+
+### Lane 1: Working Memory
+
+Captures from conversations. Organized into four tiers so retrieval stays fast and prompt-efficient.
+
+```
+Conversation
+     ↓
+L4 Staging    ← raw captures, bulk ingest buffer
+     ↓ review/promote
+L3 Archive    ← full history, searchable
+     ↓ curated, deduped, ranked
+L2 Curated    ← validated memories
+     ↓ hot-admitted by BM25 score
+L1 Hot Cache  ← sub-millisecond retrieval → injected into every prompt
+```
+
+**Key properties:**
+- **BM25 scoring** — term frequency + confidence weighting + project-aware ranking
+- **Semantic clustering** — memories grouped by topic, not just timestamp
+- **Deduplication** — SHA1 hashing prevents re-storing the same memory
+- **Token budgeting** — never exceeds your configured prompt context budget
+- **Sticky retention** — high-value memories stay in hot cache longer
+
+---
+
+### Lane 2: Knowledge Ingest
+
+Bulk-loads external sources into a separate knowledge base. Kept out of the prompt path by default — queried on-demand when relevant.
+
+**Supported sources:**
+- GitHub repos
+- Markdown/doc directories
+- Discord forums, channels, and threads (full hierarchy, progress bars, batch mode)
+- JSON exports from any source
+- Raw text
 
 ```bash
-# Ingest a GitHub repo into the knowledge base
-npm run ingest -- https://github.com/myteam/myproject.git \
-  --project myapp --type repo
+# Ingest a Discord forum
+npm run ingest:discord -- --forum-id 123456789 --mode batch --verbose
 
-# Agent workflow
-User: "How does auth work?"
-Agent: [Checks agent memory for decisions] (fast, <1ms)
-       [Queries knowledge repo for code examples] (on-demand, ~100ms)
-       "We use JWT. Here's the implementation..."
-```
+# Ingest a folder of docs
+clawtext-ingest ingest-files --input="docs/**/*.md" --project=myproject
 
-### Maintenance
+# Ingest a full Discord forum (auto-detects batch vs full mode)
+clawtext-ingest-discord fetch-discord --forum-id 123456789
 
-| Aspect | Agent Memory | Knowledge Repos |
-|--------|--------------|-----------------|
-| **Source** | Conversations | Bulk imports (repos, docs, exports) |
-| **Size** | ~100 bytes–10 KB per item | ~100 KB–MB per project |
-| **Injection** | Always (hot cache, <1ms) | On-demand (when relevant) |
-| **Maintenance** | Auto (promote, dedup, archive) | Agent-assisted (staleness alerts + re-ingest guidance) |
-
-**Agent-assisted knowledge repo maintenance:**
-
-The system monitors repo age and alerts you when updates are needed:
-
-```bash
-# View all knowledge repos and their age
+# Check knowledge repo freshness
 npm run knowledge:status
-# Output: 🟢 fresh (<30d) | 🟡 aging (30-90d) | 🔴 stale (>90d)
-
-# Health check includes repo recommendations
-npm run health
-# If stale: "Knowledge repo 'myapp' is 120 days old — re-ingest recommended"
+# → 🟢 fresh | 🟡 aging (30-90d) | 🔴 stale (>90d)
 ```
 
-Your agent can have a conversation about whether to refresh a repo, see the specific command needed, and execute it—rather than manually running shell scripts.
+**Why keep it separate from working memory?**
+
+Injecting a 500KB codebase into every prompt wastes tokens and confuses the LLM. Knowledge repos live separately — your agent queries them on-demand when it needs specifics, while working memory handles project context.
 
 ---
 
-## Key Features
+### Lane 3: Operational Learning
 
-### 🔥 Sub-Millisecond Retrieval
-Recent memories live in L1 hot cache. Injecting context into prompts adds microseconds, not milliseconds.
+The self-healing lane. Captures failures and successes, detects recurring patterns, surfaces them for review, and promotes stable lessons into durable guidance.
 
-### 🤖 Multi-Agent Memory
-- **Shared** — All agents can access common decisions and architecture notes
-- **Private** — Sensitive context stays isolated
-- **Cross-agent** — One agent can leave context for another to pick up
+**Lifecycle:**
 
-### 🔄 Automatic Continuity
-Agents remember which session they were in and can pick up mid-conversation. No more "Wait, who are you? What are we doing?"
-
-### 💻 Programmable API
-Add and search memories from code, CLI, or hooks:
-```bash
-npm run memory -- add "Decision: Use PostgreSQL for state"
-npm run memory -- search "database" --project myapp
-npm run memory -- inject "current_task"  # Get context for prompt injection
+```
+Tool fails / command fails / hook fires
+          ↓
+    [Capture: raw]        ← automatic, silent
+          ↓ recurs N times
+    [Candidate]           ← auto-promoted
+          ↓ agent-led review
+    [Reviewed]
+      ↙         ↘
+  reject       approve
+    ↓              ↓
+ Archived      Promoted
+                   ↓ agent proposes target, user confirms
+           ┌───────────────────┐
+           │  Durable Guidance │
+           │  SOUL.md          │
+           │  AGENTS.md        │
+           │  TOOLS.md         │
+           │  project docs     │
+           └───────────────────┘
 ```
 
-### 🏥 Self-Monitoring
-The system watches itself and alerts you to problems:
-```bash
-npm run health
-# → Reports: cache hit rate, staleness, review backlog, recommendations
-```
+**What gets captured:**
+- Tool failures (automatic via hooks)
+- Command/script failures
+- Repeated error patterns
+- Successful recovery patterns
+- Optimization discoveries
+
+**Why this makes OpenClaw more robust:**
+Most memory systems optimize for prompt efficiency — faster retrieval, better token use, cleaner context injection. ClawText's operational lane goes further: it actively makes the *system itself* more reliable by turning recurring failures into reviewed guidance. Less re-explaining. Fewer repeat mistakes. An agent that genuinely improves.
 
 ---
 
-## How It Fits Into Your Workflow
+## Ownership Model
 
-**Without ClawText:**
-```
-Agent session 1 → Learns something → Lost after session ends
-Agent session 2 → Starts from zero → Relearns same lessons
-```
+ClawText is designed to be automatic where safe, agent-led where orchestration is needed, and user-approved where judgment matters.
 
-**With ClawText:**
-```
-Agent session 1 → Learns something → Auto-captured and stored
-Agent session 2 → Context injected into prompt → Builds on session 1
-```
+| What | Owner | How |
+|------|-------|-----|
+| Capture hooks, memory injection, failure capture, maintenance runs | 🤖 Automatic | No action needed |
+| Review packets, promotion proposals, ingest orchestration, maintenance scheduling | 🤝 Agent | Agent presents; you glance |
+| Approve/reject/defer candidates, approve durable promotions, approve recurring cadence | ✅ You | Your call |
+| Raw CLI, cache tuning, direct memory edits | 🔧 Admin | Backend only |
 
-The memory system runs in the background. Your agents just get smarter over time.
+---
+
+## Compared to Alternatives
+
+| Feature | **ClawText 1.4** | mem0 | QMD | MEMORY.md only |
+|---------|:----------------:|:----:|:---:|:--------------:|
+| Multi-tier retrieval (4 tiers) | ✅ | ⚠️ basic | ✅ 3 tiers | ❌ |
+| BM25 + semantic clustering | ✅ | ❌ | ✅ | ❌ |
+| Sub-ms hot cache | ✅ | ⚠️ DB latency | ⚠️ DB latency | ❌ |
+| Knowledge repo / bulk ingest | ✅ (Discord, files, JSON, repos) | ⚠️ basic | ✅ | ❌ |
+| Discord ingest (forums, threads, hierarchy) | ✅ | ❌ | ❌ | ❌ |
+| Auto deduplication | ✅ SHA1 | ⚠️ | ⚠️ | ❌ |
+| Agent-assisted maintenance | ✅ | ⚠️ manual | ⚠️ manual | ❌ |
+| No external services required | ✅ | ❌ API calls | ❌ vector service | ✅ |
+| Built for OpenClaw | ✅ | ❌ | ❌ | ✅ limited |
+| **Operational learning lane** | ✅ | ❌ | ❌ | ❌ |
+| **Failure capture + pattern review** | ✅ | ❌ | ❌ | ❌ |
+| **Promotion to durable guidance** | ✅ | ❌ | ❌ | ❌ |
+| **System self-healing over time** | ✅ | ❌ | ❌ | ❌ |
+
+The bottom four rows are what v1.4 adds. Other memory systems focus on making prompts better. ClawText also makes the *agent system* more robust and self-healing over time.
 
 ---
 
 ## Quick Start
 
+### 1. Activate
+
+Add to your `openclaw.json`:
+
+```json
+{
+  "plugins": {
+    "load": {
+      "paths": ["~/.openclaw/workspace/skills/clawtext"]
+    },
+    "allow": ["clawtext"],
+    "entries": {
+      "clawtext": { "enabled": true }
+    }
+  }
+}
+```
+
+Restart your gateway, then verify:
+
 ```bash
-# Install
-git clone https://github.com/ragesaq/clawtext.git ~/.openclaw/workspace/skills/clawtext
+openclaw plugins list
+# Expected: ClawText | clawtext | loaded
+
+openclaw gateway status
+# Expected: running + RPC probe ok
+```
+
+### 2. Build
+
+```bash
 cd ~/.openclaw/workspace/skills/clawtext
 npm install
 npm run build
-
-# Test
-npm test    # Should show: 15 clusters, 191 memories, hot cache ready
 ```
 
-## Documentation
+### 3. Use
 
-- **[Architecture](docs/ARCHITECTURE.md)** — How memory tiers work, retrieval algorithms, performance tuning
-- **[Multi-Agent](docs/MULTI_AGENT.md)** — Shared/private memory, agent collaboration, cross-agent context
-- **[Curation](docs/CURATION.md)** — How memories are promoted, archived, deduplicated
-- **[Testing](docs/TESTING.md)** — Verify your installation and run integration tests
+```bash
+# Check system health
+npm run health
 
-## GitHub
+# Ingest a Discord forum
+npm run ingest:discord -- --forum-id YOUR_FORUM_ID --verbose
 
-https://github.com/ragesaq/clawtext
+# Ingest files
+clawtext-ingest ingest-files --input="docs/**/*.md" --project=myproject
 
----
+# Check working memory
+npm run memory -- search "auth"
 
-## Deployment & Scalability
-
-### Single-Node, Multi-Agent (Current)
-ClawText is optimized for a single OpenClaw Gateway with multiple agents:
-- **Architecture:** All agents share the same `~/.openclaw/workspace/memory/` directory
-- **Memory sharing:** File-based (JSON clusters, hot cache), automatically synchronized
-- **Zero coordination:** Agents read/write independently; no locking or sync logic needed
-- **Transparency:** All memories visible in plaintext files (audit, debug, edit directly)
-
-**This covers 99% of real deployments.** One machine, many agents, shared memory.
-
-### Multi-Node Deployment (Future)
-If you scale to multiple OpenClaw Gateways on different machines:
-- Each Gateway has its own workspace, isolated memories
-- Agents on Gateway A can't see memories from Gateway B
-
-**At that point, you'd add a sync layer:**
-- Shared filesystem (NFS mount)
-- Central database (PostgreSQL + API)
-- Git-based sync (push/pull orchestration)
-- Or distributed file service (S3-compatible)
-
-**Timeline:** This is not v1.3.0 scope. v1.3.0 is production-ready for single-node. Multi-node support would be a v2.0 feature with dedicated architecture decisions.
+# Check operational patterns
+npm run operational:status
+```
 
 ---
 
-## Operational Tuning
+## Architecture
 
-ClawText is production-ready out of the box, but agents and operators should know about these tuning knobs for optimizing performance:
+```
+~/.openclaw/workspace/skills/clawtext/   ← ONE install path
+│
+├── openclaw.plugin.json   ← plugin manifest
+├── SKILL.md               ← skill definition
+├── AGENT_INSTALL.md       ← activation story
+│
+├── src/
+│   ├── index.ts           ← plugin entry
+│   ├── plugin.ts          ← OpenClaw plugin wiring
+│   ├── rag.ts             ← retrieval engine (BM25, clustering)
+│   ├── hot-cache.ts       ← L1 cache
+│   ├── memory.ts          ← L2/L3 memory management
+│   ├── ingest/            ← bundled ingest engine
+│   │   ├── index.js       ← ClawTextIngest class
+│   │   ├── agent-runner.js
+│   │   └── adapters/
+│   │       └── discord.js ← Discord forum/channel/thread adapter
+│   ├── operational.ts     ← operational memory store
+│   ├── operational-capture.ts
+│   ├── operational-aggregation.ts
+│   ├── operational-retrieval.ts
+│   ├── operational-review.ts
+│   ├── operational-promotion.ts
+│   └── operational-maintenance.ts
+│
+├── bin/
+│   ├── ingest.js          ← clawtext-ingest CLI
+│   └── discord.js         ← clawtext-ingest-discord CLI
+│
+├── scripts/               ← agent-owned backend commands
+│   ├── operational-cli.mjs
+│   ├── health-report.mjs
+│   ├── review-digest.mjs
+│   ├── ingest-all.mjs
+│   └── ...
+│
+└── docs/
+    ├── ARCHITECTURE.md
+    ├── INGEST.md
+    ├── OPERATIONAL_LEARNING.md
+    └── ...
+```
 
-### Hot Cache Admission Thresholds
+---
 
-The hot cache decides which memories to keep in-memory for sub-millisecond retrieval. Two configurable thresholds control admission:
+## Deployment
 
-**In `plugin.js` or `src/hot-cache.js`:**
+### Single-Node (Current, Recommended)
+
+All agents share `~/.openclaw/workspace/memory/`. File-based, automatically synchronized. No locking needed.
+
+**Covers 99% of real deployments.** One machine, many agents, shared memory.
+
+### Multi-Node (Future)
+
+Each Gateway has isolated memory. If you scale to multiple Gateways, add a sync layer: shared filesystem, central DB, Git-based sync, or S3-compatible storage. This is not v1.4 scope.
+
+---
+
+## Tuning
+
+ClawText works out of the box. If you want to tune:
+
+### Hot Cache Admission
+
+In `src/hot-cache.ts`:
 
 ```javascript
-admissionConfidence: 0.60,  // Minimum confidence (0.0-1.0) to admit a memory
-admissionScore: 0.8,        // Minimum BM25 score to admit a memory
+admissionConfidence: 0.60,  // Min confidence to enter cache (0.0–1.0)
+admissionScore: 0.8,        // Min BM25 score to enter cache
+maxItems: 300,              // Max items in cache
+defaultTtlDays: 14,         // Days before memory expires
+stickyTtlDays: 60,          // Days before high-confidence memory expires
 ```
 
-**What they do:**
-- **admissionConfidence (default 0.60):** Only memories with 60%+ confidence enter the cache. Higher = stricter (only high-confidence), lower = more inclusive (admits marginal memories)
-- **admissionScore (default 0.8):** Only memories scoring 0.8+ on BM25 search enter cache. Higher = only strong matches, lower = admit more results
-
 **When to adjust:**
-- **Increase confidence/score if:** Cache filling with low-quality memories, hitting memory limits
-- **Decrease confidence/score if:** Cache hit rate dropping, many queries missing relevant context
+- Hit rate dropping → lower thresholds
+- Cache filling with noise → raise thresholds
 
-### Monitoring Cache Health
-
-Run this to see current performance:
+### Monitor
 
 ```bash
 npm run health
-# Output includes:
-# - Cache hit rate (target: >95%)
-# - Items in hot cache
-# - Memory footprint
-# - Recommendations for tuning
+# Reports: hit rate, cache size, staleness, review backlog, recommendations
 ```
 
-**Key metrics to watch:**
-- **Hit rate** — % of queries finding results in hot cache (target: >95%)
-- **Admission rate** — New memories entering hot cache (target: 5-20/hour)
-- **Eviction rate** — Memories leaving cache when full (target: <2/hour)
-- **Mean item age** — Average memory freshness (target: 3-7 days)
-
-### Tuning Strategy
-
-1. **Start with defaults** — Current thresholds (confidence 0.60, score 0.8) work well for most deployments
-2. **Monitor for 24-48h** — Let the system settle into production patterns
-3. **Check metrics** — Run `npm run health` regularly
-4. **Adjust if needed:**
-   - If hit rate < 95%: lower thresholds (more permissive)
-   - If cache bloating: raise thresholds (more restrictive)
-5. **Iterate** — Tuning is reversible; adjust and monitor again
-
-### Other Configurable Settings
-
-In `src/hot-cache.js` constructor:
-
-```javascript
-maxItems: 300,              // Max memories in hot cache
-maxPerProject: 50,          // Max memories per project
-defaultTtlDays: 14,         // Days before memory expires
-stickyTtlDays: 60,          // Days before high-confidence memory expires
-maxSnippetChars: 600,       // Snippet size for cache storage
-```
-
-Most users won't need to touch these. They're here if you hit edge cases.
+Target hit rate: **>95%**
 
 ---
+
+## Documentation
+
+- **[SKILL.md](SKILL.md)** — Runtime role, ownership model, plugin/skill story
+- **[AGENT_INSTALL.md](AGENT_INSTALL.md)** — Activation, allowlist, restart, verification
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Memory tiers, retrieval algorithms, performance tuning
+- **[docs/INGEST.md](docs/INGEST.md)** — Bulk ingest sources, Discord setup, deduplication
+- **[docs/OPERATIONAL_LEARNING.md](docs/OPERATIONAL_LEARNING.md)** — Operational lane design, capture policy, review/promotion lifecycle
+- **[docs/MULTI_AGENT.md](docs/MULTI_AGENT.md)** — Shared/private memory, agent collaboration
+- **[docs/CURATION.md](docs/CURATION.md)** — Promotion, archiving, deduplication pipeline
+- **[docs/TESTING.md](docs/TESTING.md)** — Verify installation, run integration tests
+
+---
+
+## GitHub
+
+**https://github.com/ragesaq/clawtext**
+
+---
+
+## Version History
+
+| Version | What Changed |
+|---------|-------------|
+| **1.4.0** | Bundled ingest engine (was separate package). Added operational learning lane: capture, review, promotion, maintenance. Three-lane architecture complete. |
+| 1.3.0 | Hot cache optimization, BM25 scoring, plugin activation + allowlist story, SKILL.md / AGENT_INSTALL.md |
+| 1.2.0 | Tiered memory (L1–L4), cluster rebuild, validate-rag tooling |
+| 1.1.0 | Initial multi-source ingest, deduplication pipeline |
+| 1.0.0 | Initial release — basic memory injection + retrieval |

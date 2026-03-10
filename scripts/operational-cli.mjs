@@ -18,6 +18,8 @@
  * - operational:correlate <patternKey> - Find correlated patterns
  * - operational:report - Full aggregation report
  * - operational:review:queue - Show detailed review queue
+ * - operational:review:packet [limit] - Show agent-facing review packet
+ * - operational:review:next - Show the highest-priority candidate
  * - operational:review:stats - Show review statistics
  */
 
@@ -26,6 +28,8 @@ import { OperationalCaptureManager } from '../dist/operational-capture.js';
 import { OperationalAggregationManager } from '../dist/operational-aggregation.js';
 import { OperationalReviewManager } from '../dist/operational-review.js';
 import { OperationalRetrievalManager } from '../dist/operational-retrieval.js';
+import { OperationalPromotionManager } from '../dist/operational-promotion.js';
+import { OperationalMaintenanceManager } from '../dist/operational-maintenance.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -37,6 +41,8 @@ const memoryManager = new OperationalMemoryManager(workspacePath);
 const captureManager = new OperationalCaptureManager(workspacePath);
 const aggregationManager = new OperationalAggregationManager(workspacePath);
 const reviewManager = new OperationalReviewManager(workspacePath);
+const promotionManager = new OperationalPromotionManager(workspacePath);
+const maintenanceManager = new OperationalMaintenanceManager(workspacePath);
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -80,8 +86,17 @@ switch (command) {
   case 'review:queue':
     showReviewQueueDetailed();
     break;
+  case 'review:packet':
+    showReviewPacket(args[1]);
+    break;
+  case 'review:next':
+    showNextReviewCandidate();
+    break;
   case 'review:stats':
     showReviewStats();
+    break;
+  case 'review:apply':
+    applyReviewDecision(args[1], args[2], args.slice(3).join(' '));
     break;
   case 'search':
     if (!args[1]) {
@@ -95,7 +110,14 @@ switch (command) {
       console.error('Usage: npm run operational:promote -- <patternKey>');
       process.exit(1);
     }
-    promotePattern(args[1]);
+    showPromotionProposal(args[1]);
+    break;
+  case 'promote:apply':
+    if (!args[1]) {
+      console.error('Usage: npm run operational:promote:apply -- <patternKey> [targetOverride] [notes]');
+      process.exit(1);
+    }
+    applyPromotion(args[1], args[2], args.slice(3).join(' '));
     break;
   case 'capture:error':
     captureErrorInteractive();
@@ -136,6 +158,15 @@ switch (command) {
   case 'report':
     generateReport();
     break;
+  case 'maintenance:status':
+    showMaintenanceStatus();
+    break;
+  case 'maintenance:run':
+    runMaintenanceJob(args[1]);
+    break;
+  case 'maintenance:force-due':
+    forceMaintenanceDue(args[1]);
+    break;
   case 'retrieval:test':
     if (!args[1]) {
       console.error('Usage: npm run operational:retrieval:test -- "<message>"');
@@ -165,9 +196,13 @@ Commands:
   operational:review reject <key> <reason>  Reject a pattern
   operational:review defer <key> <reason>   Defer review
   operational:review:queue        Show detailed review queue
+  operational:review:packet [n]   Show agent-facing review packet
+  operational:review:next         Show the highest-priority candidate
+  operational:review:apply <action> <target> [reason]  Apply agent-owned review action
   operational:review:stats        Show review statistics
   operational:search <query>      Search operational memories
-  operational:promote <key>       Promote pattern to workspace guidance
+  operational:promote <key>       Show promotion proposal for a reviewed pattern
+  operational:promote:apply <key> [target] [notes]  Apply promotion via agent-owned wrapper
   operational:capture:error       Interactively capture an error pattern
   operational:capture:success     Interactively capture a success pattern
   operational:transfer-check <task> Check for relevant patterns before a task
@@ -177,14 +212,21 @@ Commands:
   operational:merge <primary> <duplicate> Merge two patterns
   operational:correlate <key>     Find correlated patterns
   operational:report              Full aggregation report
+  operational:maintenance:status  Show scheduled maintenance status
+  operational:maintenance:run [jobId]  Run all due jobs or a specific job
+  operational:maintenance:force-due <jobId>  Force a maintenance job due now for testing
 
 Examples:
   npm run operational:review
   npm run operational:review approve "pattern.key" "Verified and working"
   npm run operational:review reject "pattern.key" "False positive"
   npm run operational:review defer "pattern.key" "Need more evidence"
+  npm run operational:review:packet -- 5
+  npm run operational:review:next
+  npm run operational:review:apply -- approve 1 "Looks stable now"
   npm run operational:search -- "compaction failure"
   npm run operational:promote -- "tool.exec.invalid_workdir"
+  npm run operational:promote:apply -- "tool.exec.invalid_workdir"
   npm run operational:synthesize
   npm run operational:merge:find
   npm run operational:merge -- "pattern1" "pattern2"
@@ -318,6 +360,46 @@ function showReviewQueueDetailed() {
   console.log(reviewManager.generateReviewReport());
 }
 
+function showReviewPacket(limitArg) {
+  const parsed = Number.parseInt(limitArg || '5', 10);
+  const limit = Number.isFinite(parsed) && parsed > 0 ? parsed : 5;
+  const packet = reviewManager.getReviewPacket(limit);
+  console.log(reviewManager.formatReviewPacket(packet));
+}
+
+function showNextReviewCandidate() {
+  const next = reviewManager.getNextReviewCandidate();
+
+  if (!next) {
+    console.log('✅ No review candidates are pending right now.');
+    return;
+  }
+
+  const packet = reviewManager.getReviewPacket(1);
+  console.log(reviewManager.formatReviewPacket(packet));
+}
+
+function applyReviewDecision(action, target, reason) {
+  if (!action || !target) {
+    console.error('Usage: npm run operational:review:apply -- <approve|reject|defer|merge> <target> [reason]');
+    process.exit(1);
+  }
+
+  const response = reviewManager.applyAgentDecision({
+    action,
+    target,
+    reason,
+    reviewer: 'agent',
+  });
+
+  if (!response.ok) {
+    console.error(`❌ ${response.message}`);
+    process.exit(1);
+  }
+
+  console.log(`✅ ${response.message}`);
+}
+
 function approvePattern(patternKey, notes) {
   const result = reviewManager.approve(patternKey, 'user', notes);
   
@@ -397,50 +479,46 @@ function searchMemories(query) {
   console.log('Use "npm run operational:search -- <query> --details" for full details.');
 }
 
-function promotePattern(patternKey) {
-  const entry = memoryManager.get(patternKey);
-  if (!entry) {
-    console.error(`Pattern not found: ${patternKey}`);
+function showPromotionProposal(patternKey) {
+  const proposal = promotionManager.getProposal(patternKey);
+  if (!proposal) {
+    console.error(`❌ Could not build promotion proposal for: ${patternKey}`);
     process.exit(1);
   }
 
-  if (entry.status === 'promoted') {
-    console.log(`Pattern already promoted: ${patternKey}`);
-    return;
+  console.log(`\n📌 Promotion Proposal\n======================\n`);
+  console.log(`Pattern: ${proposal.patternKey}`);
+  console.log(`Target: ${proposal.target}`);
+  console.log(`Confidence: ${(proposal.confidence * 100).toFixed(0)}%`);
+  if (proposal.destinationPath) {
+    console.log(`Destination: ${proposal.destinationPath}`);
   }
-
-  const target = promptForTarget(entry);
-  if (!target) {
-    console.log('Promotion cancelled.');
-    return;
-  }
-
-  const updated = memoryManager.promote(patternKey, target);
-  if (updated) {
-    console.log(`✅ Pattern promoted: ${patternKey}`);
-    console.log(`   Target: ${target}`);
-    console.log(`   Promoted at: ${updated.promotedAt}`);
-  }
+  console.log(`Requires approval: ${proposal.requiresApproval ? 'yes' : 'no'}`);
+  console.log(`\nRationale:`);
+  proposal.rationale.forEach((reason) => console.log(`  - ${reason}`));
+  console.log(`\nPrepared guidance snippet:`);
+  console.log(proposal.snippet);
 }
 
-function promptForTarget(entry) {
-  console.log('\nWhere should this pattern be promoted?');
-  console.log('1. SOUL.md (behavioral pattern)');
-  console.log('2. TOOLS.md (tool gotcha)');
-  console.log('3. AGENTS.md (workflow pattern)');
-  console.log('4. Project docs (project-specific rule)');
-  console.log('5. ClawText docs (general memory lesson)');
-  console.log('');
-  
-  const scopeToTarget = {
-    'tool': 'TOOLS.md',
-    'agent': 'AGENTS.md',
-    'gateway': 'AGENTS.md',
-    'project': 'project docs',
-    'global': 'SOUL.md',
-  };
-  
-  return scopeToTarget[entry.scope] || 'SOUL.md';
+function applyPromotion(patternKey, targetOverride, notes) {
+  const response = promotionManager.applyAgentPromotion({
+    patternKey,
+    targetOverride,
+    notes,
+    reviewer: 'agent',
+    applyToDocument: true,
+  });
+
+  if (!response.ok) {
+    console.error(`❌ ${response.message}`);
+    process.exit(1);
+  }
+
+  console.log(`✅ ${response.message}`);
+  if (response.destinationPath) {
+    console.log(`   Destination: ${response.destinationPath}`);
+  }
+  console.log(`   Status: ${response.status}`);
 }
 
 function captureErrorInteractive() {
@@ -743,6 +821,31 @@ function generateReport() {
   console.log('='.repeat(60));
   console.log('Run "npm run operational:synthesize" to auto-improve candidates');
   console.log('Run "npm run operational:merge:find" to find duplicates');
+}
+
+function showMaintenanceStatus() {
+  const status = maintenanceManager.getStatus();
+  console.log(JSON.stringify(status, null, 2));
+}
+
+function runMaintenanceJob(jobId) {
+  if (!jobId) {
+    const results = maintenanceManager.runDueJobs();
+    console.log(JSON.stringify(results, null, 2));
+    return;
+  }
+
+  const result = maintenanceManager.runJob(jobId);
+  console.log(JSON.stringify(result, null, 2));
+}
+
+function forceMaintenanceDue(jobId) {
+  if (!jobId) {
+    console.error('Usage: npm run operational:maintenance:force-due -- <jobId>');
+    process.exit(1);
+  }
+  maintenanceManager.forceDueNow(jobId);
+  console.log(`✅ Forced maintenance job due now: ${jobId}`);
 }
 
 // Export for programmatic use
