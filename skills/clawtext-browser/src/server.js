@@ -8,7 +8,6 @@ import cors from 'cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
-import { createServer as _createServer } from 'http';
 import { MemoryStore } from './memory-store.js';
 import { AntiPatternStore } from './anti-pattern-store.js';
 import { getStats as getLearningsStats } from './learnings-store.js';
@@ -86,9 +85,10 @@ export function createServer(options = {}) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = parseInt(process.env.PORT || '3737');
   const { app } = createServer({ port });
-  app.listen(port, () => {
-    console.log(`🧠 ClawText Browser running at http://localhost:${port}`);
-    console.log(`   API: http://localhost:${port}/api/health`);
+  const host = process.env.HOST || '127.0.0.1';
+  app.listen(port, host, () => {
+    console.log(`🧠 ClawText Browser running at http://${host}:${port}`);
+    console.log(`   API: http://${host}:${port}/api/health`);
     console.log(`   Graph: http://localhost:${port}/api/graph`);
   });
 }
