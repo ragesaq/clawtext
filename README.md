@@ -186,17 +186,16 @@ ClawText is designed to be automatic where it's safe, agent-guided where orchest
 
 ---
 
-## Built With
+## Key Advantages
 
-ClawText is lightweight and built on common, standard tools:
+ClawText is lightweight and built for real-world use:
 
-- **OpenClaw SDK** — The platform you're already using
-- **Node.js / TypeScript** — Standard JavaScript runtime and type safety
-- **glob** — File pattern matching (you likely have this already if you've done any Node.js work)
-- **js-yaml / yaml** — YAML parsing for frontmatter and config (lightweight, no external services)
-- **Optional multi-source adapters** — Integration libraries for various data sources (only loaded when needed)
-
-All dependencies are local npm packages. Nothing calls home to external APIs or services. Everything runs on your machine or your OpenClaw Gateway.
+- **Built on OpenClaw** — Uses the platform you're already using; no context switching
+- **No external services** — All dependencies are local npm packages; nothing calls home to APIs or third-party services
+- **Standard JavaScript stack** — Node.js / TypeScript / common tools (glob, yaml parsing)
+- **Lightweight** — You likely have most dependencies already if you've done Node.js work
+- **Multi-source capable** — Integration adapters for various data sources, loaded only when needed
+- **Everything runs locally** — On your machine or your OpenClaw Gateway. Full transparency, full control.
 | Operational learning lane | ✅ | ❌ | ❌ | ❌ |
 | Failure capture + pattern review | ✅ | ❌ | ❌ | ❌ |
 | Promotion to durable guidance | ✅ | ❌ | ❌ | ❌ |
