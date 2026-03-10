@@ -183,6 +183,10 @@ ClawText is designed to be automatic where it's safe, agent-guided where orchest
 | Agent-assisted maintenance | ✅ | ⚠️ manual | ⚠️ manual | ❌ |
 | No external services required | ✅ | ❌ API calls | ❌ vector service | ✅ |
 | Built for OpenClaw | ✅ | ❌ | ❌ | ✅ |
+| Operational learning lane | ✅ | ❌ | ❌ | ❌ |
+| Failure capture + pattern review | ✅ | ❌ | ❌ | ❌ |
+| Promotion to durable guidance | ✅ | ❌ | ❌ | ❌ |
+| System self-healing over time | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
@@ -204,12 +208,6 @@ Integration adapters for various data sources, loaded only when needed.
 
 **Full Transparency**
 Everything runs on your machine or your OpenClaw Gateway. You can see exactly how it works.
-
----
-| Operational learning lane | ✅ | ❌ | ❌ | ❌ |
-| Failure capture + pattern review | ✅ | ❌ | ❌ | ❌ |
-| Promotion to durable guidance | ✅ | ❌ | ❌ | ❌ |
-| System self-healing over time | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
