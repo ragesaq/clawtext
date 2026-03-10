@@ -83,6 +83,50 @@ The system learns which memories you use most. High-value items stay readily ava
 - **Token budgeting** — never exceeds your configured prompt context budget
 - **Sticky retention** — high-value memories stay readily available longer
 
+#### How Conversation Capture Works
+
+ClawText automatically captures all conversation context (incoming and outgoing messages) without any action on your part.
+
+**The pipeline (fully automatic):**
+
+```
+Every message event (in/out)
+       ↓
+[clawtext-extract hook] — appends to buffer (zero-LLM-cost)
+       ↓ (asynchronous)
+Memory/extract-buffer.jsonl (rolling 24h buffer)
+       ↓ every 20 minutes
+[Extraction cron] — LLM extracts facts, decisions, learnings
+       ↓
+Memory/YYYY-MM-DD.md (YAML-formatted daily memories)
+       ↓ triggered if 3+ extracted
+[Cluster rebuild] — semantic grouping, dedup, indexing
+       ↓
+Hot cache + RAG injection
+       ↓
+Injected automatically into next prompt (~1ms latency)
+```
+
+**Key points:**
+- **Hook runs on every message** — captures both you and the agent
+- **Zero cost at capture time** — just appends JSON lines to a buffer file
+- **Automatic extraction every 20 minutes** — background cron processes the buffer
+- **Session flush on `/new`** — if you start a fresh conversation, the current buffer drains immediately so nothing is lost
+- **Daily rebuild at 2am UTC** — full cluster rebuild + quality validation
+- **Format stored** — JSONL in buffer, then YAML in daily memory files:
+  ```yaml
+  # Example extracted memory
+  - id: mem_20260310_001
+    timestamp: 2026-03-10T09:02:00Z
+    type: decision
+    topic: ClawText
+    content: "Decided to bundle clawtext-ingest into main package for unified installation story"
+    confidence: 0.95
+    project: openclaw
+  ```
+
+**You don't need to do anything.** Conversation capture is always on. The system handles extraction, clustering, deduplication, and injection automatically.
+
 ---
 
 ### Lane 2: Knowledge Ingest
