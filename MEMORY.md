@@ -100,10 +100,12 @@
 - `maxMemories: 5` (was 7, was exceeding token budget) ✅
 - Hooks enabled: `clawtext-extract`, `clawtext-flush`, `session-memory`, `boot-md`, `command-logger` ✅
 
-### Status as of 2026-03-05 07:09 UTC:
+### Status as of 2026-03-10 09:06 UTC:
 - 7 clean clusters, 122 memories indexed
-- 13 memories extracted this session from this conversation
-- Previous 13 stale/inconsistent clusters deleted and rebuilt cleanly
+- 237 memories extracted total (since v1.4.0 rollout)
+- Last extraction run: 2026-03-10 09:02 UTC
+- Buffer contains 19 recent messages (active capture working)
+- **Pipeline discovery:** Added detailed explanation to README.md with full pipeline diagram and example YAML format
 
 ---
 
