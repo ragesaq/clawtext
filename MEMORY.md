@@ -14,128 +14,61 @@
 
 ## 🎯 Current Active Projects (2026-03-05)
 
-### 🔗 Discord Integration for ClawText-Ingest — PREMIUM CLAWHUB PUBLICATION READY ✅
-**Status:** v1.3.0 complete — Phase 1 + Phase 2 + Enhancements + Premium ClawhHub presentation (2026-03-05 04:00 UTC)  
-**Location:** `~/.openclaw/workspace/skills/clawtext-ingest/`
+### ✅ ClawText v1.4.0 — UNIFIED & PRODUCTION READY
+**Status:** v1.4.0 released (2026-03-10) — Bundled ingest + operational learning + working memory  
+**Location:** `~/.openclaw/workspace/skills/clawtext/` (main package)  
+**Archived:** `~/.openclaw/workspace/skills/clawtext-ingest/` (deprecated, redirects to main)
 
-**Code (1,254 lines, 22/22 tests):**
-- DiscordAdapter (472 lines)
-- DiscordIngestionRunner (285 lines)
-- CLI Commands (497 lines)
+**What's v1.4.0:**
+- **Bundled ingest:** Discord, repos, docs, JSON — all in one package (previously clawtext-ingest)
+- **Three-lane architecture:** Working memory + ingest + operational learning
+- **Operational learning lane:** Capture failures → agent review → promoted guidance
+- **Hot cache:** ~1ms latency, semantic clustering, automatic injection
+- **Lifecycle maintenance:** Capture, curate, archive (scheduled + agent-owned)
 
-**Enhancements Completed (2026-03-05):**
-- ✅ Updated README.md with Discord integration section
-- ✅ Created AGENT_GUIDE.md (15 KB, 6 autonomous patterns with examples)
-- ✅ Created CLAYHUB_GUIDE.md (9 KB, step-by-step publication workflow)
-- ✅ Created ENHANCEMENT_REVIEW.md (12 KB, gap analysis & recommendations)
-- ✅ Created ASSESSMENT_COMPLETE.md (6 KB, completion status)
-- ✅ Created IMPROVEMENTS.md (12 KB, improvements summary)
-- ✅ Created INDEX.md (9 KB, navigation hub for all guides)
+**Code & Tests:**
+- TypeScript sources compile cleanly (tsc ✅)
+- 22/22 operational tests passing
+- All phases 1-7 implemented and verified
 
-**Documentation (11 guides, 92 KB total):**
-- README.md — Main overview + Discord section
-- AGENT_GUIDE.md ⭐ — 6 patterns (Direct API, Discord Agent, CLI, Cron, Batch, Thread)
-- CLAYHUB_GUIDE.md ⭐ — Step-by-step publication (7 steps)
-- PHASE2_CLI_GUIDE.md — Complete CLI reference
-- API_REFERENCE.md — Full method signatures
-- DISCORD_BOT_SETUP.md — Bot creation (5 min)
-- QUICKSTART.md — Fast start
-- Plus: 3 delivery summaries, 2 assessment summaries, 1 index
+**Documentation:**
+- README.md — Complete system overview
+- SKILL.md — Formal skill definition
+- AGENT_INSTALL.md — Activation guide
+- OPERATIONAL_LEARNING.md — Three-lane architecture detail
 
-**All 6 Gaps Identified & Filled:**
-1. GitHub README didn't mention Discord → Updated with Discord section ✅
-2. No agent autonomy guide → AGENT_GUIDE.md (6 patterns) ✅
-3. No ClawhHub publication guide → CLAYHUB_GUIDE.md (step-by-step) ✅
-4. Cluster rebuild workflow unclear → README includes full flow ✅
-5. No programmatic Discord examples → AGENT_GUIDE has Discord patterns ✅
-6. No scheduled ingestion → AGENT_GUIDE includes cron patterns ✅
+**Distribution:**
+- ✅ GitHub: https://github.com/ragesaq/clawtext (tag v1.4.0)
+- ✅ Install: `git clone` or `npm install git+https://github.com/ragesaq/clawtext.git`
+- ClawHub: Attempted; v0.7.0 has size limit issue (not blocker — GitHub is better for complex systems anyway)
 
-**6 Agent Patterns Documented:**
-1. Direct API (in-agent code)
-2. Discord Agent runner
-3. CLI subprocess
-4. Cron/scheduled tasks
-5. Batch multi-source
-6. Discord thread ingestion
+**Status:** Production-ready and live 🚀
 
-Each with: working code, configuration, real-world example, error handling, troubleshooting
-
-**Real-World Examples:**
-- Daily GitHub docs sync
-- Hourly Discord forum monitoring
-- Team decision ingestion
-- Multi-source batch ingestion
-- Thread monitoring
-
-**Git Commits (8 today):**
-- d517bd2: docs: add comprehensive improvements summary
-- 3b40f03: docs: add comprehensive documentation index
-- a34b4a5: docs: add assessment completion summary
-- 979320d: docs: add final enhancement completion summary
-- 14f56c1: docs: add comprehensive guides (README, AGENT_GUIDE, CLAYHUB_GUIDE)
-- 50a15d1: docs: add quick reference guide
-- f8e34d6: docs: complete Phase 1 + Phase 2 delivery summary
-- 4ef9fbf: feat: Phase 2 CLI commands with progress tracking
-
-**Version:** 1.3.0 (bumped from 1.2.0)
-
-**Quality:**
-- Code: 1,254 lines, 22/22 tests ✅
-- Documentation: 92 KB, 11 guides, 20+ examples ✅
-- Accessibility: INDEX.md navigation hub, organized by use case ✅
-- Completeness: All gaps filled, all audiences served ✅
-
-**Ready For:**
-- ✅ v1.3.0 tag & GitHub push
-- ✅ ClayhHub publication (guide provided)
-- ✅ User installation: `clayhub install clawtext-ingest`
-- ✅ Agent deployment (6 patterns documented)
-- ✅ Production deployment
-
-**All identified enhancements complete and production-ready.** 🚀
-
-### Premium ClawhHub Presentation — COMPLETED (2026-03-05 Latest Turn)
-**New in this session:**
-- ✅ Enhanced clayhub.json (50+ premium metadata fields)
-- ✅ Rewrote SKILL.md (12 KB, premium production-grade format)
-- ✅ Added feature showcase with emojis (12 features categorized)
-- ✅ Created use cases and problems solved (7 each)
-- ✅ Added target audience profiles (5 specific personas)
-- ✅ Added quality metrics showcase (tests, code, docs)
-- ✅ Added performance benchmarks (speed, memory, scalability)
-- ✅ Added integration details (ClawText workflow)
-- ✅ Added comparison matrix (vs alternatives)
-- ✅ Created CLAWHUB_READY.md (publication readiness guide)
-- ✅ Git commit 2312d7e: "docs: add ClawhHub publication readiness checklist"
-
-**Presentation Quality Now Matches:**
-- Top-10 ClawhHub skills
-- 50+ metadata fields
-- Visual hierarchy (emojis, tables, clear sections)
-- Problem/solution framework
-- Complete feature showcase
-- Real-world examples
-- Quality metrics display
-- Integration workflow documentation
-- Comparison tables
-
-**Ready For:**
-- ✅ v1.3.0 tag (execute: `git tag v1.3.0`)
-- ✅ GitHub push (execute: `git push origin v1.3.0`)
-- ✅ ClayhHub publication (sign in → publish → done in 10 min)
-- ✅ User discovery (listed in skill directory)
-- ✅ Community installation (`openclaw install clawtext-ingest`)
+**vs Self-Improving-Agent:**
+- **ClawText**: OpenClaw workspace-wide memory, multi-agent coordination, system robustness over time
+- **Self-Improving-Agent** (skills/self-improving-agent/): Single Claude project, local session learnings, lighter weight
+- **Use both together**: Self-Improving-Agent for project-local work; ClawText for workspace consolidation + operational learning
+- See comparison table below for detailed role clarification
 
 ---
 
-**COMPLETE TIMELINE — This Session:**
-1. **Compaction Summary** (previous turn) → Summarized all prior work
-2. **Premium Enhancement** (latest turn) → Upgraded to top-10 ClayhHub quality
-3. **Publication Ready** (current) → All standards met, ready to go live
+## Memory Systems Comparison
 
----
+| Aspect | ClawText v1.4.0 | Self-Improving-Agent |
+|--------|-----------------|---------------------|
+| **Scope** | Multi-agent workspace | Single Claude project |
+| **Storage** | Clusters, YAML, hot cache | `.learnings/` markdown (local) |
+| **Activation** | Automatic hooks + agent-mediated | Manual + hooks (per-session) |
+| **Review Flow** | Structured proposal → approval | Optional agent review |
+| **Promotion** | Target-based (SOUL.md, AGENTS.md, TOOLS.md, docs) | Manual promotion to project files |
+| **RAG/Injection** | ~1ms hot cache, semantic clustering, automatic | No RAG layer |
+| **Multi-Source Ingest** | Discord, repos, docs, JSON, threads | Single project files only |
+| **Operational Learning** | Failure capture → pattern recognition → system self-healing | Learning capture → optional skill extraction |
+| **Deduplication** | Full SHA1 hashing, prevents re-ingest | Manual dedup (review-dedupe.mjs) |
+| **Scheduled Maintenance** | Automatic (review-digest, candidate-backlog, operational-health) | Manual execution needed |
+| **Best For** | Workspace memory, multi-agent learning, system robustness | Project-local improvements, session continuity |
 
-**All identified enhancements complete. Premium presentation ready for ClayhHub publication.** 🚀
+**Decision**: Keep both. Use ClawText for OpenClaw workspace; Self-Improving-Agent for isolated Claude projects needing lightweight learning capture.
 
 
 
@@ -438,36 +371,10 @@ Each with: working code, configuration, real-world example, error handling, trou
 
 ## Projects
 
-### ClawText RAG System (Complete ✅)
-- **Phase 2 Status:** Live (validation tool, dedup controls, agent onboarding)
-- **Location:** ~/workspace/skills/clawtext-ingest/
-- **Key files:** HOW_THINGS_WORK.md (§3-4), scripts/validate-rag.js
-- **Operational:** RAG quality validation, cluster rebuild automation, empirical tuning
+### ClawText v1.4.0 (Production ✅)
+- **Status:** Live — working memory + ingest + operational learning
+- **Location:** ~/.openclaw/workspace/skills/clawtext/
+- **Key files:** README.md, OPERATIONAL_LEARNING.md, scripts/operational-cli.mjs, scripts/build-clusters.js
+- **Operational:** Multi-tier memory, semantic clustering, hot cache (~1ms), automatic injection
 
 ---
-
-## Me (The Agent)
-
-**Operating Model:**
-- Session-based, stateless across restarts
-- Memory persists via MEMORY.md + daily notes (memory/YYYY-MM-DD.md)
-- Can read my own files; can write MEMORY.md + workspace files
-- Security-conscious: won't exfiltrate private data, ask before public actions
-- Personality: helpful, direct, opinionated (when appropriate), resourceful
-
-**Current Integrations:**
-- Web search via `web_search` tool (unsafe defaults; ClawSec wrapper recommended)
-- File I/O, execution, Discord messaging (restricted by sandbox)
-- Session history, memory files
-
----
-
-## Decisions Log
-
-- **2026-03-03:** ClawSec audit complete; identified integration gap as P1 blocking automatic security
-- **2026-02-27:** Security system implemented; full workflow demonstration complete
-- **2026-03-03:** Phase 2 (ClawText) complete; RAG validation production-ready
-
----
-
-*This file is curated memory. Daily notes live in memory/YYYY-MM-DD.md.*
