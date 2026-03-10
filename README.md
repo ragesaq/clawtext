@@ -16,21 +16,23 @@ Every time an LLM processes a request, it builds a prompt from three layers:
 2. **Context** — Background information to inform the response
 3. **Current request** — What you're asking right now
 
-Without persistent memory, that context layer is empty. Every session starts from zero:
+Without persistent memory, the context layer is empty. Every session starts from zero:
 
 ```
 Session 1:
-[System] + [Context] + [Request] → Response
-         (empty!)
+[System] + [CONTEXT: EMPTY] + "Where was Caesar's greatest military victory?"
+→ Response: "Battle of Alesia in 52 BC"
 
-Session 2:
-[System] + [Context] + [Request] → Response
-         (empty again!)
+Session 2 (new conversation):
+[System] + [CONTEXT: EMPTY] + "Who was that guy he defeated in that battle you told me about yesterday?"
+→ Response: "What battle? I don't have any context from our previous conversation."
 
-Each session relearns the same lessons. Knowledge is lost between sessions.
+With a memory system:
+[System] + [CONTEXT: Battle of Alesia, Caesar's military history] + "Who was that guy he defeated?"
+→ Response: "Vercingetorix, the Gallic chieftain. That victory at Alesia was decisive because..."
 ```
 
-Memory systems fill that context layer with information that persists across sessions. The agent can build on past work, remember decisions, apply lessons from previous errors.
+Memory systems fill that context layer with information that persists across sessions. The agent remembers previous conversations, decisions, and can build on past work rather than relearning the same things.
 
 ### OpenClaw's Built-In Memory
 
