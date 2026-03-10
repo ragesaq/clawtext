@@ -13,7 +13,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-const API = 'http://localhost:3737/api/hygiene';
+const API = '/api/hygiene';
 
 const SEVERITY_COLORS = {
   critical: '#f85149',

@@ -14,7 +14,8 @@ const TABS = [
   { id: 'hygiene',   label: '🧹 Hygiene',   icon: '🧹' },
 ];
 
-const API = 'http://localhost:3737';
+// Use relative URL so the app works from any host (localhost, Tailscale IP, etc.)
+const API = '';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('graph');
