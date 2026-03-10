@@ -8,11 +8,14 @@ import cors from 'cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+import { createServer as _createServer } from 'http';
 import { MemoryStore } from './memory-store.js';
 import { AntiPatternStore } from './anti-pattern-store.js';
+import { getStats as getLearningsStats } from './learnings-store.js';
 import searchRoutes from './routes/search.js';
 import antiPatternRoutes from './routes/anti-patterns.js';
 import graphRoutes from './routes/graph.js';
+import learningsRoutes from './routes/learnings.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -37,6 +40,7 @@ export function createServer(options = {}) {
   app.use('/api/search', searchRoutes(memoryStore));
   app.use('/api/anti-patterns', antiPatternRoutes(antiPatternStore, memoryStore));
   app.use('/api/graph', graphRoutes(memoryStore, antiPatternStore));
+  app.use('/api/learnings', learningsRoutes);
 
   // Health + stats
   app.get('/api/health', (req, res) => {
@@ -45,6 +49,7 @@ export function createServer(options = {}) {
       memoryDir,
       stats: memoryStore.getStats(),
       antiPatterns: antiPatternStore.getAll().length,
+      learnings: getLearningsStats()
     });
   });
 
@@ -66,6 +71,8 @@ export function createServer(options = {}) {
             <li><a href="/api/graph" style="color:#58a6ff">GET /api/graph</a></li>
             <li><a href="/api/anti-patterns" style="color:#58a6ff">GET /api/anti-patterns</a></li>
             <li><a href="/api/search?q=RGCS" style="color:#58a6ff">GET /api/search?q=RGCS</a></li>
+            <li><a href="/api/learnings?resolutionStatus=unresolved" style="color:#58a6ff">GET /api/learnings (unresolved)</a></li>
+            <li><a href="/api/learnings/export/promote-ready" style="color:#58a6ff">GET /api/learnings/export/promote-ready</a></li>
           </ul>
         </body></html>
       `);

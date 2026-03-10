@@ -2,12 +2,14 @@ import { useState } from 'react';
 import SearchPanel from './components/SearchPanel.jsx';
 import GraphPanel from './components/GraphPanel.jsx';
 import AntiPatternPanel from './components/AntiPatternPanel.jsx';
+import LearningsPanel from './components/LearningsPanel.jsx';
 import StatusBar from './components/StatusBar.jsx';
 
 const TABS = [
-  { id: 'search', label: '🔍 Search', icon: '🔍' },
-  { id: 'graph',  label: '🕸 Graph',  icon: '🕸' },
-  { id: 'walls',  label: '🧱 Walls',  icon: '🧱' },
+  { id: 'search',    label: '🔍 Search',    icon: '🔍' },
+  { id: 'graph',     label: '🕸 Graph',     icon: '🕸' },
+  { id: 'walls',     label: '🧱 Walls',     icon: '🧱' },
+  { id: 'learnings', label: '🧠 Learnings', icon: '🧠' },
 ];
 
 const API = 'http://localhost:3737';
@@ -67,6 +69,11 @@ export default function App() {
         )}
         {activeTab === 'walls' && (
           <AntiPatternPanel
+            api={API}
+          />
+        )}
+        {activeTab === 'learnings' && (
+          <LearningsPanel
             api={API}
           />
         )}
