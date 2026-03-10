@@ -1,0 +1,23 @@
+{
+  "name": "clawtext-browser",
+  "version": "0.1.0",
+  "description": "Memory browser + anti-pattern manager for ClawText — self-hosted, zero-config",
+  "type": "module",
+  "bin": {
+    "clawtext-browse": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "build:ui": "cd ui && npm run build",
+    "dev:ui": "cd ui && npm run dev"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "chokidar": "^3.5.3",
+    "glob": "^10.3.10",
+    "js-yaml": "^4.1.0",
+    "uuid": "^9.0.0"
+  }
+}

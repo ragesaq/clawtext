@@ -1,0 +1,87 @@
+/**
+ * ClawText Browser — Express server
+ * Self-hosted memory browser + anti-pattern manager
+ */
+
+import express from 'express';
+import cors from 'cors';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
+import { MemoryStore } from './memory-store.js';
+import { AntiPatternStore } from './anti-pattern-store.js';
+import searchRoutes from './routes/search.js';
+import antiPatternRoutes from './routes/anti-patterns.js';
+import graphRoutes from './routes/graph.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export function createServer(options = {}) {
+  const memoryDir = options.memoryDir || join(process.env.HOME, '.openclaw/workspace/memory');
+  const port = options.port || 3737;
+  const uiDist = join(__dirname, '..', 'ui', 'dist');
+
+  if (!existsSync(memoryDir)) {
+    throw new Error(`Memory directory not found: ${memoryDir}\nRun with --memory-dir <path>`);
+  }
+
+  // Initialize data stores
+  const memoryStore = new MemoryStore(memoryDir);
+  const antiPatternStore = new AntiPatternStore(memoryDir);
+
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+
+  // API routes
+  app.use('/api/search', searchRoutes(memoryStore));
+  app.use('/api/anti-patterns', antiPatternRoutes(antiPatternStore, memoryStore));
+  app.use('/api/graph', graphRoutes(memoryStore, antiPatternStore));
+
+  // Health + stats
+  app.get('/api/health', (req, res) => {
+    res.json({
+      ok: true,
+      memoryDir,
+      stats: memoryStore.getStats(),
+      antiPatterns: antiPatternStore.getAll().length,
+    });
+  });
+
+  // Serve built React UI (if built)
+  if (existsSync(uiDist)) {
+    app.use(express.static(uiDist));
+    app.get('*', (req, res) => {
+      res.sendFile(join(uiDist, 'index.html'));
+    });
+  } else {
+    app.get('/', (req, res) => {
+      res.send(`
+        <html><body style="font-family:sans-serif;padding:2rem;background:#0d1117;color:#c9d1d9">
+          <h1>🧠 ClawText Browser</h1>
+          <p>API is running. Build the UI with: <code>npm run build:ui</code></p>
+          <p>Or run the dev server: <code>npm run dev:ui</code> (on port 5173)</p>
+          <ul>
+            <li><a href="/api/health" style="color:#58a6ff">GET /api/health</a></li>
+            <li><a href="/api/graph" style="color:#58a6ff">GET /api/graph</a></li>
+            <li><a href="/api/anti-patterns" style="color:#58a6ff">GET /api/anti-patterns</a></li>
+            <li><a href="/api/search?q=RGCS" style="color:#58a6ff">GET /api/search?q=RGCS</a></li>
+          </ul>
+        </body></html>
+      `);
+    });
+  }
+
+  return { app, memoryStore, antiPatternStore, port };
+}
+
+// Direct run
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const port = parseInt(process.env.PORT || '3737');
+  const { app } = createServer({ port });
+  app.listen(port, () => {
+    console.log(`🧠 ClawText Browser running at http://localhost:${port}`);
+    console.log(`   API: http://localhost:${port}/api/health`);
+    console.log(`   Graph: http://localhost:${port}/api/graph`);
+  });
+}
