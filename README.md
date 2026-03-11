@@ -2,7 +2,8 @@
 
 **Status:** Production  
 **Architecture:** Three-lane memory system for OpenClaw  
-**Focus:** working memory, ingest, and operational learning in one install story
+**Focus:** working memory, ingest, and operational learning in one install story  
+**New:** continuity transfer capability for structured handoff across threads/sessions
 
 ClawText is a file-based memory system for OpenClaw that keeps `MEMORY.md` small, keeps recent/high-value context on the fast path, and lets deeper knowledge stay searchable without turning the whole workspace into prompt sludge.
 
@@ -11,6 +12,9 @@ It does three things together:
 1. **Working memory** — retrieves relevant context into prompts
 2. **Ingest** — pulls in docs, repos, Discord, JSON, and other sources
 3. **Operational learning** — captures failures, reviews them, and promotes durable guidance
+
+Cross-cutting addition:
+- **Continuity transfer** — creates structured handoff artifacts (short/full/bootstrap) so active work moves across threads/sessions without context loss
 
 ---
 
@@ -51,6 +55,16 @@ That gives you a memory system that stays useful under real load.
 - captures failures, successful recoveries, and recurring agent mistakes
 - keeps operational knowledge separate from normal project memory
 - supports review, maturation, promotion, and maintenance workflows
+
+### 4. Continuity Transfer (new)
+
+- generates three handoff artifact types:
+  - short handoff summary
+  - full continuity packet
+  - next-agent bootstrap
+- supports automatic thread extraction/transfer with agent-led overrides where judgment is needed
+- supports optional promotion of continuity artifacts into memory when they are durable
+- packaged at `skills/clawbridge/` and usable as a companion tool inside the ClawText install
 
 ---
 
@@ -151,6 +165,9 @@ You should see cluster files in `memory/clusters/` and a successful validation r
 - [AGENT_INSTALL.md](./AGENT_INSTALL.md)
 - [AGENT_ONBOARDING.md](./AGENT_ONBOARDING.md)
 - [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+- [skills/clawbridge/START_HERE.md](./skills/clawbridge/START_HERE.md)
+- [skills/clawbridge/QUICKSTART.md](./skills/clawbridge/QUICKSTART.md)
+- [skills/clawbridge/INTEGRATION.md](./skills/clawbridge/INTEGRATION.md)
 
 ---
 

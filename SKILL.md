@@ -13,6 +13,9 @@ ClawText is a three-lane memory system for OpenClaw:
 2. **Ingest** — import and deduplicate external knowledge sources
 3. **Operational learning** — capture failures, recurring fixes, and agent self-improvement patterns
 
+New addition:
+- **Continuity transfer** — structured handoff artifacts for moving active work across threads/sessions without context loss
+
 It is designed to keep `MEMORY.md` small and high-signal while allowing larger project knowledge to stay searchable and maintainable.
 
 ## What it does
@@ -23,6 +26,7 @@ It is designed to keep `MEMORY.md` small and high-signal while allowing larger p
 - isolates operational learning from normal conversational memory
 - adds anti-pattern walls to prevent false associations
 - provides hygiene controls for sensitive data handling
+- includes companion continuity transfer tooling (`skills/clawbridge/`) for short/full/bootstrap handoff generation
 
 ## Installation
 
@@ -109,6 +113,7 @@ node scripts/operational-cli.mjs status
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 - [docs/INGEST.md](./docs/INGEST.md)
 - [docs/OPERATIONAL_LEARNING.md](./docs/OPERATIONAL_LEARNING.md)
+- [skills/clawbridge/START_HERE.md](./skills/clawbridge/START_HERE.md)
 
 ## Notes
 

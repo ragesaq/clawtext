@@ -36,15 +36,32 @@ export class ClawTextRAG {
       return;
     }
 
-    const files = fs.readdirSync(this.clustersDir).filter(f => f.startsWith('cluster-'));
+    const entries = fs.readdirSync(this.clustersDir, { withFileTypes: true });
+    const files = entries.filter((entry) => {
+      if (!entry.name.startsWith('cluster-')) return false;
+      if (!entry.isFile()) return false;
+      return entry.name.endsWith('.json');
+    });
 
-    files.forEach(file => {
+    entries.forEach((entry) => {
+      if (!entry.name.startsWith('cluster-')) return;
+      if (!entry.isFile()) {
+        console.warn(`[ClawText RAG] Skipping non-file cluster entry: ${entry.name}`);
+      } else if (!entry.name.endsWith('.json')) {
+        console.warn(`[ClawText RAG] Skipping non-JSON cluster entry: ${entry.name}`);
+      }
+    });
+
+    files.forEach((entry) => {
+      const file = entry.name;
       try {
-        const data = JSON.parse(fs.readFileSync(path.join(this.clustersDir, file), 'utf8'));
+        const fullPath = path.join(this.clustersDir, file);
+        const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
         const projectId = data.projectId || path.basename(file, '.json').replace('cluster-', '');
         this.clusters.set(projectId, data);
       } catch (e) {
-        console.error(`Failed to load cluster ${file}:`, e);
+        const message = e instanceof Error ? e.message : String(e);
+        console.warn(`[ClawText RAG] Failed to load cluster ${file}: ${message}`);
       }
     });
 
