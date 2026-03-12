@@ -165,6 +165,7 @@ You should see cluster files in `memory/clusters/` and a successful validation r
 - [docs/ME-002_SCOPE_ISOLATION_HARDENING.md](./docs/ME-002_SCOPE_ISOLATION_HARDENING.md)
 - [docs/ME-003_CONTEXT_LIBRARIAN_CURATION.md](./docs/ME-003_CONTEXT_LIBRARIAN_CURATION.md)
 - [docs/ME-004_EVAL_HARNESS.md](./docs/ME-004_EVAL_HARNESS.md)
+- [docs/STATE_ROOTS.md](./docs/STATE_ROOTS.md)
 
 ### Agent/operator docs
 

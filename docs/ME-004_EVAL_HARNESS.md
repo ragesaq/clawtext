@@ -38,9 +38,9 @@ For multiple scenarios (`baseline`, `me001_only`, `me002_only`, `me003_only`, `a
    - percent changes
 
 ## Output
-Writes timestamped report artifacts to:
-- `docs/evals/ME-004_eval_<timestamp>.json`
-- `docs/evals/ME-004_eval_<timestamp>.md`
+Writes timestamped report artifacts by default to:
+- `~/workspace/state/clawtext/dev/evals/ME-004_eval_<timestamp>.json`
+- `~/workspace/state/clawtext/dev/evals/ME-004_eval_<timestamp>.md`
 
 ## Usage
 
@@ -51,7 +51,7 @@ npm run eval:memory-evolution
 Optional custom output dir:
 
 ```bash
-node scripts/eval-memory-evolution.mjs --out ./docs/evals
+node scripts/eval-memory-evolution.mjs --out ./state/clawtext/dev/evals
 ```
 
 ## Impact map

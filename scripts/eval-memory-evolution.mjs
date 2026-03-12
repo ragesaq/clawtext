@@ -212,7 +212,7 @@ async function main() {
   const stamp = nowStamp();
   const outDir = outBase
     ? path.resolve(outBase)
-    : path.join(ROOT, 'docs', 'evals');
+    : path.join(WORKSPACE, 'state', 'clawtext', 'dev', 'evals');
   fs.mkdirSync(outDir, { recursive: true });
 
   const jsonPath = path.join(outDir, `ME-004_eval_${stamp}.json`);

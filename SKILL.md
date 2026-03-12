@@ -119,6 +119,7 @@ node scripts/operational-cli.mjs status
 - [docs/ME-002_SCOPE_ISOLATION_HARDENING.md](./docs/ME-002_SCOPE_ISOLATION_HARDENING.md)
 - [docs/ME-003_CONTEXT_LIBRARIAN_CURATION.md](./docs/ME-003_CONTEXT_LIBRARIAN_CURATION.md)
 - [docs/ME-004_EVAL_HARNESS.md](./docs/ME-004_EVAL_HARNESS.md)
+- [docs/STATE_ROOTS.md](./docs/STATE_ROOTS.md)
 - [skills/clawbridge/START_HERE.md](./skills/clawbridge/START_HERE.md)
 
 ## Notes
