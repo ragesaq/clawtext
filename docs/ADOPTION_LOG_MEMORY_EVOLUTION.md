@@ -47,3 +47,18 @@ Use this log to leave durable breadcrumbs for memory-engine evolution work.
   - `docs/ME-001_DURABILITY_CLASSIFIER.md`
   - `src/durability-classifier.ts`
   - `src/operational-promotion.ts`
+
+## 2026-03-12 — ME-002 Scope Isolation Hardening
+
+- **Change ID:** ME-002
+- **Date (UTC):** 2026-03-12
+- **Feature:** Strict scope filtering for operational retrieval
+- **Status:** merged (flagged)
+- **Flag:** `CLAWTEXT_SCOPE_ISOLATION_ENABLED`
+- **Default State:** off
+- **Reason:** Reduce cross-scope operational pattern noise while preserving default behavior.
+- **Impact on Other Pillars:** No ClawDash/ClawTask/continuity runtime impact; retrieval-path filter only when flag enabled.
+- **Rollback:** Disable feature flag; or revert `src/operational-retrieval.ts` ME-002 changes.
+- **References:**
+  - `docs/ME-002_SCOPE_ISOLATION_HARDENING.md`
+  - `src/operational-retrieval.ts`

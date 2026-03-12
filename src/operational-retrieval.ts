@@ -8,7 +8,7 @@
  * - Injection rules (never in normal chat)
  */
 
-import { OperationalMemoryManager, OperationalMemory } from './operational.js';
+import { OperationalMemoryManager, OperationalMemory, Scope } from './operational.js';
 import { OperationalAggregationManager } from './operational-aggregation.js';
 
 /**
@@ -55,6 +55,8 @@ export interface OperationalRetrievalResult {
   queryUsed: string;
   totalPatterns: number;
   injectionReady: boolean;
+  scopeIsolationEnabled?: boolean;
+  allowedScopes?: Scope[];
 }
 
 /**
@@ -93,6 +95,42 @@ export class OperationalRetrievalManager {
     this.workspacePath = workspacePath;
     this.memoryManager = new OperationalMemoryManager(workspacePath);
     this.aggregationManager = new OperationalAggregationManager(workspacePath);
+  }
+
+  private isScopeIsolationEnabled(): boolean {
+    return process.env.CLAWTEXT_SCOPE_ISOLATION_ENABLED === 'true';
+  }
+
+  /**
+   * Determine allowed scopes for strict retrieval mode.
+   * Default remains broad unless feature flag is enabled.
+   */
+  private getAllowedScopes(taskType: TaskType): Scope[] {
+    switch (taskType) {
+      case 'tool-use':
+        return ['tool', 'agent', 'global'];
+      case 'command-execution':
+        return ['tool', 'agent', 'gateway', 'global'];
+      case 'config-change':
+      case 'deployment':
+      case 'gateway-work':
+      case 'plugin-work':
+        return ['gateway', 'agent', 'tool', 'global'];
+      case 'debugging':
+        return ['project', 'tool', 'agent', 'gateway', 'global'];
+      case 'normal-chat':
+      case 'unknown':
+      default:
+        return ['global'];
+    }
+  }
+
+  /**
+   * Optional strict filter to reduce cross-scope noise.
+   * Only active when CLAWTEXT_SCOPE_ISOLATION_ENABLED=true.
+   */
+  private applyScopeIsolation(patterns: OperationalMemory[], allowedScopes: Scope[]): OperationalMemory[] {
+    return patterns.filter((p) => allowedScopes.includes(p.scope));
   }
 
   /**
@@ -184,13 +222,15 @@ export class OperationalRetrievalManager {
    */
   async retrieveForTask(context: TaskContext, query?: string): Promise<OperationalRetrievalResult> {
     const classification = this.classifyTask(context);
-    
+    const scopeIsolationEnabled = this.isScopeIsolationEnabled();
+    const allowedScopes = this.getAllowedScopes(classification.taskType);
+
     // Combine query from context if not provided
     const searchQuery = query || context.userMessage || '';
 
     // Only query operational memory for relevant task types
     let patterns: OperationalMemory[] = [];
-    
+
     if (classification.shouldQueryOperational) {
       patterns = this.memoryManager.search(searchQuery, {
         status: 'reviewed',
@@ -198,9 +238,14 @@ export class OperationalRetrievalManager {
       });
 
       // Also check for high-recurrence patterns even if query doesn't match
-      const highRecurrence = this.memoryManager.getAllByStatus('reviewed')
+      let highRecurrence = this.memoryManager.getAllByStatus('reviewed')
         .filter(p => p.recurrenceCount >= 3)
         .slice(0, 5);
+
+      if (scopeIsolationEnabled) {
+        patterns = this.applyScopeIsolation(patterns, allowedScopes);
+        highRecurrence = this.applyScopeIsolation(highRecurrence, allowedScopes);
+      }
 
       // Merge and dedupe by patternKey
       const allPatterns = [...patterns, ...highRecurrence];
@@ -219,6 +264,8 @@ export class OperationalRetrievalManager {
       queryUsed: searchQuery,
       totalPatterns: patterns.length,
       injectionReady: patterns.length > 0 && classification.shouldQueryOperational,
+      scopeIsolationEnabled,
+      allowedScopes: scopeIsolationEnabled ? allowedScopes : undefined,
     };
   }
 
