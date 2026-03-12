@@ -1,0 +1,43 @@
+{
+  "projectId": "majorbbs",
+  "memories": [
+    {
+      "content": "## MajorBBS Dual-Write Architecture — DAT Primary + SQLite Mirror\n\nUser proposed and agreed to a dual-write architecture for MajorBBS: keep native Btrieve DAT files as the authoritative primary storage, while maintaining SQLite as a read-only reporting copy. This approach:\n\n- Preserves DAT files as the canonical data source (Btrieve-native compatibility)\n- Enables SQLite for reporting/analytics without risking data integrity\n- Allows users to query SQLite while MajorBBS operates on DAT files\n- Provides a safer alternative to full real-time dual-write complexity\n\nImplementation path: Build a DLL that handles both DAT operations (via wbtrv32 emulation) and maintains SQLite as a synchronized read-only mirror. This was the final decision after exploring reverse-conversion tools.",
+      "keywords": [
+        "majorbbs",
+        "btrieve",
+        "sqlite",
+        "dual-write",
+        "reporting",
+        "architecture",
+        "dll"
+      ],
+      "type": "decision",
+      "project": "majorbbs",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T06:43:01.853Z"
+    },
+    {
+      "content": "## MajorBBS Tooling Decision — Option A + Bidirectional DLL\n\nUser approved \"Option A\" approach for MajorBBS data migration tooling and confirmed requirement to build a drop-in DLL reverser. The solution will:\n\n1. Support forward migration (DAT → SQLite) for reporting\n2. Support reverse migration (SQLite → DAT) for rollback scenarios\n3. Be packaged as a drop-in DLL that users can test and revert easily\n4. Allow users to switch back to native Btrieve operation without data loss\n\nThis dual-mode capability addresses user concerns about migration safety and provides operational flexibility for MajorBBS deployments.",
+      "keywords": [
+        "majorbbs",
+        "wbtrv32",
+        "exporter",
+        "dll",
+        "exe",
+        "rollback",
+        "dual-mode"
+      ],
+      "type": "decision",
+      "project": "majorbbs",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T06:43:01.853Z"
+    }
+  ],
+  "builtAt": "2026-03-11T06:43:01.876Z",
+  "sourceFiles": [
+    "memory/2026-03-11.md"
+  ]
+}

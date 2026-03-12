@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-exec-failed
+type: error-pattern
+summary: Tool exec failed
+symptom: Command aborted by signal SIGTERM
+trigger: Tool exec called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-09T23:00:32.858Z'
+lastSeenAt: '2026-03-09T23:00:32.858Z'
+status: raw
+evidence:
+  - 'Tool: exec'
+  - 'Error: Command aborted by signal SIGTERM'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"command":"systemctl --user restart openclaw-gateway.service && sleep 3 && systemctl --user is-active openclaw-gateway.service","timeout":120000}'
+id: 5afc1123fe1c1800
+createdAt: '2026-03-09T23:00:32.858Z'
+updatedAt: '2026-03-09T23:00:32.858Z'

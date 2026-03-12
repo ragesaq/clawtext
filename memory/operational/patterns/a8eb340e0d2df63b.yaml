@@ -1,0 +1,20 @@
+patternKey: error-pattern.tool.phase-7c-synthetic-promotion-test-phase7
+type: error-pattern
+summary: Phase 7C synthetic promotion test phase7c-1773100521099
+symptom: phase7c-1773100521099 tool gotcha
+trigger: Synthetic tool trigger
+rootCause: Synthetic tool root cause
+fix: Use the synthetic safe workflow
+scope: tool
+confidence: 0.82
+recurrenceCount: 4
+firstSeenAt: '2026-03-09T23:55:21.099Z'
+lastSeenAt: '2026-03-09T23:55:21.099Z'
+status: promoted
+evidence:
+  - synthetic phase 7c reviewed pattern
+promotedTo: TOOLS.md
+promotedAt: '2026-03-09T23:55:21.107Z'
+id: a8eb340e0d2df63b
+createdAt: '2026-03-09T23:55:21.099Z'
+updatedAt: '2026-03-09T23:55:21.108Z'

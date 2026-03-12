@@ -1,0 +1,32 @@
+{
+  "id": "mem_6f8c5986fe7aa1fb",
+  "sourceType": "api",
+  "sourceId": null,
+  "sourceRef": null,
+  "project": "ui",
+  "type": "preference",
+  "lane": "curated",
+  "status": "promoted",
+  "confidence": 0.9,
+  "importance": 0.7,
+  "createdAt": "2026-03-08T22:43:00.366Z",
+  "observedAt": "2026-03-08T22:43:00.366Z",
+  "updatedAt": "2026-03-08T22:43:00.366Z",
+  "entities": [],
+  "tags": [],
+  "keywords": [
+    "user",
+    "prefers",
+    "dark",
+    "mode"
+  ],
+  "dedupeHash": "47e00fb6a0364c24",
+  "summary": "User prefers dark mode for UI",
+  "body": "User prefers dark mode for UI",
+  "relations": {
+    "supersedes": [],
+    "related": [],
+    "derivedFrom": []
+  },
+  "metadata": {}
+}

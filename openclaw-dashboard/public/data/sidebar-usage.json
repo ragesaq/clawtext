@@ -1,0 +1,35 @@
+{
+  "source": "collector-openclaw",
+  "updatedAt": "2026-03-11T07:47:47.930Z",
+  "openai": {
+    "window": "today",
+    "requests": 148,
+    "tokens": 482000,
+    "costUsd": 9.42,
+    "trend": [
+      3.9,
+      4.7,
+      5.6,
+      6.1,
+      7.4,
+      8.5,
+      9.42
+    ]
+  },
+  "copilot": {
+    "window": "today",
+    "completions": 311,
+    "acceptRate": 0.37,
+    "chatRequests": 42,
+    "trend": [
+      210,
+      238,
+      267,
+      289,
+      318,
+      347,
+      371
+    ]
+  },
+  "notes": "Temporary seed data. Replace with non-LLM cron-fed usage collector."
+}

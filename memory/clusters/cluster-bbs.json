@@ -1,0 +1,24 @@
+{
+  "projectId": "bbs",
+  "memories": [
+    {
+      "content": "## BBS test board cleanup: explicit deletion approved\n\nUser encountered BBS board startup error after stopping wgserv residuals. Explicitly approved deletion of the test board directory (`C:\\BBSV10`) since:\n- It's a test board (not production)\n- Clean backup exists at `C:\\docs\\BBSV10`\n- User noted the clean backup might have original DAT file vs DAT→SQLite migration state\n\nFallback plan: restore by copying (not moving) from `C:\\docs\\BBSV10` to `C:\\BBSV10`.",
+      "keywords": [
+        "BBS",
+        "test-board",
+        "wgserv",
+        "cleanup",
+        "deletion-approval"
+      ],
+      "type": "decision",
+      "project": "bbs",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T08:43:01.853Z"
+    }
+  ],
+  "builtAt": "2026-03-11T08:43:01.875Z",
+  "sourceFiles": [
+    "memory/2026-03-11.md"
+  ]
+}

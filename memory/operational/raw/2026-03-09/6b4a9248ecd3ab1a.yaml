@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: No changes made to /home/lumadmin/.openclaw/workspace/skills/clawtext/plugin.js. The replacement produced identical content. This might indicate an issue with special characters or the text not existing as expected.
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-09T23:16:25.784Z'
+lastSeenAt: '2026-03-09T23:16:25.784Z'
+status: raw
+evidence:
+  - 'Tool: edit'
+  - 'Error: No changes made to /home/lumadmin/.openclaw/workspace/skills/clawtext/plugin.js. The replacement produced identical content. This might indicate an issue with special characters or the text not existing as expected.'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/skills/clawtext/plugin.js","oldText":"  async injectOperationalPatterns(event) {\n    const userMessage = (event.userMessage || event.prompt || '''').trim();\n    if (!userMessage) {\n      return { prependContext: '''', stats: { patternsInjected: 0, taskType: ''unknown'' } };\n    }\n","newText":"  async injectOperationalPatterns(event) {\n    const userMessage = (event.userMessage || event.prompt || '''').trim();\n    if (!userMessage) {\n      return { prependContext: '''', stats: { patternsInjected: 0, taskType: ''unknown'' } };\n    }\n"}'
+id: 6b4a9248ecd3ab1a
+createdAt: '2026-03-09T23:16:25.784Z'
+updatedAt: '2026-03-09T23:16:25.784Z'

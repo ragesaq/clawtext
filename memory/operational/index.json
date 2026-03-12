@@ -1,0 +1,38 @@
+{
+  "error-pattern.tool.tool-exec-failed": {
+    "patternKey": "error-pattern.tool.tool-exec-failed",
+    "filePath": "raw/2026-03-10/978b7dab690dbb9a.yaml",
+    "status": "raw",
+    "type": "error-pattern",
+    "scope": "tool",
+    "recurrenceCount": 1,
+    "lastSeenAt": "2026-03-10T03:33:29.066Z"
+  },
+  "error-pattern.tool.tool-sessions-send-failed": {
+    "patternKey": "error-pattern.tool.tool-sessions-send-failed",
+    "filePath": "raw/2026-03-10/5e8730898b3d3811.yaml",
+    "status": "raw",
+    "type": "error-pattern",
+    "scope": "tool",
+    "recurrenceCount": 1,
+    "lastSeenAt": "2026-03-10T03:05:47.653Z"
+  },
+  "error-pattern.tool.tool-read-failed": {
+    "patternKey": "error-pattern.tool.tool-read-failed",
+    "filePath": "candidates/f4cefbb84b4d1397.yaml",
+    "status": "candidate",
+    "type": "error-pattern",
+    "scope": "tool",
+    "recurrenceCount": 14,
+    "lastSeenAt": "2026-03-10T05:47:02.105Z"
+  },
+  "error-pattern.tool.tool-edit-failed": {
+    "patternKey": "error-pattern.tool.tool-edit-failed",
+    "filePath": "candidates/4bac65e997c2fdc0.yaml",
+    "status": "candidate",
+    "type": "error-pattern",
+    "scope": "tool",
+    "recurrenceCount": 2,
+    "lastSeenAt": "2026-03-10T06:13:35.686Z"
+  }
+}

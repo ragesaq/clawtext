@@ -1,0 +1,26 @@
+{
+  "projectId": "clawtext-browser",
+  "memories": [
+    {
+      "content": "## Graph UI must maximize density and use all available canvas\n\nUser explicitly dislikes whitespace in the graph page. Requirement clarified:\n- keep the old sidebar layout if needed\n- right sidebar/details are acceptable\n- but the graph/tree rendering must aggressively use the full available canvas\n- dynamic resizing should consume free space as panels open/close\n- \"DENSITY\" and \"maximum fill\" are the guiding UI principles for this screen",
+      "keywords": [
+        "graph",
+        "density",
+        "whitespace",
+        "canvas",
+        "dynamic-resizing",
+        "fill",
+        "layout"
+      ],
+      "type": "decision",
+      "project": "clawtext-browser",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-10.md",
+      "updatedAt": "2026-03-10T19:42:47.749Z"
+    }
+  ],
+  "builtAt": "2026-03-10T19:42:47.772Z",
+  "sourceFiles": [
+    "memory/2026-03-10.md"
+  ]
+}

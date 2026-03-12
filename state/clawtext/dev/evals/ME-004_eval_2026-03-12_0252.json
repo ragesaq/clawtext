@@ -1,0 +1,444 @@
+{
+  "generatedAt": "2026-03-12T02:52:51.499Z",
+  "workspace": "/home/lumadmin/.openclaw/workspace",
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "flags": {
+        "durability": false,
+        "scopeIsolation": false,
+        "contextLibrarian": false
+      },
+      "rag": {
+        "queryCount": 5,
+        "totalInjected": 25,
+        "totalTokens": 1056,
+        "avgInjected": 5,
+        "avgTokens": 211.2,
+        "rows": [
+          {
+            "query": "ClawText continuity transfer handoff bootstrap",
+            "injected": 5,
+            "tokens": 332
+          },
+          {
+            "query": "memory evolution adoption breadcrumbs feature flag",
+            "injected": 5,
+            "tokens": 256
+          },
+          {
+            "query": "operational pattern retrieval scope isolation",
+            "injected": 5,
+            "tokens": 7
+          },
+          {
+            "query": "durability classifier promotion confidence",
+            "injected": 5,
+            "tokens": 142
+          },
+          {
+            "query": "RAG injection token budget relevance curation",
+            "injected": 5,
+            "tokens": 319
+          }
+        ]
+      },
+      "retrieval": {
+        "contextCount": 3,
+        "rows": [
+          {
+            "task": "debugging plugin issue",
+            "type": "debugging",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "command execution fix",
+            "type": "command-execution",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "config + deploy",
+            "type": "gateway-work",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          }
+        ]
+      },
+      "promotion": {
+        "skipped": true,
+        "reason": "no reviewed patterns found"
+      }
+    },
+    {
+      "scenario": "me001_only",
+      "flags": {
+        "durability": true,
+        "scopeIsolation": false,
+        "contextLibrarian": false
+      },
+      "rag": {
+        "queryCount": 5,
+        "totalInjected": 25,
+        "totalTokens": 1056,
+        "avgInjected": 5,
+        "avgTokens": 211.2,
+        "rows": [
+          {
+            "query": "ClawText continuity transfer handoff bootstrap",
+            "injected": 5,
+            "tokens": 332
+          },
+          {
+            "query": "memory evolution adoption breadcrumbs feature flag",
+            "injected": 5,
+            "tokens": 256
+          },
+          {
+            "query": "operational pattern retrieval scope isolation",
+            "injected": 5,
+            "tokens": 7
+          },
+          {
+            "query": "durability classifier promotion confidence",
+            "injected": 5,
+            "tokens": 142
+          },
+          {
+            "query": "RAG injection token budget relevance curation",
+            "injected": 5,
+            "tokens": 319
+          }
+        ]
+      },
+      "retrieval": {
+        "contextCount": 3,
+        "rows": [
+          {
+            "task": "debugging plugin issue",
+            "type": "debugging",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "command execution fix",
+            "type": "command-execution",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "config + deploy",
+            "type": "gateway-work",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          }
+        ]
+      },
+      "promotion": {
+        "skipped": true,
+        "reason": "no reviewed patterns found"
+      }
+    },
+    {
+      "scenario": "me002_only",
+      "flags": {
+        "durability": false,
+        "scopeIsolation": true,
+        "contextLibrarian": false
+      },
+      "rag": {
+        "queryCount": 5,
+        "totalInjected": 25,
+        "totalTokens": 1056,
+        "avgInjected": 5,
+        "avgTokens": 211.2,
+        "rows": [
+          {
+            "query": "ClawText continuity transfer handoff bootstrap",
+            "injected": 5,
+            "tokens": 332
+          },
+          {
+            "query": "memory evolution adoption breadcrumbs feature flag",
+            "injected": 5,
+            "tokens": 256
+          },
+          {
+            "query": "operational pattern retrieval scope isolation",
+            "injected": 5,
+            "tokens": 7
+          },
+          {
+            "query": "durability classifier promotion confidence",
+            "injected": 5,
+            "tokens": 142
+          },
+          {
+            "query": "RAG injection token budget relevance curation",
+            "injected": 5,
+            "tokens": 319
+          }
+        ]
+      },
+      "retrieval": {
+        "contextCount": 3,
+        "rows": [
+          {
+            "task": "debugging plugin issue",
+            "type": "debugging",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "project",
+              "tool",
+              "agent",
+              "gateway",
+              "global"
+            ]
+          },
+          {
+            "task": "command execution fix",
+            "type": "command-execution",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "tool",
+              "agent",
+              "gateway",
+              "global"
+            ]
+          },
+          {
+            "task": "config + deploy",
+            "type": "gateway-work",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "gateway",
+              "agent",
+              "tool",
+              "global"
+            ]
+          }
+        ]
+      },
+      "promotion": {
+        "skipped": true,
+        "reason": "no reviewed patterns found"
+      }
+    },
+    {
+      "scenario": "me003_only",
+      "flags": {
+        "durability": false,
+        "scopeIsolation": false,
+        "contextLibrarian": true
+      },
+      "rag": {
+        "queryCount": 5,
+        "totalInjected": 20,
+        "totalTokens": 1056,
+        "avgInjected": 4,
+        "avgTokens": 211.2,
+        "rows": [
+          {
+            "query": "ClawText continuity transfer handoff bootstrap",
+            "injected": 4,
+            "tokens": 332
+          },
+          {
+            "query": "memory evolution adoption breadcrumbs feature flag",
+            "injected": 4,
+            "tokens": 256
+          },
+          {
+            "query": "operational pattern retrieval scope isolation",
+            "injected": 4,
+            "tokens": 7
+          },
+          {
+            "query": "durability classifier promotion confidence",
+            "injected": 4,
+            "tokens": 142
+          },
+          {
+            "query": "RAG injection token budget relevance curation",
+            "injected": 4,
+            "tokens": 319
+          }
+        ]
+      },
+      "retrieval": {
+        "contextCount": 3,
+        "rows": [
+          {
+            "task": "debugging plugin issue",
+            "type": "debugging",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "command execution fix",
+            "type": "command-execution",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          },
+          {
+            "task": "config + deploy",
+            "type": "gateway-work",
+            "count": 0,
+            "scopeIsolationEnabled": false,
+            "allowedScopes": []
+          }
+        ]
+      },
+      "promotion": {
+        "skipped": true,
+        "reason": "no reviewed patterns found"
+      }
+    },
+    {
+      "scenario": "all_flags",
+      "flags": {
+        "durability": true,
+        "scopeIsolation": true,
+        "contextLibrarian": true
+      },
+      "rag": {
+        "queryCount": 5,
+        "totalInjected": 20,
+        "totalTokens": 1056,
+        "avgInjected": 4,
+        "avgTokens": 211.2,
+        "rows": [
+          {
+            "query": "ClawText continuity transfer handoff bootstrap",
+            "injected": 4,
+            "tokens": 332
+          },
+          {
+            "query": "memory evolution adoption breadcrumbs feature flag",
+            "injected": 4,
+            "tokens": 256
+          },
+          {
+            "query": "operational pattern retrieval scope isolation",
+            "injected": 4,
+            "tokens": 7
+          },
+          {
+            "query": "durability classifier promotion confidence",
+            "injected": 4,
+            "tokens": 142
+          },
+          {
+            "query": "RAG injection token budget relevance curation",
+            "injected": 4,
+            "tokens": 319
+          }
+        ]
+      },
+      "retrieval": {
+        "contextCount": 3,
+        "rows": [
+          {
+            "task": "debugging plugin issue",
+            "type": "debugging",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "project",
+              "tool",
+              "agent",
+              "gateway",
+              "global"
+            ]
+          },
+          {
+            "task": "command execution fix",
+            "type": "command-execution",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "tool",
+              "agent",
+              "gateway",
+              "global"
+            ]
+          },
+          {
+            "task": "config + deploy",
+            "type": "gateway-work",
+            "count": 0,
+            "scopeIsolationEnabled": true,
+            "allowedScopes": [
+              "gateway",
+              "agent",
+              "tool",
+              "global"
+            ]
+          }
+        ]
+      },
+      "promotion": {
+        "skipped": true,
+        "reason": "no reviewed patterns found"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "variant": "me001_only",
+      "diff": {
+        "rag": {
+          "injectedDelta": 0,
+          "tokenDelta": 0,
+          "injectedPct": 0,
+          "tokenPct": 0
+        }
+      }
+    },
+    {
+      "variant": "me002_only",
+      "diff": {
+        "rag": {
+          "injectedDelta": 0,
+          "tokenDelta": 0,
+          "injectedPct": 0,
+          "tokenPct": 0
+        }
+      }
+    },
+    {
+      "variant": "me003_only",
+      "diff": {
+        "rag": {
+          "injectedDelta": -5,
+          "tokenDelta": 0,
+          "injectedPct": -20,
+          "tokenPct": 0
+        }
+      }
+    },
+    {
+      "variant": "all_flags",
+      "diff": {
+        "rag": {
+          "injectedDelta": -5,
+          "tokenDelta": 0,
+          "injectedPct": -20,
+          "tokenPct": 0
+        }
+      }
+    }
+  ]
+}

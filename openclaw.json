@@ -1,0 +1,19 @@
+{
+  "plugins": {
+    "allow": [
+      "clawtext"
+    ],
+    "entries": {
+      "clawtext": {
+        "enabled": true
+      }
+    }
+  },
+  "skills": {
+    "entries": {
+      "clawtext-rag": {
+        "enabled": true
+      }
+    }
+  }
+}

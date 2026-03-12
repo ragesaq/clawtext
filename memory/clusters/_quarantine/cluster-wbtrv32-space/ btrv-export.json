@@ -1,0 +1,27 @@
+{
+  "projectId": "wbtrv32 / btrv-export",
+  "memories": [
+    {
+      "content": "## Btrieve v6 Index Record Pointer Encoding (Decoded)\n\nConfirmed encoding formula for 4-byte record pointers in Btrieve v6 B-tree leaf index entries:\n\n```\nencoded_ptr = (physicalPageNumber * 0x400) + offsetWithinPage\n```\n\n- physicalPage = physical page number in the .dat file (NOT logical)\n- offsetWithinPage = byte offset within that page (includes 6-byte page header)\n- 0x400 = 1024 (Btrieve internal addressing unit, not the 4096-byte page size)\n\nVerified against WGSMENU2.DAT:\n- AACCOUNT: phys=0x0000c006 (page 12, offset 6) → ptr=0x00003006 (12*0x400+6) ✅\n- ATOP: phys=0x000088e4 (page 8, offset 0x8e4) → ptr=0x000078e4 (8*0x400+0x8e4) ✅\n\nDecode (already in codebase as getRecordPointer):\n- high = toUint16(ptr[0..1]), low = toUint16(ptr[2..3])\n- result = (high << 16) | low\n\nThe decoded value IS the encoded_ptr above, stored big-endian as two little-endian 16-bit words.",
+      "keywords": [
+        "btrieve",
+        "v6",
+        "index-page",
+        "record-pointer",
+        "encoding",
+        "pat",
+        "exporter",
+        "dll"
+      ],
+      "type": "engineering",
+      "project": "wbtrv32 / btrv-export",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T06:22:56.951Z"
+    }
+  ],
+  "builtAt": "2026-03-11T06:22:56.973Z",
+  "sourceFiles": [
+    "memory/2026-03-11.md"
+  ]
+}

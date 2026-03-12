@@ -1,0 +1,110 @@
+{
+  "lastScannedAt": "2026-03-09T00:42:19.766Z",
+  "repos": [
+    {
+      "projectId": "contractors-showdown",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-06T19:06:21.471Z",
+      "ageDays": 2,
+      "status": "fresh"
+    },
+    {
+      "projectId": "openclaw-config",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-06T04:26:43.890Z",
+      "ageDays": 2,
+      "status": "fresh"
+    },
+    {
+      "projectId": "workflow",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-06T04:26:43.890Z",
+      "ageDays": 2,
+      "status": "fresh"
+    },
+    {
+      "projectId": "clawtext",
+      "memoryCount": 22,
+      "latestMemoryAt": "2026-03-08T20:42:41.459Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "compositor-fx (RageFX)",
+      "memoryCount": 4,
+      "latestMemoryAt": "2026-03-08T20:42:41.452Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "contractors-showdown-data-platform",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-08T20:42:41.442Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "default",
+      "memoryCount": 49,
+      "latestMemoryAt": "2026-03-08T20:42:41.459Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "embeddings",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-08T06:05:01.683Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "general",
+      "memoryCount": 3,
+      "latestMemoryAt": "2026-03-08T20:42:41.452Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "hardware",
+      "memoryCount": 1,
+      "latestMemoryAt": "2026-03-08T20:42:41.442Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "infrastructure",
+      "memoryCount": 19,
+      "latestMemoryAt": "2026-03-08T20:42:41.459Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "ingestion",
+      "memoryCount": 20,
+      "latestMemoryAt": "2026-03-08T20:42:41.456Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "moltmud",
+      "memoryCount": 2,
+      "latestMemoryAt": "2026-03-08T20:42:41.455Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "openclaw",
+      "memoryCount": 25,
+      "latestMemoryAt": "2026-03-08T20:42:41.459Z",
+      "ageDays": 0,
+      "status": "fresh"
+    },
+    {
+      "projectId": "rgcs",
+      "memoryCount": 41,
+      "latestMemoryAt": "2026-03-08T20:42:41.457Z",
+      "ageDays": 0,
+      "status": "fresh"
+    }
+  ]
+}

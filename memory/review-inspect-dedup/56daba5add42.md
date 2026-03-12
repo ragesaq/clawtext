@@ -1,0 +1,23 @@
+---
+key: 56daba5add42
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["setdeviceoffset","target=DriverOffsets"]
+ts: 2026-03-06T18:12:12.337Z
+---
+
+# Candidate (count=1)
+
+setdeviceoffset dev= hand=right enabled= pos(,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(-.,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(-.,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(-.,-.,) rot(.,.,.) target=driveroffsets setdeviceoffset dev= hand=right enabled= pos(-.,-.,) rot(.,.,.) target=driveroffsets --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:3719 right matched:["setdeviceoffset","target=DriverOffsets"]
+  
+  SetDeviceOffset dev=5 hand=RIGHT enabled=1 pos(0,-0.00483967,0) rot(13.7259,1.73247,15.2203) target=DriverOffsets
+
+SetDeviceOffset dev=5 hand=RIGHT enabled=1 pos(0,-0.00521355,0) rot(13.7259,1.73247,15.2203) target=DriverOffsets
+
+SetDeviceOffset dev=5 hand=RIGHT enabled=1 pos(0,-0.00549704,0) rot(13.7259,1.73247,15.2203) target=DriverOffsets
+
+SetDeviceOffset dev=5 hand=RIGHT enabled=1 pos(-0.00037

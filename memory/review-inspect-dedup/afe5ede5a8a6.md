@@ -1,0 +1,49 @@
+---
+key: afe5ede5a8a6
+count: 3
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["SUCCESS: Offset applied to device"]
+ts: 2026-03-06T18:12:12.308Z
+---
+
+# Candidate (count=3)
+
+[ .] -> openvr deviceid for right = [ .] -> preserving existing rotation: pitch=., yaw=., roll=. [ .] -> applying via sharedmemoryipc: pos(x=-.037m, y=-.007m, z=-.001m) [ .] -> success: offset applied to device [ .] settranslationoffsets: role=right, x=-., y=-., z=-. [ .] -> openvr deviceid for right = [ .] -> preserving existing rotation: pitch=., yaw=., roll=. --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:844 success matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:21:33.356] -> OpenVR deviceId for Right = 5
+
+[2026-03-04 01:21:33.356] -> Preserving existing rotation: pitch=0.673, yaw=0.672, roll=18.152
+
+[2026-03-04 01:21:33.356] -> Applying via SharedMemoryIPC: pos(x=-0.037m, y=-0.007m, z=-0.001m)
+
+[2026-03-04 01:21:33.360] -> SUCCESS: Offset applied to device 5
+
+[2026-03-04 01:21:33.389] setTranslationOffsets: role=Right, x=-3.70, y=-0.72, z=
+
+- 2026-03-04-hmd-cutoff.md:849 success matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:21:33.389] -> OpenVR deviceId for Right = 5
+
+[2026-03-04 01:21:33.389] -> Preserving existing rotation: pitch=0.673, yaw=0.672, roll=18.152
+
+[2026-03-04 01:21:33.389] -> Applying via SharedMemoryIPC: pos(x=-0.037m, y=-0.007m, z=-0.001m)
+
+[2026-03-04 01:21:33.392] -> SUCCESS: Offset applied to device 5
+
+[2026-03-04 01:21:33.422] setTranslationOffsets: role=Right, x=-3.74, y=-0.71, z=
+
+- 2026-03-04-hmd-cutoff.md:854 success matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:21:33.422] -> OpenVR deviceId for Right = 5
+
+[2026-03-04 01:21:33.422] -> Preserving existing rotation: pitch=0.673, yaw=0.672, roll=18.152
+
+[2026-03-04 01:21:33.422] -> Applying via SharedMemoryIPC: pos(x=-0.037m, y=-0.007m, z=-0.001m)
+
+[2026-03-04 01:21:33.425] -> SUCCESS: Offset applied to device 5
+
+[2026-03-04 01:21:33.454] setTranslationOffsets: role=Right, x=-3.77, y=-0.70, z=

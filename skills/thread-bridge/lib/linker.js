@@ -1,27 +1,38 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const util = require('util');
-const execp = util.promisify(exec);
+const execFileP = util.promisify(execFile);
 
-async function postHandoff(sourceThreadId, newThreadUrl, newThreadId) {
-  const note = `🔀 Continuing in ${newThreadUrl}`;
-  const cmd = `openclaw message --action=send --channel=${sourceThreadId} --message=${JSON.stringify(note)}`;
+async function runOpenClaw(args, options = {}) {
+  return execFileP('openclaw', args, {
+    timeout: options.timeout ?? 15000,
+    maxBuffer: options.maxBuffer ?? 4 * 1024 * 1024,
+  });
+}
+
+async function sendNote(targetChannelId, note) {
   try {
-    await execp(cmd);
+    await runOpenClaw([
+      'message',
+      'send',
+      '--channel', 'discord',
+      '--target', `channel:${targetChannelId}`,
+      '-m', String(note || ''),
+      '--json',
+    ]);
     return true;
   } catch (err) {
-    throw new Error(`Failed to post handoff: ${err.message}`);
+    throw new Error(`Failed to send note: ${err.message}`);
   }
 }
 
-async function postSplitLink(sourceThreadId, newThreadUrl, newThreadId, title) {
+async function postHandoff(sourceThreadId, newThreadUrl, _newThreadId) {
+  const note = `🔀 Continuing in ${newThreadUrl}`;
+  return sendNote(sourceThreadId, note);
+}
+
+async function postSplitLink(sourceThreadId, newThreadUrl, _newThreadId, title) {
   const note = `🔀 A new thread was created: ${title} — ${newThreadUrl}`;
-  const cmd = `openclaw message --action=send --channel=${sourceThreadId} --message=${JSON.stringify(note)}`;
-  try {
-    await execp(cmd);
-    return true;
-  } catch (err) {
-    throw new Error(`Failed to post split link: ${err.message}`);
-  }
+  return sendNote(sourceThreadId, note);
 }
 
 module.exports = { postHandoff, postSplitLink };

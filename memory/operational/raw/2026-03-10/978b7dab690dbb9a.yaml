@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-exec-failed
+type: error-pattern
+summary: Tool exec failed
+symptom: '{"message": "The request body contains invalid JSON.", "code": 50109}/bin/bash: line 4: -i: command not found'
+trigger: Tool exec called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-10T03:33:29.066Z'
+lastSeenAt: '2026-03-10T03:33:29.066Z'
+status: raw
+evidence:
+  - 'Tool: exec'
+  - 'Error: {"message": "The request body contains invalid JSON.", "code": 50109}/bin/bash: line 4: -i: command not found'
+  - 'Session: 34ffa6b8-db53-4019-8cc1-215d7872c40f'
+  - 'Inputs: {"command":"curl -s -X POST ''https://discord.com/api/webhooks/1480767564224270336/OblA_egFXedc_Qbz6hOmLj3oXKlJZoAD16H40v26MrWmecqkGo_4eh0Ris5GhAjWZ1lq'' -H ''Content-Type: application/json'' --data-binary @- <<''JSON''\n{\"content\":\"📄 Agent-Render Viewer\\n\\nTest the viewer: http://100.80.61.30:3000\\n\\nSample diff: http://100.80.61.30:3000#agent-render=v1.plain.@@%20-1%2C3%20%2B1%2C4%20@@%0Afunction%20hello()%20%7B%0A-%20%20console.log(%5C\"Hello%5C\");%0A%2B%20%20console.log(%5C\"Hello%20World%5C\");%0A%7D\",\"thread_name\":\"ai-projects\"}\nJSON\n -i -S -m 10","timeout":15}'
+id: 978b7dab690dbb9a
+createdAt: '2026-03-10T03:33:29.067Z'
+updatedAt: '2026-03-10T03:33:29.067Z'

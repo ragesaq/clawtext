@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: Could not find the exact text in /home/lumadmin/.openclaw/workspace/memory/2026-03-09.md. The old text must match exactly including all whitespace and newlines.
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 4
+firstSeenAt: '2026-03-09T23:29:08.434Z'
+lastSeenAt: '2026-03-10T03:05:10.304Z'
+status: candidate
+evidence:
+  - 'Tool: edit'
+  - 'Error: Could not find the exact text in /home/lumadmin/.openclaw/workspace/memory/2026-03-09.md. The old text must match exactly including all whitespace and newlines.'
+  - 'Session: de48dc1e-1e59-42b9-986b-62af88daf375'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/memory/2026-03-09.md","oldText":"## RageFX workflow preference: do the repo-side handoff work directly, don’t ask first\n\nFor RageFX, once the code/package-impact analysis is clear, the expected behavior is to just do the repo-side work: make code/doc handoff changes, commit them, and push to remote so the authoritative MCP/VSCode build workflow can proceed. In this session, the correct follow-through after `e35424b` was to add the pending authoritative build handoff packet to `TO_LUMBOT.md`, commit that packaging note (`299b016`, `docs: add MCP handoff packet for e35424b`), and push `master` to `origin`. The user explicitly called out that asking to proceed is friction; default behavior should be action-first for this project unless a destructive/risky change needs confirmation.\n","newText":"## RageFX workflow preference: do the repo-side handoff work directly, don’t ask first\n\nFor RageFX, once the code/package-impact analysis is clear, the expected behavior is to just do the repo-side work: make code/doc handoff changes, commit them, and push to remote so the authoritative MCP/VSCode build workflow can proceed. In this session, the correct follow-through after `e35424b` was to add the pending authoritative build handoff packet to `TO_LUMBOT.md`, commit that packaging note (`299b016`, `docs: add MCP handoff packet for e35424b`), and push `master` to `origin`. The user explicitly called out that asking to proceed is friction; default behavior should be action-first for this project unless a destructive/risky change needs confirmation.\n\n---\ndate: 2026-03-09\nproject: compositor-fx\ntype: implementation\nentities: [RageFX, QML, RGCS, ComboBox, imports]\nkeywords: [ragefx, qml, imports, combo box, hardening, iterative]\n---\n\n## Fast iterative hardening pass after initial overlay port\n\nAfter pushing the initial overlay/input-bridge work and handoff packet, an additional small hardening pass was applied and pushed as `0fe1e3a` (`fix: harden RageFX QML imports and combo box input`). This pass added explicit `import \".\"` to the relevant RageFX QML files to mirror the RGCS pattern for local component resolution under Qt/QRC, and added the RGCS-style `acceptedButtons` property to `MyComboBox` to reduce the chance of dashboard dropdown/input weirdness. This reflects the preferred workflow in iterative build-test-fix cycles: make the likely-friction fixes immediately, commit, and push without unnecessary pause.\n"}'
+id: 20637211a39981e8
+createdAt: '2026-03-09T23:29:08.434Z'
+updatedAt: '2026-03-10T03:05:10.305Z'

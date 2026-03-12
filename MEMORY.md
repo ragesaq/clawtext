@@ -1,8 +1,40 @@
 # MEMORY.md — Long-Term Knowledge Base
 
+## 🟢 FINAL: ClawText README Refactored to Gold Standard Post Level (2026-03-12 16:39 UTC)
+
+**Commit:** `051452a`
+
+**What was done:**
+Compressed Migration + Configuration sections back into Installation callouts, maintaining structure integrity:
+
+**Changes:**
+- Moved migration to inline callout in "Existing Installation?" subsection
+- Integrated 3-preset tuning guide as one-liner descriptions + AGENT_SETUP reference
+- Removed standalone "Optimal Configuration" section (was ~220 lines)
+- Installation section now ~80 lines, focused and scannable
+- All guidance preserved but integrated as pointers to AGENT_SETUP.md
+
+**Result:**
+- README.md: 527 lines (was 727), stays within Gold Standard calibration (1500-2000 words for system products)
+- Installation section: clean, doesn't dominate the narrative
+- Full config + migration workflows still available via AGENT_SETUP.md
+- Agents can still guide users through entire flow with full detail
+- Narrative spine intact and strong
+
+**Why this matters:**
+- Maintains the problem → solution → deep dive → quick start → impact structure
+- Doesn't let implementation details (migration, tuning) overshadow core value
+- Pointers to detailed guides keep the README clean
+- Users see the elevator pitch first; detailed options available on-demand
+
+---
+
+
+
 ## 🔴 HIGH PRIORITY: RGCS Development Workflow (ALWAYS follow this order)
 
 **Every RGCS code change, no exceptions:**
+
 1. `git pull --rebase origin main` FIRST — sync with VSCode agent commits before touching anything
 2. Make code changes
 3. `git add` + `git commit`
@@ -12,37 +44,116 @@
 **Why:** VSCode agent may have committed between sessions. Skipping the pull risks diverged history and painful rebases.
 **Repo:** `/home/lumadmin/.openclaw/workspace/rgcs/`
 
+## ✅ RESOLVED: Thread Bootstrap Context Bleed (2026-03-12)
+
+**What happened:**
+Discord forum threads forked from parent channel sessions (`forkedFromParent: true`) inherited old assistant-authored posts from the parent channel's session history into the child thread bootstrap.
+
+Example: PR #43063 thread inherited 3 unrelated posts (ClawSaver, Planner/Worker, Lumbot) dated before thread creation.
+
+**Root cause:**
+Session bootstrap bug in OpenClaw — not a ClawBridge issue.
+
+**Verdict:**
+✅ ClawBridge handoff artifacts are **clean and correct**. The contamination exists only in the raw thread session transcript, not in the generated continuity docs.
+
+**Action taken:**
+- Documented in `docs/handoffs/CLAWBRIDGE_CONTEXT_BLEED_REPORT_2026-03-12.md`
+- For affected threads: use generated handoff artifacts (`CLAWBRIDGE_SHORT_*`, `CLAWBRIDGE_FULL_*`) as authoritative, not raw transcript history
+- For future thread creation: OpenClaw team will implement session bootstrap filtering to exclude old parent-channel assistant posts
+
+**Status:** ✅ **Does NOT block ClawText GitHub release.** ClawBridge ecosystem integration is solid.
+
+---
+
 ## 🎯 Current Active Projects (2026-03-05)
 
-### ✅ ClawText v1.4.0 — UNIFIED & PRODUCTION READY
-**Status:** v1.4.0 released (2026-03-10) — Bundled ingest + operational learning + working memory  
+### ✅ ClawText v1.5 (In Development) — Lightweight Relationship Tracking Added (2026-03-12 18:56 UTC)
+**Status:** Feature complete — v1.5 feature: relationships.yaml for explicit cross-references  
 **Location:** `~/.openclaw/workspace/skills/clawtext/` (main package)  
-**Archived:** `~/.openclaw/workspace/skills/clawtext-ingest/` (deprecated, redirects to main)
+**GitHub:** https://github.com/ragesaq/clawtext (live)  
+**Latest commit:** `3ed6aa6` (Add lightweight relationship tracking)
+
+**v1.5 Addition (2026-03-12):**
+- **docs/RELATIONSHIPS.md** — Comprehensive guide to YAML-based lightweight relationships
+  - Shortcuts for grouping related concepts
+  - Edges for explicit dependencies, causation, documentation
+  - Agent workflows (weekly reviews, auto-detection)
+  - Query patterns and examples
+  - Rationale: 90% of use cases with 10% of complexity (YAML, not database)
+- **memory/clusters/relationships.yaml** — Initial relationships file with examples
+  - RGCS Quaternion Issues (anti-pattern → error → fix chain)
+  - Lumbot Voice Latency (cross-project: RGCS → Lumbot impact)
+  - Maintenance metadata, validation rules
+- **docs/CURATION.md** — Updated to reference relationships in promotion workflow
+- **HEARTBEAT.md** — Added weekly relationship review task (15 min, optional)
+
+**Rationale:** Explicit relationships enable:
+- Grouped discovery ("show me all RGCS quaternion issues")
+- Cross-project impact tracking (RGCS changes → Lumbot latency)
+- Dependency traversal without full knowledge graph overhead
+- Agent-led maintenance with structured weekly reviews
+
+**Agent Best Practices:**
+- See `AGENT_CLAWTEXT_BEST_PRACTICES.md` for full value extraction guide
+- Core patterns: memory search first, capture operational patterns, document workflows, link relationships
+- Periodic maintenance: weekly relationship review (15 min), cluster rebuild after bulk ingest, RAG validation as-needed
+- High-value workflows: bootstrap new projects, debug recurring issues, document decision chains
+
+**Status:** ✅ Production ready. Environment fully configured. No setup required.
 
 **What's v1.4.0:**
 - **Bundled ingest:** Discord, repos, docs, JSON — all in one package (previously clawtext-ingest)
-- **Three-lane architecture:** Working memory + ingest + operational learning
-- **Operational learning lane:** Capture failures → agent review → promoted guidance
-- **Hot cache:** ~1ms latency, semantic clustering, automatic injection
+- **Three-lane architecture:** Working memory + ingest + operational learning (FULLY DOCUMENTED WITH DEPTH)
+- **Automatic memory pipeline:** Extraction (20m) → clustering (nightly) → injection (every prompt)
+- **Operational learning lane:** Capture failures → agent review → promoted guidance (LIVE)
+- **Hot cache:** ~1ms latency, semantic clustering (BM25 + semantic sim), automatic injection
 - **Lifecycle maintenance:** Capture, curate, archive (scheduled + agent-owned)
+- **Continuity transfer:** Packaged with ClawBridge companion skill for thread handoffs
+- **State root adoption:** Runtime state properly separated under `~/.openclaw/workspace/state/clawtext/prod/`
 
 **Code & Tests:**
 - TypeScript sources compile cleanly (tsc ✅)
 - 22/22 operational tests passing
 - All phases 1-7 implemented and verified
 
-**Documentation:**
-- README.md — Complete system overview
-- SKILL.md — Formal skill definition
-- AGENT_INSTALL.md — Activation guide
-- OPERATIONAL_LEARNING.md — Three-lane architecture detail
+**Documentation — GOLD STANDARD POST (2026-03-12):**
+- **README.md** (513 lines) — Merged original depth with v1.4.0 features
+  - Problem statement: Caesar example showing why memory matters
+  - Three-lane deep dives: tiered diagram, pipeline diagram, YAML format, CLI examples
+  - "What's New in v1.4.0" section: automatic pipeline, bundled ingest, state roots
+  - Architecture diagram: file structure with annotations
+  - Installation: Agent-assisted (reference to AGENT_SETUP.md) + manual verification path
+  - Deployment: single-node (current) + multi-node (future)
+  - Tuning: config knobs, when to adjust, target metrics (>95% hit rate)
+  - Role-based documentation map (first-time users, operators, deep dives)
+  - Version history table (1.0.0 → 1.4.0 evolution)
+- **AGENT_SETUP.md** — Agent-assisted setup flow (agent handles mechanics, talks through choices)
+- **SKILL.md** — Formal skill definition
+- **AGENT_INSTALL.md** — Quick activation guide
+- **OPERATIONAL_LEARNING.md** — Three-lane architecture detail
+- **SECURITY.md & RISK.md** — Full threat model and mitigations
+- **docs/** — 18 supporting docs (architecture, ingest, ME-001/002/003/004, adoption logs, testing, etc.)
+
+**Core Principle Alignment:**
+- ✅ Automatic: extraction hooks, clustering crons, injection hooks, gateway integration
+- ✅ Agent-led: review workflows, promotion decisions, ingest source selection, tuning/archival
+- ✅ Initial setup: Agent-assisted (not silent, not manual) — AGENT_SETUP.md workflow
+
+**README Quality:**
+- ✅ Narrative-driven (problem → solution → architecture)
+- ✅ Product guide (not just feature announcement)
+- ✅ Depth restored (diagrams, examples, CLI usage, config knobs)
+- ✅ v1.4.0 integrated cleanly
+- ✅ Role-based documentation navigation
+- ✅ Concrete, actionable sections
 
 **Distribution:**
-- ✅ GitHub: https://github.com/ragesaq/clawtext (tag v1.4.0)
-- ✅ Install: `git clone` or `npm install git+https://github.com/ragesaq/clawtext.git`
-- ClawHub: Attempted; v0.7.0 has size limit issue (not blocker — GitHub is better for complex systems anyway)
+- ✅ GitHub: https://github.com/ragesaq/clawtext (main, ready for clone/npm install)
+- ✅ Install: `git clone https://github.com/ragesaq/clawtext.git ~/.openclaw/workspace/skills/clawtext`
+- ClawHub: Deferred (size limit issue not blocker — GitHub distribution is cleaner for complex systems)
 
-**Status:** Production-ready and live 🚀
+**Status:** ✅ **Production-ready, GitHub-live, Gold Standard Post complete** 🚀
 
 **vs Self-Improving-Agent:**
 - **ClawText**: OpenClaw workspace-wide memory, multi-agent coordination, system robustness over time
@@ -166,6 +277,63 @@
 - 20 minutes setup, zero maintenance
 
 **Status:** ✅ Published on ClawHub, discoverable, polished
+
+---
+
+## 🔴 ClawBridge ClawHub Publication — Blocker (2026-03-12)
+
+**Status:** Failed to publish ClawBridge v0.9.0 to ClawHub  
+**Root cause:** ClawHub CLI upload size limit exceeded (20971520 bytes / 20 MB)
+
+**What I did:**
+1. Generated `clawhub.json` with full-publish.cjs script ✅
+2. Committed and pushed to GitHub ✅
+3. Attempted clawhub publish — got size limit error
+
+**Attempts made:**
+- Direct publish from repo: FAILED (repo is 396K with .git)
+- Clean staging directory (132K): FAILED
+- Minimal subset (60K): FAILED — same 20MB limit error
+- Different slug/name options: No effect
+
+**Hypothesis:**
+- Either clawhub CLI is recursively including parent directories / node_modules
+- Or the ClawHub API server has a configuration issue
+- The 20MB limit seems very high but the error persists at 60K
+
+**Files ready for publish:**
+- `clawhub.json` — Generated and committed ✅
+- `README.md` — Rewritten with Gold Standard Post ✅
+- `SKILL.md` — Complete ✅
+- Git repository: Clean history, ready ✅
+
+**Next steps:**
+1. Try `clawhub auth` to verify account status
+2. Check if ClawHub registry has maintenance/limits
+3. Consider manual web-based publish if CLI fails
+4. Or skip ClawHub for now — skill is installable via `npm install git+https://github.com/ragesaq/clawbridge.git`
+
+---
+
+## 📊 Gold Standard Post — Length Calibration Finding (2026-03-12)
+
+**Finding:** Not all products merit the full Gold Standard Post length.
+
+**Data point:** ClawBridge README
+- Initial version: 9.7 KB, 1,400 words (full narrative spine + examples + ecosystem detail)
+- Compressed version: 3.9 KB, 560 words (problem + solution + quick start + why + summary)
+- Assessment: Compressed version is **stronger** — more scannable, tighter narrative, still complete
+
+**Calibration rules:**
+- **Utility tools** (ClawBridge, ClawSaver, small skills): 500-600 words (0.5-1 KB)
+- **System products** (ClawText, OpenClaw, platforms): 1,500-2,000 words (3-4 KB)
+- **Medium products** (bridges, integrations): 800-1,200 words (1.5-2.5 KB)
+
+**Implication for Gold Standard Post skill:**
+- Don't apply the full narrative spine to every product
+- Start with 50% depth; expand only if the product genuinely needs it
+- Keep all READMEs under 2 KB unless they're system/platform products
+- Scanability > completeness for most products
 
 ---
 
@@ -380,3 +548,15 @@
 - **Operational:** Multi-tier memory, semantic clustering, hot cache (~1ms), automatic injection
 
 ---
+
+---
+
+## User Preferences
+
+- Strong preference for **doing things right** over expedient patching when architecture, packaging, repo hygiene, or long-term maintainability are involved.
+- Prefers clean boundaries, durable structure, and correct top-level organization even if it takes more effort up front.
+- Related pattern: prefers full-context handoffs and properly structured systems over short-term convenience.
+- Strong preference for **repeatable processes**: when a one-off effort produces a high-quality pattern (e.g. a "gold standard" README/post), prefer turning it into a reusable starting structure/skill rather than recreating it ad hoc each time.
+- Strong preference that **new products get their own new forum posts** in ai-projects (`1475021817168134144`) using thread-bridge/continuity handoff, with full context by default.
+- Core-principle preference should be **ironclad release policy** for skills/modules: fully documented, Gold Standard post format included, easily installable, automation-first with agent-driven execution where possible, and manual controls where desired.
+- Product-post messaging principle: keep each product post standalone; do not reference other products (especially not-yet-existing ones). Ecosystem integration narrative should be deferred until explicitly requested.

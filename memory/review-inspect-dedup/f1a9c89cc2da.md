@@ -1,0 +1,49 @@
+---
+key: f1a9c89cc2da
+count: 3
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["SUCCESS: Offset applied to device"]
+ts: 2026-03-06T18:12:12.305Z
+---
+
+# Candidate (count=3)
+
+[ .] settranslationoffsets: role=left, x=-., y=., z=-. [ .] -> openvr deviceid for left = [ .] -> preserving existing rotation: pitch=-., yaw=-., roll=-. [ .] -> applying via sharedmemoryipc: pos(x=.007m, y=.012m, z=.036m) [ .] -> success: offset applied to device [ .] settranslationoffsets: role=left, x=-., y=., z=-. [ .] -> openvr deviceid for left = --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:2146 applying matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:30:55.336] setTranslationOffsets: role=Left, x=-3.57, y=1.22, z=-0.72
+
+[2026-03-04 01:30:55.336] -> OpenVR deviceId for Left = 6
+
+[2026-03-04 01:30:55.336] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.174
+
+[2026-03-04 01:30:55.336] -> Applying via SharedMemoryIPC: pos(x=0.007m, y=0.012m, z=0.036m)
+
+[2026-03-04 01:30:55.339] -> SUCCESS: Offset applied to device 
+
+- 2026-03-04-hmd-cutoff.md:2151 applying matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:30:55.371] setTranslationOffsets: role=Left, x=-3.57, y=1.22, z=-0.69
+
+[2026-03-04 01:30:55.371] -> OpenVR deviceId for Left = 6
+
+[2026-03-04 01:30:55.371] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.174
+
+[2026-03-04 01:30:55.371] -> Applying via SharedMemoryIPC: pos(x=0.007m, y=0.012m, z=0.036m)
+
+[2026-03-04 01:30:55.377] -> SUCCESS: Offset applied to device 
+
+- 2026-03-04-hmd-cutoff.md:2156 applying matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:30:55.404] setTranslationOffsets: role=Left, x=-3.57, y=1.22, z=-0.66
+
+[2026-03-04 01:30:55.404] -> OpenVR deviceId for Left = 6
+
+[2026-03-04 01:30:55.404] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.174
+
+[2026-03-04 01:30:55.404] -> Applying via SharedMemoryIPC: pos(x=0.007m, y=0.012m, z=0.036m)
+
+[2026-03-04 01:30:55.407] -> SUCCESS: Offset applied to device 

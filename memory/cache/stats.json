@@ -1,0 +1,9 @@
+{
+  "hits": 1221,
+  "misses": 2,
+  "admissions": 187,
+  "evictions": 13,
+  "prunedExpired": 0,
+  "lastLoadedAt": "2026-03-10T16:00:46.234Z",
+  "lastSavedAt": "2026-03-10T16:00:46.429Z"
+}

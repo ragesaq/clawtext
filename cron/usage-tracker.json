@@ -1,0 +1,24 @@
+{
+  "id": "usage-tracker-hourly",
+  "name": "Usage Tracker - Hourly Report",
+  "description": "Track OpenAI and GitHub Copilot usage and post to #status channel",
+  "schedule": "0 * * * *",
+  "command": "/home/lumadmin/.openclaw/workspace/cron/usage-tracker-cron.sh",
+  "enabled": true,
+  "channel": "discord",
+  "target": "channel:1475019186563448852",
+  "timeout": 60,
+  "retry": {
+    "maxAttempts": 3,
+    "backoffMs": 5000
+  },
+  "notifications": {
+    "onSuccess": false,
+    "onFailure": true
+  },
+  "metadata": {
+    "type": "usage-tracking",
+    "providers": ["openai", "github-copilot"],
+    "reportType": "hourly"
+  }
+}

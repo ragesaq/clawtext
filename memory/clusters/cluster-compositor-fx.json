@@ -1,0 +1,25 @@
+{
+  "projectId": "compositor-fx",
+  "memories": [
+    {
+      "content": "## Fast iterative hardening pass after initial overlay port\n\nAfter pushing the initial RageFX overlay/input-bridge work and the MCP handoff packet, an additional small hardening pass was applied and pushed as `0fe1e3a` (`fix: harden RageFX QML imports and combo box input`). This pass added explicit `import \".\"` to the relevant RageFX QML files to mirror the RGCS pattern for local component resolution under Qt/QRC, and added the RGCS-style `acceptedButtons` property to `MyComboBox` to reduce the chance of SteamVR dashboard dropdown/input weirdness. For RageFX iterative cycles, preferred behavior is: apply the likely-friction fix immediately, commit, and push, rather than pausing between small validation-oriented changes.",
+      "keywords": [
+        "ragefx",
+        "qml",
+        "imports",
+        "combo box",
+        "hardening",
+        "iterative"
+      ],
+      "type": "implementation",
+      "project": "compositor-fx",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-09.md",
+      "updatedAt": "2026-03-12T05:55:31.963Z"
+    }
+  ],
+  "builtAt": "2026-03-12T05:55:31.987Z",
+  "sourceFiles": [
+    "memory/2026-03-09.md"
+  ]
+}

@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-sessions-send-failed
+type: error-pattern
+summary: Tool sessions_send failed
+symptom: 'No session found with label: lumbot'
+trigger: Tool sessions_send called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-10T03:05:47.653Z'
+lastSeenAt: '2026-03-10T03:05:47.653Z'
+status: raw
+evidence:
+  - 'Tool: sessions_send'
+  - 'Error: No session found with label: lumbot'
+  - 'Session: 34ffa6b8-db53-4019-8cc1-215d7872c40f'
+  - 'Inputs: {"label":"lumbot","message":"http://100.80.61.30:3000"}'
+id: 5e8730898b3d3811
+createdAt: '2026-03-10T03:05:47.653Z'
+updatedAt: '2026-03-10T03:05:47.653Z'

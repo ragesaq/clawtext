@@ -20,23 +20,49 @@
       ],
       "confidence": 0.8,
       "sourceFile": "memory/2026-03-07.md",
-      "updatedAt": "2026-03-08T03:04:07.423Z"
+      "updatedAt": "2026-03-12T05:55:31.961Z"
     },
     {
-      "content": "## RageFX icon generation prompt and asset path\n\nFact: An image generation prompt for a retro graphics-card style \"RAGEFX\" icon was prepared for together.ai. The intended save path is `overlay/assets/ragefx_icon.png`. Actionable: attempt generation using the provided prompt and save the result at the stated path; if generation fails, capture the service error for debugging.",
+      "content": "## Launch plan: create a professional Patreon page for RageFX (and possibly RGCS)\n\nThe user plans to launch RageFX on Patreon and may add RGCS there if Steam distribution fails. They asked for a scan of top Patreon pages in related VR/coding niches and a recommendation of assets and copy that will make the page enticing. Actionable: prepare a list of example pages, required assets (screenshots, demo video, tier structure, short pitch, roadmap), and a content checklist for launch.",
       "keywords": [
-        "together.ai,image,prompt,ragefx,icon,overlay,assets"
+        "patreon,launch,marketing,RageFX,RGCS,assets,patreon-page"
       ],
-      "type": "fact",
+      "type": "decision",
       "project": "general",
       "confidence": 0.8,
       "sourceFile": "memory/2026-03-08.md",
-      "updatedAt": "2026-03-08T03:04:07.423Z"
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## RageFX: public description / brand gist for Patreon\n\nUser-provided gist: present as a VR innovator/hacker building RageFX — a SteamVR plugin that applies cross-game image-quality improvements (sharpening, LUTs, FOV tweaks) to improve clarity and performance. Actionable: use this succinct positioning and focus on 'sharpening + quality improvements' as the headline when drafting the Patreon pitch and page sections.",
+      "keywords": [
+        "RageFX,branding,VR,sharpening,RCAS,patreon,description"
+      ],
+      "type": "project-summary",
+      "project": "general",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Core Principles Separation in Product Documentation\n\nUser established that Core Principals (personal working philosophy and preferences) should not be included in product documentation. These are context for how the user wants to work, not product features. Product posts should standalone without referencing other products in development or personal philosophy sections.",
+      "keywords": [
+        "core-principles",
+        "user-preferences",
+        "product-separation",
+        "documentation-structure"
+      ],
+      "type": "learning",
+      "project": "general",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-12.md",
+      "updatedAt": "2026-03-12T05:55:31.965Z"
     }
   ],
-  "builtAt": "2026-03-08T03:04:07.431Z",
+  "builtAt": "2026-03-12T05:55:31.987Z",
   "sourceFiles": [
     "memory/2026-03-07.md",
-    "memory/2026-03-08.md"
+    "memory/2026-03-08.md",
+    "memory/2026-03-12.md"
   ]
 }

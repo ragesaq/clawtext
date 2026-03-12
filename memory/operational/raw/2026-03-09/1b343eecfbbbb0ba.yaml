@@ -1,0 +1,18 @@
+patternKey: error-pattern.tool.phase-7b-synthetic-review-wrapper-test
+type: error-pattern
+summary: Phase 7B synthetic review wrapper test
+symptom: Synthetic verification pattern phase7b-synthetic-review-wrapper-test
+trigger: Synthetic verification trigger
+rootCause: Synthetic root cause for phase 7B verification
+fix: Synthetic fix for phase 7B verification
+scope: tool
+confidence: 0.5
+recurrenceCount: 2
+firstSeenAt: '2026-03-09T23:49:48.298Z'
+lastSeenAt: '2026-03-09T23:49:48.304Z'
+status: raw
+evidence:
+  - synthetic verification event
+id: 1b343eecfbbbb0ba
+createdAt: '2026-03-09T23:49:48.299Z'
+updatedAt: '2026-03-09T23:49:48.304Z'

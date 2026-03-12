@@ -1,0 +1,19 @@
+{
+  "name": "clawbridge",
+  "version": "0.9.0",
+  "title": "ClawBridge",
+  "description": "OpenClaw skill: structured continuity and transfer for active work",
+  "author": "OpenClaw Assistant",
+  "license": "MIT",
+  "repository": "https://github.com/ragesaq/clawbridge",
+  "categories": ["continuity", "transfer"],
+  "keywords": ["context", "threads", "transfer", "handoff", "continuity"],
+  "features": [
+    "Automatic context extraction from Discord threads",
+    "Three artifact types: short summary, full packet, agent bootstrap",
+    "One-command transfer with optional ClawText integration"
+  ],
+  "tags": ["production-ready", "v0.9.0", "tested"],
+  "tested": true,
+  "maintained": true
+}

@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: 'Missing required parameter: newText (newText or new_string). Supply correct parameters before retrying.'
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 2
+firstSeenAt: '2026-03-10T05:27:37.228Z'
+lastSeenAt: '2026-03-10T06:13:35.686Z'
+status: raw
+evidence:
+  - 'Tool: edit'
+  - 'Error: Missing required parameter: newText (newText or new_string). Supply correct parameters before retrying.'
+  - 'Session: d699912e-e179-428b-a166-0b0a42c65922'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/rgcs/driver/rgcs_lean/src/DeviceHandle.h","old_string":"    static constexpr float kDeadbandPosMaxMm  = 0.3500f;  // at strength=1.0 → 65% freeze\n    static constexpr float kDeadbandPower     = 2.50f;    // power curve; each step feels even\n","newString":"    static constexpr float kDeadbandPosMaxMm  = 0.0350f;  // 10x lower band; current RGCS 1% felt like OVR ~80%\n    static constexpr float kDeadbandPower     = 2.50f;    // keep curve shape; scale whole band downward first\n"}'
+id: 4bac65e997c2fdc0
+createdAt: '2026-03-10T05:27:37.229Z'
+updatedAt: '2026-03-10T06:13:35.686Z'

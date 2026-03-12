@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: Found 9 occurrences of the text in /home/lumadmin/.openclaw/workspace/rgcs/TO_VSCODE.md. The text must be unique. Please provide more context to make it unique.
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 2
+firstSeenAt: '2026-03-10T04:46:03.101Z'
+lastSeenAt: '2026-03-10T05:02:30.110Z'
+status: raw
+evidence:
+  - 'Tool: edit'
+  - 'Error: Found 9 occurrences of the text in /home/lumadmin/.openclaw/workspace/rgcs/TO_VSCODE.md. The text must be unique. Please provide more context to make it unique.'
+  - 'Session: d699912e-e179-428b-a166-0b0a42c65922'
+  - 'Inputs: {"new_string":"---\n\n## [2026-03-10 04:42 UTC] Build Request — v1.2.446 — HMD Deadband Gate\n\n**Action required:** `git pull --rebase origin main` → build from commit `a9b5bbd`\n\n**What changed:**\n- `driver/rgcs_lean/src/DeviceHandle.cpp` — HMD filter path replaced\n- `driver/rgcs_lean/src/DeviceHandle.h` — new deadband state + constants\n\n**Why:** Replaced HmdExpFilter (lag-inducing) on HMD path with OVR-style deadband gate.\nBlack-box analysis of OVR Smooth Tracking confirmed it uses hold-or-passthrough, not filtering.\nNew gate: if pos+rot delta < threshold → hold last pose; else → pass through.\nZero lag on intentional head movement. Controller path completely untouched.\n\n**Deadband curve:**\n```\npos_thresh_mm  = 0.3500f * powf(strength, 2.50f)\nrot_thresh_deg = pos_thresh_mm * 0.3333f\n```\n\n**Build priority:** HIGH — first HMD approach that should be invisible to wearer.\n\n---\n\n","old_string":"---\n\n","path":"/home/lumadmin/.openclaw/workspace/rgcs/TO_VSCODE.md"}'
+id: 6535d5c1c36822b5
+createdAt: '2026-03-10T04:46:03.101Z'
+updatedAt: '2026-03-10T05:02:30.111Z'

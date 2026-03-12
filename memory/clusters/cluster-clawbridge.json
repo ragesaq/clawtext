@@ -1,0 +1,54 @@
+{
+  "projectId": "clawbridge",
+  "memories": [
+    {
+      "content": "## ClawBridge Phase 1 packaged with automation + detailed docs\n\nImplemented packaged Phase 1 CLI at `skills/clawbridge/bin/clawbridge.js` with command:\n- `clawbridge extract-discord-thread`\n\nCapabilities:\n- automatic extraction from source thread\n- automatic generation of short/full/bootstrap artifacts\n- automatic destination forum thread creation and posting\n- optional ClawText promotion via `--ingest`\n- agent-led manual override flags for objective/established/open/next context\n\nDocumentation added for agent/operator success:\n- `skills/clawbridge/START_HERE.md`\n- `skills/clawbridge/QUICKSTART.md`\n- `skills/clawbridge/INTEGRATION.md`\n- updated `README.md` and `SKILL.md`\n\nValidation run succeeded, creating thread:\n- `1481146857693511822`\n- `https://discord.com/channels/1474997926919929927/1475021817168134144/1481146857693511822`",
+      "keywords": [
+        "clawbridge",
+        "packaging",
+        "automation",
+        "quickstart",
+        "integration",
+        "agent-led"
+      ],
+      "type": "fact",
+      "project": "clawbridge",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T05:23:04.284Z"
+    },
+    {
+      "content": "## ClawBridge official thread designated\n\nChannel `1481146857693511822` designated as the official ClawBridge thread. Previous work referenced: `--title \"ClawBridge Extract — Test\" --mode dual --ingest` command that was the last left-off point.",
+      "keywords": [
+        "clawbridge",
+        "official-thread",
+        "discord",
+        "channel-1481146857693511822"
+      ],
+      "type": "fact",
+      "project": "clawbridge",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T05:23:04.284Z"
+    },
+    {
+      "content": "## ClawBridge execution layer naming candidates\n\nUser requested humorous naming alternatives to \"ClawXecution\" for the execution function aspect of the big project. Generated candidates with rankings:\n- **ClawForce** (execution muscle/power, serious-funny, immediate recognition)\n- **ClawGrip** (control flow, alliteration, tangible feel)\n- **ClawMaker** (builds on existing energy, action-oriented)\n- **ClawDo** (peak ridiculousness, memetic stupidity-fun)\n- **ClawStrike**, **ClawActuate**, **ClawGrind**, **ClawCatch**, **ClawWield** (other variants)\n\nUser decision pending on which direction aligns with project vibe.",
+      "keywords": [
+        "naming",
+        "clawbridge",
+        "execution",
+        "humor",
+        "branding"
+      ],
+      "type": "decision",
+      "project": "clawbridge",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T05:23:04.284Z"
+    }
+  ],
+  "builtAt": "2026-03-11T05:23:04.306Z",
+  "sourceFiles": [
+    "memory/2026-03-11.md"
+  ]
+}

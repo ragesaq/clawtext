@@ -10,9 +10,25 @@ keywords: [procedures, operations, debugging, deployment, restart, workflow]
 
 # HOW_THINGS_WORK.md — Operational Procedures
 
-**Last Updated:** 2026-03-03 10:00 UTC
+**Last Updated:** 2026-03-12 16:47 UTC
 
 This file documents **how to do things** in the system. Read this when you need to perform an action.
+
+---
+
+## 📦 Building OpenClaw Plugins
+
+**See:** [`PLUGIN_STANDARDS.md`](./PLUGIN_STANDARDS.md)
+
+Standard practices for developing, packaging, and releasing OpenClaw plugins. Based on ClawText v1.4.1 implementation.
+
+Covers:
+- Package structure and naming (@openclaw scoping)
+- Documentation standards (README, SKILL.md, AGENT_SETUP.md)
+- Installation workflow (plugin CLI, agent-led setup, migration)
+- Configuration & tuning patterns
+- Version management
+- Quality checklist
 
 ---
 

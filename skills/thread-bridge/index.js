@@ -1,4 +1,7 @@
 const path = require('path');
+const { execFile } = require('child_process');
+const util = require('util');
+const execFileP = util.promisify(execFile);
 const fetcher = require('./lib/fetcher');
 const summarizer = require('./lib/summarizer');
 const creator = require('./lib/creator');
@@ -69,6 +72,48 @@ function applyEffortDefaults(opts, actionType) {
   return opts;
 }
 
+function normalizeContinuityOption(continuity) {
+  if (continuity === false) return { enabled: false };
+  if (continuity === true || continuity === undefined || continuity === null) {
+    return { enabled: true, mode: 'dual', ingest: false };
+  }
+  return {
+    enabled: continuity.enabled !== false,
+    mode: continuity.mode || 'dual',
+    ingest: Boolean(continuity.ingest),
+  };
+}
+
+function extractJson(output) {
+  const t = String(output || '').trim();
+  const idx = t.indexOf('{');
+  if (idx === -1) throw new Error('No JSON found in clawbridge output');
+  return JSON.parse(t.slice(idx));
+}
+
+async function attachContinuityPacket({ sourceThreadId, targetForumId, targetThreadId, mode = 'dual', ingest = false }) {
+  const workspace = path.resolve(process.cwd());
+  const clawbridgeBin = path.join(workspace, 'skills', 'clawbridge', 'bin', 'clawbridge.js');
+
+  const args = [
+    clawbridgeBin,
+    'extract-discord-thread',
+    '--source-thread', String(sourceThreadId),
+    '--target-forum', String(targetForumId),
+    '--attach-thread', String(targetThreadId),
+    '--no-create-thread',
+    '--mode', String(mode || 'dual'),
+  ];
+  if (ingest) args.push('--ingest');
+
+  const { stdout } = await execFileP('node', args, {
+    timeout: ingest ? 180000 : 60000,
+    maxBuffer: 8 * 1024 * 1024,
+  });
+
+  return extractJson(stdout);
+}
+
 async function refreshThread(sourceThreadId, options = {}, ctx = null) {
   const parsed = parseCallerContext(ctx) || null;
   resolveGuildContext(parsed, options);
@@ -80,8 +125,11 @@ async function refreshThread(sourceThreadId, options = {}, ctx = null) {
     archiveSource: false,
     threadTitle: undefined,
     targetForum: undefined,
-    effort: 'medium'
+    effort: 'medium',
+    continuity: true,
   }, options);
+
+  opts.continuity = normalizeContinuityOption(opts.continuity);
 
   applyEffortDefaults(opts, 'refresh');
 
@@ -107,7 +155,23 @@ async function refreshThread(sourceThreadId, options = {}, ctx = null) {
   }
 
   // Create forum post (forum channels expected)
-  const createResp = await creator.createForumPost(forum, title, summary);
+  const createResp = await creator.createForumPost(forum, title, summary, opts);
+
+  // Attach ClawBridge continuity packet into the new thread/post
+  let continuityResult = null;
+  if (opts.continuity.enabled && createResp && createResp.id) {
+    try {
+      continuityResult = await attachContinuityPacket({
+        sourceThreadId,
+        targetForumId: forum,
+        targetThreadId: createResp.id,
+        mode: opts.continuity.mode,
+        ingest: opts.continuity.ingest,
+      });
+    } catch (err) {
+      continuityResult = { ok: false, error: err.message };
+    }
+  }
 
   // Post handoff in source
   if (opts.postHandoffInSource) {
@@ -125,9 +189,9 @@ async function refreshThread(sourceThreadId, options = {}, ctx = null) {
   }
 
   // Log operation
-  await creator.logOperation({ type: 'refresh', sourceThreadId, newThreadId: createResp.id, forum, options: opts });
+  await creator.logOperation({ type: 'refresh', sourceThreadId, newThreadId: createResp.id, forum, options: opts, continuity: continuityResult });
 
-  return { newThreadId: createResp.id, newThreadUrl: createResp.url };
+  return { newThreadId: createResp.id, newThreadUrl: createResp.url, continuity: continuityResult };
 }
 
 async function splitThread(sourceThreadId, newTitle, forumChannelId, options = {}, ctx = null) {
@@ -139,8 +203,11 @@ async function splitThread(sourceThreadId, newTitle, forumChannelId, options = {
     summaryStyle: undefined,
     postHandoffInSource: true,
     archiveSource: false,
-    effort: 'medium'
+    effort: 'medium',
+    continuity: true,
   }, options);
+
+  opts.continuity = normalizeContinuityOption(opts.continuity);
 
   applyEffortDefaults(opts, 'split');
 
@@ -154,16 +221,31 @@ async function splitThread(sourceThreadId, newTitle, forumChannelId, options = {
   }
 
   const title = newTitle || (await creator.autoTitleFromSummary(summary));
-  const createResp = await creator.createForumPost(forum, title, summary);
+  const createResp = await creator.createForumPost(forum, title, summary, opts);
+
+  let continuityResult = null;
+  if (opts.continuity.enabled && createResp && createResp.id) {
+    try {
+      continuityResult = await attachContinuityPacket({
+        sourceThreadId,
+        targetForumId: forum,
+        targetThreadId: createResp.id,
+        mode: opts.continuity.mode,
+        ingest: opts.continuity.ingest,
+      });
+    } catch (err) {
+      continuityResult = { ok: false, error: err.message };
+    }
+  }
 
   if (opts.postHandoffInSource) {
     const link = createResp.url || creator.buildThreadUrl(forum, createResp.id);
     await linker.postSplitLink(sourceThreadId, link, createResp.id, title);
   }
 
-  await creator.logOperation({ type: 'split', sourceThreadId, newThreadId: createResp.id, forum, options: opts });
+  await creator.logOperation({ type: 'split', sourceThreadId, newThreadId: createResp.id, forum, options: opts, continuity: continuityResult });
 
-  return { newThreadId: createResp.id };
+  return { newThreadId: createResp.id, continuity: continuityResult };
 }
 
 async function freshThread(forumChannelId, title, seedText, options = {}, ctx = null) {
@@ -187,7 +269,7 @@ async function freshThread(forumChannelId, title, seedText, options = {}, ctx = 
   let initialMessage = '';
   if (seedText) initialMessage = seedText;
 
-  const createResp = await creator.createForumPost(forum, title, initialMessage);
+  const createResp = await creator.createForumPost(forum, title, initialMessage, opts);
 
   await creator.logOperation({ type: 'fresh', newThreadId: createResp.id, forum, options: opts });
 

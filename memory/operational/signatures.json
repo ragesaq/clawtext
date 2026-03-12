@@ -1,0 +1,47 @@
+{
+  "error-pattern.tool.562f07c1.error-pattern": [
+    "error-pattern.tool.tool-exec-failed"
+  ],
+  "error-pattern.tool.677a5f48.error-pattern": [
+    "error-pattern.tool.tool-exec-failed"
+  ],
+  "error-pattern.tool.44468b10.error-pattern": [
+    "error-pattern.tool.tool-read-failed"
+  ],
+  "error-pattern.tool.52030c6d.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ],
+  "error-pattern.tool.3dccec0f.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ],
+  "error-pattern.tool.5d0f66dd.error-pattern": [
+    "error-pattern.tool.tool-read-failed"
+  ],
+  "error-pattern.tool.539257e.error-pattern": [
+    "error-pattern.tool.tool-read-failed"
+  ],
+  "error-pattern.tool.5fa95ce2.error-pattern": [
+    "error-pattern.tool.tool-exec-failed"
+  ],
+  "error-pattern.tool.3ab1410a.error-pattern": [
+    "error-pattern.tool.tool-sessions-send-failed"
+  ],
+  "error-pattern.tool.61380fad.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ],
+  "error-pattern.tool.223c3e85.error-pattern": [
+    "error-pattern.tool.tool-read-failed"
+  ],
+  "error-pattern.tool.2e314620.error-pattern": [
+    "error-pattern.tool.tool-exec-failed"
+  ],
+  "error-pattern.tool.2424790c.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ],
+  "error-pattern.tool.4a510eba.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ],
+  "error-pattern.tool.588deeb4.error-pattern": [
+    "error-pattern.tool.tool-edit-failed"
+  ]
+}

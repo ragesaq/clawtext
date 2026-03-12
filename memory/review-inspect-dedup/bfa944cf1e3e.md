@@ -1,0 +1,25 @@
+---
+key: bfa944cf1e3e
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+ts: 2026-03-06T18:12:12.345Z
+---
+
+# Candidate (count=1)
+
+. [debug] [gamedetector] performdetection() called at . . [info] gamedetector: game detected via vr api: contractors_showdown . [debug] [events] mousebuttondown at (,) button=left timestamp= . [debug] [events] mousebuttonpress accepted=true isaccepted=false . [debug] [events] mousebuttonup at (,) button=left timestamp= . [debug] [events] mousebuttonrelease accepted=true isaccepted=true . [debug] [gamedetector] timer poll # --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:5413 isaccepted matched:["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+  
+  2026-03-04 01:14:19.456 [DEBUG] [GameDetector] performDetection() called at 01:14:19.456
+
+2026-03-04 01:14:19.456 [INFO] GameDetector: Game detected via VR API: contractors_showdown
+
+2026-03-04 01:14:20.151 [DEBUG] [EVENTS] MouseButtonDown at (496,145) button=Left timestamp=3846
+
+2026-03-04 01:14:20.151 [DEBUG] [EVENTS] MouseButtonPress accepted=true isAccepted=false
+
+2026-03-04 01:14:20.291 [DEBU

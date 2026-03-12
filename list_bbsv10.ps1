@@ -1,0 +1,2 @@
+Get-ChildItem -Path 'C:\BBSV10' -Force | Sort-Object LastWriteTime -Descending | Select-Object FullName,Length,LastWriteTime -First 60 | Format-Table -AutoSize
+if(Test-Path 'C:\BBSV10\wbtrv32.dll'){ Get-FileHash -Path 'C:\BBSV10\wbtrv32.dll' -Algorithm SHA256 | Format-List } else { Write-Output 'wbtrv32.dll missing' }

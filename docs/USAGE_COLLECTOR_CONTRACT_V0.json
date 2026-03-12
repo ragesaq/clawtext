@@ -1,0 +1,109 @@
+{
+  "version": "0.1.0",
+  "generatedAt": "2026-03-11T07:25:00Z",
+  "files": {
+    "opsMetrics": {
+      "path": "public/data/ops-metrics.json",
+      "refreshMinutes": 5,
+      "shape": {
+        "source": "string",
+        "updatedAt": "date-time",
+        "providers": "ProviderMetric[]",
+        "openaiPlus": "OpenAIPlusMetric",
+        "copilot": "CopilotMetric",
+        "costs": "CostsMetric",
+        "notes": "string?"
+      }
+    },
+    "sidebarUsage": {
+      "path": "public/data/sidebar-usage.json",
+      "refreshMinutes": 5,
+      "shape": {
+        "source": "string",
+        "updatedAt": "date-time",
+        "openai": "SidebarOpenAIUsage",
+        "copilot": "SidebarCopilotUsage",
+        "notes": "string?"
+      }
+    }
+  },
+  "providerMetric": {
+    "id": "string",
+    "name": "string",
+    "status": ["healthy", "degraded", "down"],
+    "latencyMs": "number",
+    "errorRatePct": "number",
+    "throughputLabel": "string",
+    "trend": "number[]"
+  },
+  "openaiPlusMetric": {
+    "plan": "string",
+    "fiveHourWindow": {
+      "usedPct": "number",
+      "hoursElapsed": "number",
+      "historyPct": "number[]"
+    },
+    "weeklyWindow": {
+      "usedPct": "number",
+      "daysElapsed": "number",
+      "historyPct": "number[]"
+    }
+  },
+  "copilotMetric": {
+    "plan": "string",
+    "monthlyPremiumMessages": {
+      "used": "number",
+      "limit": "number",
+      "dayOfMonth": "number",
+      "historyUsed": "number[]"
+    },
+    "chatRequestsToday": "number",
+    "acceptRate": "number"
+  },
+  "costsMetric": {
+    "meteredApis": {
+      "todayUsd": "number",
+      "weekUsd": "number",
+      "trendUsd": "number[]"
+    },
+    "clawsaver": {
+      "callsSaved": "number",
+      "savingsRatio": "number",
+      "trendPct": "number[]"
+    }
+  },
+  "sidebarOpenAIUsage": {
+    "window": "string",
+    "requests": "number",
+    "tokens": "number",
+    "costUsd": "number"
+  },
+  "sidebarCopilotUsage": {
+    "window": "string",
+    "completions": "number",
+    "acceptRate": "number",
+    "chatRequests": "number"
+  },
+  "collectors": [
+    {
+      "id": "openai-plus",
+      "writes": ["ops-metrics.json", "sidebar-usage.json"],
+      "cadenceMinutes": 10
+    },
+    {
+      "id": "github-copilot",
+      "writes": ["ops-metrics.json", "sidebar-usage.json"],
+      "cadenceMinutes": 10
+    },
+    {
+      "id": "openrouter",
+      "writes": ["ops-metrics.json"],
+      "cadenceMinutes": 5
+    }
+  ],
+  "notes": [
+    "Collectors should write sanitized metrics only.",
+    "No provider secrets should be exposed to the frontend.",
+    "Same data can later be mirrored into Prometheus/Grafana."
+  ]
+}

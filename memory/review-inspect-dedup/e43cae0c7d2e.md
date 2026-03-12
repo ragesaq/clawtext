@@ -1,0 +1,25 @@
+---
+key: e43cae0c7d2e
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+ts: 2026-03-06T18:12:12.341Z
+---
+
+# Candidate (count=1)
+
+. [info] [smoothing] >>> set_device_type_strength: hmd . -> . deviceids=(openvr) . [debug] [events] mousebuttonrelease accepted=true isaccepted=true . [debug] [events] mousebuttondown at (,) button=left timestamp= . [debug] [events] mousebuttonpress accepted=true isaccepted=false . [debug] [events] mousebuttondown at (,) button=left timestamp= . [debug] [events] mousebuttonpress accepted=true isaccepted=true . [debug] [events] mousebuttonup at (,) button=left timestamp= --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:4712 isaccepted matched:["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+  
+  2026-03-04 01:13:36.912 [Info] [SMOOTHING] >>> SET_DEVICE_TYPE_STRENGTH: HMD 0.002 -> 0.0018 deviceIds=0(OpenVR) 
+
+2026-03-04 01:13:36.917 [DEBUG] [EVENTS] MouseButtonRelease accepted=true isAccepted=true
+
+2026-03-04 01:13:36.951 [DEBUG] [EVENTS] MouseButtonDown at (219,498) button=Left timestamp=2250
+
+2026-03-04 01:13:36.951 [DEBUG] [EVENTS] MouseButtonPress accepted=true isAccepted=false
+
+2026-0

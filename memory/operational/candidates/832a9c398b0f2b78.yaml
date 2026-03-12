@@ -1,0 +1,19 @@
+patternKey: error-pattern.tool.tool-exec-failed
+type: error-pattern
+summary: Tool exec failed
+symptom: 'ENOENT: no such file'
+trigger: Tool exec called with workdir /tmp/nonexistent
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.7
+recurrenceCount: 3
+firstSeenAt: '2026-03-09T15:12:36.782Z'
+lastSeenAt: '2026-03-09T15:12:36.792Z'
+status: candidate
+evidence:
+  - 'Tool: exec'
+  - 'Error: ENOENT: no such file'
+id: 832a9c398b0f2b78
+createdAt: '2026-03-09T15:12:36.783Z'
+updatedAt: '2026-03-09T15:39:42.419Z'

@@ -1,0 +1,587 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "ab89a7f8-1a22-4390-b454-c9028b0a0ad2",
+      "name": "security-audit-weekly",
+      "description": "Weekly security audit",
+      "enabled": true,
+      "createdAtMs": 1771752162519,
+      "updatedAtMs": 1773072108978,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1",
+        "tz": "America/Phoenix"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run security audit and report findings",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "nextRunAtMs": 1773676800000,
+        "lastRunAtMs": 1773072000010,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 108968,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "2ac219dc-8b8f-43fc-864f-28abd24d049a",
+      "name": "health-alerts-hourly",
+      "description": "Hourly health monitoring for errors",
+      "enabled": false,
+      "createdAtMs": 1771752175150,
+      "updatedAtMs": 1771930051965,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "America/Phoenix",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Health check - report any OpenClaw errors or provider issues",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1771927491492,
+        "lastStatus": "error",
+        "lastDurationMs": 359996,
+        "consecutiveErrors": 1,
+        "lastRunStatus": "error",
+        "lastDeliveryStatus": "unknown",
+        "lastError": "cron announce delivery failed"
+      }
+    },
+    {
+      "id": "5201c73f-f233-494d-82f9-249a8652886e",
+      "name": "daily-status-report",
+      "description": "Combined daily token and update report",
+      "enabled": false,
+      "createdAtMs": 1771752475501,
+      "updatedAtMs": 1772151538585,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "America/Phoenix"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Generate comprehensive daily status report including: 1) OpenRouter balance and usage from API, 2) All OpenClaw session token usage and costs, 3) Cron job execution overhead costs, 4) OpenClaw version check and update availability, 5) Total daily monitoring cost summary, 6) Any provider errors or issues",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1772136280157,
+        "lastStatus": "error",
+        "lastDurationMs": 351962,
+        "consecutiveErrors": 3,
+        "lastRunStatus": "error",
+        "lastDeliveryStatus": "unknown",
+        "lastError": "cron announce delivery failed"
+      }
+    },
+    {
+      "id": "f468c52f-36b2-44fd-8012-d7e489763d99",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1475022398792274071",
+      "name": "memory-auto-capture-test",
+      "enabled": false,
+      "createdAtMs": 1771802064814,
+      "updatedAtMs": 1771868090069,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 300000,
+        "anchorMs": 1771802064814
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Review recent conversations for auto-capture opportunities. Look for: 1) User preferences stated, 2) Decisions made, 3) Important facts shared. If found, use openclaw memdb add to store them with appropriate type and priority.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "lastRunAtMs": 1771866567771,
+        "lastStatus": "error",
+        "lastDurationMs": 60020,
+        "consecutiveErrors": 7,
+        "lastRunStatus": "error",
+        "lastDeliveryStatus": "not-requested",
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "64c70cb4-39f7-48c6-b113-9d22d66125be",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1475022398792274071",
+      "name": "sqlite-memory-maintenance-daily",
+      "enabled": false,
+      "createdAtMs": 1771802084416,
+      "updatedAtMs": 1771957791233,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run daily SQLite memory maintenance: openclaw memdb maintenance. Report results.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "lastRunAtMs": 1771898400014,
+        "lastStatus": "ok",
+        "lastDurationMs": 60571,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered"
+      }
+    },
+    {
+      "id": "07da7a02-8758-4d7d-bd8c-b1c57b94fb4f",
+      "agentId": "background-light",
+      "sessionKey": "agent:main:discord:channel:1475531219151225045",
+      "name": "background-light-agent",
+      "enabled": false,
+      "createdAtMs": 1771865553625,
+      "updatedAtMs": 1771926045160,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run lightweight background tasks: 1) Check embeddings queue depth, trigger compaction if >1000 pending, 2) Run reconcile checks for stuck items, 3) Check for recent tool execution errors (edit failures, config validation errors), 4) If errors found, investigate root cause and attempt remediation, 5) Report critical failures and error investigations to #updates (1475019186563448852). Keep output under 500 tokens.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 60,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1771925700015,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 60066,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 20,
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "0ba69afc-7fa7-4e65-807f-cca938a05b95",
+      "agentId": "background-light",
+      "sessionKey": "agent:main:discord:channel:1475531219151225045",
+      "name": "background-light-agent",
+      "enabled": false,
+      "createdAtMs": 1771865573788,
+      "updatedAtMs": 1771905674316,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run lightweight background tasks: 1) Check embeddings queue depth, trigger compaction if >1000 pending, 2) Run reconcile checks for stuck items, 3) Check for recent tool execution errors (edit failures, config validation errors), 4) If errors found, investigate root cause and attempt remediation, 5) Report critical failures and error investigations to #updates (1475019186563448852). Keep output under 500 tokens.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 60,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1771899254549,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 60019,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 13,
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "0c6040f0-7f78-42e1-a84d-b7ba89db7543",
+      "agentId": "background-ml",
+      "sessionKey": "agent:main:discord:channel:1475531219151225045",
+      "name": "background-ml-agent-daily",
+      "enabled": false,
+      "createdAtMs": 1771865573807,
+      "updatedAtMs": 1771928029295,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Daily ML background tasks: run memory compaction and cleanup old embeddings, generate concise daily digest of system health, prune obsolete memory entries older than 30 days, report summary to #updates (1475019186563448852).",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 300,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1771912800025,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 97820,
+        "lastError": "cron delivery target is missing",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "1984869e-de56-492d-a8b5-d3ef4b8e118c",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1475540896656261191",
+      "name": "error-monitor",
+      "description": "Monitor and investigate OpenClaw errors",
+      "enabled": false,
+      "createdAtMs": 1771867689672,
+      "updatedAtMs": 1771928027800,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Check for recent OpenClaw errors in logs and cron jobs. If errors found: 1) Identify error type (config, tool execution, cron failure), 2) Investigate root cause by examining relevant files/logs, 3) Attempt remediation if safe, 4) Report findings to #updates (1475019186563448852). Focus on: config validation errors, file edit failures, cron timeouts, provider errors.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 120,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1771927702057,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 120012,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 6,
+        "lastError": "Error: cron: job execution timed out"
+      }
+    },
+    {
+      "id": "37b3502a-15da-4051-8cb2-e6154e047184",
+      "name": "session-cleanup-weekly",
+      "description": "Weekly session cleanup to prevent accumulation",
+      "enabled": true,
+      "createdAtMs": 1771868312607,
+      "updatedAtMs": 1772964869918,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * 0",
+        "tz": "America/Phoenix"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Clean up OpenClaw sessions older than 14 days and report count",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "nextRunAtMs": 1773568800000,
+        "lastRunAtMs": 1772964869857,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 61,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 1,
+        "lastError": "Error: Missing workspace template: AGENTS.md (/home/lumadmin/docs/reference/templates/AGENTS.md). Ensure docs/reference/templates are packaged."
+      }
+    },
+    {
+      "id": "92f776dd-b598-4c3a-827b-4805e36c5fb8",
+      "name": "config-auto-commit",
+      "description": "Auto-commit OpenClaw configs every 6 hours",
+      "enabled": false,
+      "createdAtMs": 1771961816824,
+      "updatedAtMs": 1772151535410,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */6 * * *",
+        "tz": "America/Phoenix",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Auto-commit OpenClaw configuration changes to GitHub. Check for modified configs in ~/.openclaw/config-tracker, commit with timestamp, and push to origin. Report what was committed or if no changes.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "lastRunAtMs": 1772149299674,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 312749,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 2,
+        "lastError": "cron announce delivery failed"
+      }
+    },
+    {
+      "id": "b6084de3-34ed-4d30-8ddc-6214bbceeb53",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1476070522679984158",
+      "name": "heartbeat-proactive-check",
+      "enabled": true,
+      "createdAtMs": 1771994405244,
+      "updatedAtMs": 1773277208751,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10,14,18 * * *",
+        "tz": "America/Los_Angeles"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Check heartbeats every 30 minutes per HEARTBEAT.md"
+      },
+      "state": {
+        "nextRunAtMs": 1773334800000,
+        "lastRunAtMs": 1773277200021,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 8730,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "062c6ff6-afe1-45d7-8c0b-580d5ff4c5f3",
+      "agentId": "channel-mini",
+      "sessionKey": "agent:channel-mini:discord:channel:1475019186563448852",
+      "name": "plugin-reconcile-report-6h",
+      "enabled": true,
+      "createdAtMs": 1772483401130,
+      "updatedAtMs": 1773273949115,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */6 * * *",
+        "staggerMs": 3600000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Perform a focused plugin-state check and report ONLY changes:\n\n1. List all plugins by name, version, and state (enabled/disabled/failed).\n2. Compare to previous state (if available from logs or memory).\n3. Report ONLY:\n   - Plugins that changed from enabled → disabled\n   - Plugins that changed from disabled → enabled\n   - Plugins that changed allowlist status (added/removed from plugins.allow)\n   - Any newly failed plugins\n4. Do NOT report on plugins that have remained in the same state.\n5. If no changes detected since last report, reply: 'No plugin state changes detected.'\n\nBe concise.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1475019186563448852"
+      },
+      "state": {
+        "nextRunAtMs": 1773295501386,
+        "lastRunAtMs": 1773273901394,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 47721,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "c31eb8e5-3547-4a93-a1d9-c2292210cc01",
+      "agentId": "channel-mini",
+      "sessionKey": "agent:channel-mini:discord:channel:1478253498935279707",
+      "name": "wbtrv32-build-monitor",
+      "enabled": false,
+      "createdAtMs": 1772519880536,
+      "updatedAtMs": 1772520111425,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 300000,
+        "anchorMs": 1772519880536
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "WBTRV32_BUILD_CHECK: Poll GitHub Actions for wbtrv32 build status. Stop if completed."
+      },
+      "state": {}
+    },
+    {
+      "id": "3ecd245f-aad4-4258-912e-b2e37b5f6b1e",
+      "agentId": "channel-mini",
+      "sessionKey": "agent:channel-mini:discord:channel:1479001605431885824",
+      "name": "ClawText — auto-extract memories from conversations (every 20 min)",
+      "enabled": true,
+      "createdAtMs": 1772692874086,
+      "updatedAtMs": 1773294935220,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 1200000,
+        "anchorMs": 1772692874086
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "## ClawText Memory Extraction Task\n\nYou are an automated memory extraction agent. Your job: extract meaningful long-term memories from recent conversations.\n\n### Step 1 — Read State\nRead `/home/lumadmin/.openclaw/workspace/memory/extract-state.json`. If missing, use `{lastExtractedTs: 0, totalExtracted: 0}`.\n\n### Step 2 — Load Messages\n\nFirst, try the buffer file:\n- Read `/home/lumadmin/.openclaw/workspace/memory/extract-buffer.jsonl` (one JSON per line)\n- Filter records where `ts > lastExtractedTs`\n\nIf the buffer has fewer than 3 new records, **also** pull from session history as a fallback:\n- Use `sessions_history` tool with sessionKey `agent:channel-mini:discord:channel:1479001605431885824`, limit 40, includeTools false\n- Take the last 40 messages, filter for role=user or role=assistant, convert to buffer-style records\n- Combine with any buffer records, deduplicate by content hash\n\nIf after combining you have fewer than 3 new records, write the state file with `lastRunAt` updated and reply: EXTRACTION_SKIP — fewer than 3 new messages.\n\n### Step 3 — Extract Memories\nReview the messages. Extract only items worth long-term storage:\n\n**EXTRACT:**\n- Technical decisions and reasoning\n- Bugs fixed / solutions to specific problems\n- Project status changes (features completed, abandoned, redesigned)\n- User preferences (how ragesaq wants things done)\n- New tools, patterns, libraries being adopted\n- Lessons learned (what failed, what worked better)\n- Architecture decisions (RGCS, ClawText, MoltMUD, OpenClaw)\n- Confirmed working states of any system\n\n**SKIP:**\n- Casual chat, acknowledgments, \"sounds good\"\n- Questions with no answers yet\n- Duplicate of something already in MEMORY.md\n- Administrative noise (heartbeats, status pings)\n\n### Step 4 — Write Memories\nAppend each extracted memory to `/home/lumadmin/.openclaw/workspace/memory/YYYY-MM-DD.md` (today's date):\n\n```\n---\ndate: YYYY-MM-DD\nproject: [openclaw|clawtext|rgcs|moltmud|infrastructure|general]\ntype: [fact|decision|code-pattern|error-pattern|learning]\nentities: [comma-separated list]\nkeywords: [5-8 keywords]\n---\n\n## [Descriptive title]\n\n[1-4 specific, actionable sentences.]\n```\n\nAdd a blank line between entries. Do NOT overwrite the file.\n\n### Step 5 — Update State\nWrite `/home/lumadmin/.openclaw/workspace/memory/extract-state.json`:\n```json\n{\n  \"lastExtractedTs\": <max ts from processed records>,\n  \"lastRunAt\": \"<ISO timestamp>\",\n  \"totalExtracted\": <running total>,\n  \"lastBatchCount\": <memories extracted this run>\n}\n```\n\n### Step 6 — Prune Buffer\nRewrite the buffer file keeping only records from last 24 hours (`ts > Date.now() - 86400000`).\n\n### Step 7 — Rebuild Clusters (if 3+ memories extracted)\n```bash\ncd /home/lumadmin/.openclaw/workspace/skills/clawtext && node scripts/build-clusters.js --force\n```\n\n### Step 8 — Report\nBriefly: messages reviewed, memories extracted, topics covered, clusters rebuilt (yes/no).",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 180,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1773296086988,
+        "lastRunAtMs": 1773294886988,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 48232,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": false
+      }
+    },
+    {
+      "id": "0f166a54-439a-4b9d-b951-552e7a41881d",
+      "agentId": "channel-mini",
+      "sessionKey": "agent:channel-mini:discord:channel:1479001605431885824",
+      "name": "ClawText — daily cluster rebuild + RAG validation (2am UTC)",
+      "enabled": true,
+      "createdAtMs": 1772692883045,
+      "updatedAtMs": 1773280902301,
+      "schedule": {
+        "expr": "0 2 * * *",
+        "kind": "cron",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "## ClawText Daily Cluster Rebuild\n\nRun the following commands and report results:\n\n1. Rebuild memory clusters:\n```bash\ncd /home/lumadmin/.openclaw/workspace/skills/clawtext && node scripts/build-clusters.js --force\n```\n\n2. Validate RAG quality:\n```bash\ncd /home/lumadmin/.openclaw/workspace/skills/clawtext && node scripts/validate-rag.js\n```\n\n3. Report: cluster count, total memories indexed, RAG quality score, any warnings.\n\nIf quality < 70%, notify via Discord channel 1479001605431885824 with a brief summary of the issue.",
+        "model": "openrouter/qwen/qwen3.5-122b-a10b",
+        "timeoutSeconds": 180,
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1773367200000,
+        "lastRunAtMs": 1773280800009,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 102292,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "openai-usage-monitor",
+      "name": "AI Usage Pattern Analyzer (Copilot + Codex + OpenRouter, every 30 min)",
+      "enabled": true,
+      "sessionTarget": "isolated",
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/30 * * * *"
+      },
+      "payload": {
+        "kind": "systemEvent",
+        "command": "node ~/.openclaw/workspace/skills/ai-usage-pattern-analyzer/handler.cjs"
+      },
+      "state": {
+        "nextRunAtMs": 1773295200000,
+        "lastRunAtMs": 1773293400011,
+        "lastRunStatus": "skipped",
+        "lastStatus": "skipped",
+        "lastDurationMs": 0,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 0,
+        "lastError": "isolated job requires payload.kind=agentTurn"
+      },
+      "wakeMode": "now",
+      "delivery": {
+        "mode": "announce"
+      },
+      "updatedAtMs": 1773293400011
+    }
+  ]
+}

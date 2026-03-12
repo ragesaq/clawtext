@@ -1,0 +1,177 @@
+{
+  "version": "0.1.0",
+  "generatedAt": "2026-03-11T04:00:00Z",
+  "description": "Machine-readable telemetry model for ClawMon, Prometheus, Grafana, and ClawDash.",
+  "domains": [
+    {
+      "id": "provider_model",
+      "tracks": [
+        "request_count",
+        "success_count",
+        "failure_count",
+        "latency",
+        "retries",
+        "fallback_count",
+        "input_tokens",
+        "output_tokens",
+        "cost_usd",
+        "invalid_output_rate",
+        "rate_limit_frequency"
+      ],
+      "dimensions": ["provider", "model", "endpoint", "task_category", "surface", "time_window"]
+    },
+    {
+      "id": "server_host",
+      "tracks": [
+        "cpu_usage",
+        "memory_usage",
+        "disk_usage",
+        "disk_io",
+        "network_io",
+        "load_average",
+        "service_uptime",
+        "gateway_health"
+      ],
+      "dimensions": ["host", "service", "mount_or_device", "network_interface"]
+    },
+    {
+      "id": "queue_event",
+      "tracks": [
+        "queue_depth",
+        "oldest_event_age",
+        "enqueue_rate",
+        "dequeue_rate",
+        "dedupe_rate",
+        "dropped_events",
+        "backlog_spikes"
+      ],
+      "dimensions": ["queue_name", "priority", "event_domain"]
+    },
+    {
+      "id": "incident",
+      "tracks": [
+        "incident_count",
+        "incident_by_severity",
+        "time_to_classify",
+        "time_to_resolve",
+        "retry_success_rate",
+        "fallback_success_rate",
+        "recurrence_count"
+      ],
+      "dimensions": ["incidentClass", "severity", "provider", "model", "component", "surface"]
+    },
+    {
+      "id": "memory_learning",
+      "tracks": [
+        "extraction_count",
+        "extraction_success",
+        "cluster_count",
+        "cluster_rebuild_duration",
+        "rag_injection_count",
+        "rag_confidence",
+        "promoted_learnings_count",
+        "operational_pattern_count"
+      ],
+      "dimensions": ["project", "memory_lane", "cluster_id", "source_type"]
+    },
+    {
+      "id": "workflow",
+      "tracks": [
+        "tasks_created",
+        "tasks_completed",
+        "cycle_time",
+        "blocked_count",
+        "overdue_count",
+        "milestone_completion_rate",
+        "active_work_by_product",
+        "active_work_by_lane"
+      ],
+      "dimensions": ["product", "lane", "owner", "priority", "task_type"]
+    },
+    {
+      "id": "cost_efficiency",
+      "tracks": [
+        "spend_by_provider",
+        "spend_by_model",
+        "cost_per_successful_request",
+        "cost_per_token",
+        "cost_per_task_category",
+        "clawsaver_avoided_calls",
+        "estimated_savings"
+      ],
+      "dimensions": ["provider", "model", "task_category", "surface", "product"]
+    }
+  ],
+  "prometheusMetricFamilies": {
+    "counters": [
+      "requests_total",
+      "errors_total",
+      "incidents_total",
+      "retries_total",
+      "tasks_completed_total",
+      "memory_extractions_total"
+    ],
+    "gauges": [
+      "active_sessions",
+      "queue_depth",
+      "cpu_pct",
+      "memory_pct",
+      "blocked_tasks_count",
+      "rag_confidence"
+    ],
+    "histograms": [
+      "provider_latency_seconds",
+      "incident_resolution_duration_seconds",
+      "cluster_rebuild_duration_seconds",
+      "task_cycle_time_seconds"
+    ]
+  },
+  "dashboards": [
+    {
+      "id": "health",
+      "panels": [
+        "provider_success_rate",
+        "latency_percentiles",
+        "queue_backlog",
+        "server_pressure",
+        "incident_volume"
+      ]
+    },
+    {
+      "id": "costs_usage",
+      "panels": [
+        "spend_over_time",
+        "tokens_by_provider_model",
+        "clawsaver_savings",
+        "fallback_cost_impact"
+      ]
+    },
+    {
+      "id": "memory",
+      "panels": [
+        "extraction_runs",
+        "cluster_rebuilds",
+        "rag_confidence_trend",
+        "promoted_learnings"
+      ]
+    },
+    {
+      "id": "workflow",
+      "panels": [
+        "tasks_by_status",
+        "blocked_trend",
+        "cycle_time",
+        "milestone_burnup"
+      ]
+    }
+  ],
+  "alertCandidates": [
+    "provider_error_rate_above_threshold",
+    "p95_latency_spike",
+    "server_memory_pressure_sustained",
+    "queue_backlog_sustained",
+    "daily_cost_budget_exceeded",
+    "rag_confidence_drop",
+    "blocked_tasks_above_threshold"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "codex-profiler": {
+      "version": "1.0.10",
+      "installedAt": 1773168057349
+    },
+    "openrouter-usage-info": {
+      "version": "0.1.0",
+      "installedAt": 1773168648656
+    }
+  }
+}

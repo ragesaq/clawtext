@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-read-failed
+type: error-pattern
+summary: Tool read failed
+symptom: 'Validation failed for tool "read":'
+trigger: Tool read called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 14
+firstSeenAt: '2026-03-10T03:20:17.886Z'
+lastSeenAt: '2026-03-10T05:47:02.105Z'
+status: candidate
+evidence:
+  - 'Tool: read'
+  - 'Error: Validation failed for tool "read":'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"limit":40,"offset":"[340](vscode-webview://ghbq3vt1lh6g2k0r1p5gn9v1bvr8kva3ippbf6hbgmj2aiqbmfqm8/340)\n","path":"/home/lumadmin/.openclaw/workspace/MEMORY.md"}'
+id: f4cefbb84b4d1397
+createdAt: '2026-03-10T03:20:17.886Z'
+updatedAt: '2026-03-10T05:47:02.105Z'

@@ -1,0 +1,40 @@
+{
+  "id": "mem_56ee2e7e8d595788",
+  "sourceType": "api",
+  "sourceId": null,
+  "sourceRef": null,
+  "project": "test",
+  "type": "fact",
+  "lane": "curated",
+  "status": "promoted",
+  "confidence": 0.85,
+  "importance": 0.7,
+  "createdAt": "2026-03-08T23:18:41.360Z",
+  "observedAt": "2026-03-08T23:18:41.360Z",
+  "updatedAt": "2026-03-08T23:18:41.360Z",
+  "entities": [],
+  "tags": [],
+  "keywords": [
+    "integration",
+    "test",
+    "memory",
+    "type",
+    "fact",
+    "project"
+  ],
+  "dedupeHash": "d03c4fc787106493",
+  "summary": "Integration test memory --type fact --project test",
+  "body": "Integration test memory --type fact --project test",
+  "relations": {
+    "supersedes": [],
+    "related": [],
+    "derivedFrom": []
+  },
+  "metadata": {},
+  "agentId": null,
+  "agentName": null,
+  "visibility": "shared",
+  "targetAgent": null,
+  "sessionId": null,
+  "relatesToSession": null
+}

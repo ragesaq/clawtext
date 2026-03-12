@@ -99,3 +99,29 @@ Trigger this skill whenever the user asks to:
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+---
+
+## RGCS Build HTTP API
+
+Direct access to the RGCS MCP build server from lumbot (no MCP/stdio required).
+
+- **Base URL:** `http://100.99.169.120:8765`
+- **Auth:** `Authorization: Bearer <RGCS_HTTP_TOKEN>` — token set in `.vscode/mcp.json` on the Windows build machine; ask VSCode agent for the value if unknown
+- **Port:** `8765` (default; override via `RGCS_HTTP_PORT` env var on server)
+- **Full reference:** `rgcs/BUILD_HTTP_API.md`
+
+### Quick curl snippets
+
+```bash
+BASE=http://100.99.169.120:8765
+TOKEN=<token>
+AUTH="Authorization: Bearer $TOKEN"
+
+curl -s "$BASE/api/health"   -H "$AUTH" | jq .       # ping
+curl -s "$BASE/api/status"   -H "$AUTH" | jq .status  # build status
+curl -s "$BASE/api/validate" -H "$AUTH" | jq .valid   # artifact check
+curl -s -X POST "$BASE/api/git/pull" -H "$AUTH" -H "Content-Type: application/json" -d '{}' | jq .
+curl -s -X POST "$BASE/api/build"    -H "$AUTH" -H "Content-Type: application/json" -d '{}' | jq .buildId
+```
+

@@ -1,0 +1,53 @@
+{
+  "projectId": "compositor-fx (RageFX)",
+  "memories": [
+    {
+      "content": "## RageFX: ragefx_icon.png added to git (commit 00fb449)\n\n- Icon was previously gitignored as a generated binary asset\n- Regenerated via together.ai `black-forest-labs/FLUX.1-schnell` (512×512, 4 steps, retro neon RAGEFX aesthetic)\n- Removed `overlay/assets/ragefx_icon.png` from `.gitignore`\n- Committed both changes, pushed to origin/master as `00fb449`\n- Icon is now tracked; will survive `git pull` on Windows dev machine\n- Note: `ragefx.ico` is still gitignored (line 23 of `.gitignore`)\n\nLatest commit chain: 00fb449 → 65bbc57 → e5bbfa6 → 803920b",
+      "keywords": [
+        "icon, asset, gitignore, commit, together-ai, flux, png"
+      ],
+      "type": "milestone",
+      "project": "compositor-fx (RageFX)",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## RageFX: MCP build server network-exposure proposal\n\nCurrent state: MCP build server (`.mcp-servers/ragefx-build/`) runs locally via stdio, VSCode-only.\nProposed: Add HTTP/SSE transport with auth so the AI assistant can call `start_build`/`watch_build` directly via `exec curl` — enabling fully autonomous code→push→build→report loop.\nStatus: User asked if it's worth doing. Suggested yes for tighter workflow. Awaiting user decision.",
+      "keywords": [
+        "MCP, build-server, HTTP, network, autonomous-build"
+      ],
+      "type": "context",
+      "project": "compositor-fx (RageFX)",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## RageFX: Full Project State (memory checkpoint 2026-03-08)",
+      "keywords": [
+        "reshade, vr-compositor, post-processing, rcas, lut, fov-crop, display-shim, mcp-build"
+      ],
+      "type": "project-summary",
+      "project": "compositor-fx (RageFX)",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## RageFX: updated install layout and log/config locations\n\nDecision: RageFX should no longer install into `%LOCALAPPDATA%` as the primary application location. Instead the main app installs to `C:\\Program Files\\RageFX`, the OpenVR driver to `C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\drivers\\00rageFX`, while INI/config/temp files live under `%LOCALAPPDATA%\\RageFX` and logs under `%LOCALAPPDATA%\\RageFX\\logs`. Future installer scripts must mirror the RGCS layout (Program Files for binaries, AppData for mutable state) and avoid writing binaries into AppData.",
+      "keywords": [
+        "install-paths,Program-Files,SteamVR-driver,AppData,logs,config,ini"
+      ],
+      "type": "decision",
+      "project": "compositor-fx (RageFX)",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    }
+  ],
+  "builtAt": "2026-03-12T05:55:31.987Z",
+  "sourceFiles": [
+    "memory/2026-03-08.md"
+  ]
+}

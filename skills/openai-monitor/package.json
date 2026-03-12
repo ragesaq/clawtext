@@ -1,0 +1,12 @@
+{
+  "name": "openai-monitor",
+  "version": "1.0.0",
+  "description": "OpenAI Codex usage monitoring and alerting",
+  "main": "handler.js",
+  "scripts": {
+    "check": "node handler.js"
+  },
+  "keywords": ["openai", "quota", "monitoring"],
+  "author": "",
+  "license": "MIT"
+}

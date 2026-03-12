@@ -1,0 +1,25 @@
+---
+key: dee2d805d2cc
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+ts: 2026-03-06T18:12:12.344Z
+---
+
+# Candidate (count=1)
+
+. [debug] [events] mousebuttonpress accepted=true isaccepted=false . [debug] [events] mousebuttonup at (,) button=left timestamp= . [info] [smoothing] >>> set_device_type_strength: hmd . -> . deviceids=(openvr) . [info] [smoothing] applying to openvr devices... . [info] [smoothing] hmd smoothing applied for device : enabled=true strength=. . [debug] [events] mousebuttonrelease accepted=true isaccepted=true . [debug] [gamedetector] timer poll # --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:5111 applying matched:["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+  
+  2026-03-04 01:14:10.311 [DEBUG] [EVENTS] MouseButtonPress accepted=true isAccepted=false
+
+2026-03-04 01:14:10.411 [DEBUG] [EVENTS] MouseButtonUp at (229,507) button=Left timestamp=3529
+
+2026-03-04 01:14:10.411 [Info] [SMOOTHING] >>> SET_DEVICE_TYPE_STRENGTH: HMD 0.0078 -> 0.0076 deviceIds=0(OpenVR) 
+
+2026-03-04 01:14:10.415 [Info] [SMOOTHING] Applying to OpenVR devices...
+
+2026-03-04 01:14:10.418 

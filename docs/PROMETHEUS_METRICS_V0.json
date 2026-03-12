@@ -1,0 +1,206 @@
+{
+  "version": "0.1.0",
+  "generatedAt": "2026-03-11T04:05:00Z",
+  "prefix": "openclaw_",
+  "namingRules": {
+    "style": "lowercase_underscore",
+    "counterSuffix": "_total",
+    "durationSuffix": "_seconds",
+    "byteSuffix": "_bytes"
+  },
+  "commonLabels": [
+    "provider",
+    "model",
+    "surface",
+    "component",
+    "host",
+    "queue",
+    "incident_class",
+    "severity",
+    "product",
+    "lane",
+    "task_type",
+    "status"
+  ],
+  "metricFamilies": [
+    {
+      "name": "openclaw_provider_requests_total",
+      "type": "counter",
+      "labels": ["provider", "model", "surface", "status"],
+      "description": "Total provider requests by status."
+    },
+    {
+      "name": "openclaw_provider_retries_total",
+      "type": "counter",
+      "labels": ["provider", "model", "reason"],
+      "description": "Total retries for provider/model requests."
+    },
+    {
+      "name": "openclaw_provider_fallbacks_total",
+      "type": "counter",
+      "labels": ["from_provider", "from_model", "to_provider", "to_model", "reason"],
+      "description": "Total provider/model fallback actions."
+    },
+    {
+      "name": "openclaw_provider_tokens_input_total",
+      "type": "counter",
+      "labels": ["provider", "model"],
+      "description": "Total input tokens sent to provider/model."
+    },
+    {
+      "name": "openclaw_provider_tokens_output_total",
+      "type": "counter",
+      "labels": ["provider", "model"],
+      "description": "Total output tokens returned by provider/model."
+    },
+    {
+      "name": "openclaw_provider_latency_seconds",
+      "type": "histogram",
+      "labels": ["provider", "model", "surface"],
+      "description": "Latency distribution for provider/model requests.",
+      "buckets": [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 40]
+    },
+    {
+      "name": "openclaw_incidents_total",
+      "type": "counter",
+      "labels": ["incident_class", "severity", "component", "surface"],
+      "description": "Total incidents created by class/severity."
+    },
+    {
+      "name": "openclaw_incidents_open",
+      "type": "gauge",
+      "labels": ["incident_class", "severity"],
+      "description": "Open incidents currently unresolved."
+    },
+    {
+      "name": "openclaw_incident_resolution_seconds",
+      "type": "histogram",
+      "labels": ["incident_class", "severity"],
+      "description": "Resolution duration for incidents.",
+      "buckets": [1, 5, 10, 30, 60, 120, 300, 900, 1800, 3600]
+    },
+    {
+      "name": "openclaw_queue_depth",
+      "type": "gauge",
+      "labels": ["queue", "priority"],
+      "description": "Current queue depth by queue and priority."
+    },
+    {
+      "name": "openclaw_queue_oldest_event_age_seconds",
+      "type": "gauge",
+      "labels": ["queue"],
+      "description": "Age of the oldest event in the queue."
+    },
+    {
+      "name": "openclaw_queue_events_total",
+      "type": "counter",
+      "labels": ["queue", "direction", "event_domain"],
+      "description": "Queue event flow: enqueued, dequeued, dropped, deduped."
+    },
+    {
+      "name": "openclaw_memory_extractions_total",
+      "type": "counter",
+      "labels": ["status", "source_type"],
+      "description": "Memory extraction runs by status and source type."
+    },
+    {
+      "name": "openclaw_memory_clusters",
+      "type": "gauge",
+      "labels": ["project"],
+      "description": "Current number of memory clusters."
+    },
+    {
+      "name": "openclaw_memory_rag_confidence",
+      "type": "gauge",
+      "labels": ["project"],
+      "description": "Current RAG confidence score."
+    },
+    {
+      "name": "openclaw_memory_cluster_rebuild_seconds",
+      "type": "histogram",
+      "labels": ["project"],
+      "description": "Cluster rebuild duration.",
+      "buckets": [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120]
+    },
+    {
+      "name": "openclaw_sessions_active",
+      "type": "gauge",
+      "labels": ["session_type", "surface"],
+      "description": "Current active sessions by type and surface."
+    },
+    {
+      "name": "openclaw_sessions_total",
+      "type": "counter",
+      "labels": ["session_type", "surface", "status"],
+      "description": "Total sessions by lifecycle state."
+    },
+    {
+      "name": "openclaw_session_duration_seconds",
+      "type": "histogram",
+      "labels": ["session_type", "surface"],
+      "description": "Session duration distribution.",
+      "buckets": [1, 10, 30, 60, 300, 900, 1800, 3600, 7200, 14400]
+    },
+    {
+      "name": "openclaw_tasks_open",
+      "type": "gauge",
+      "labels": ["status", "priority", "product", "lane"],
+      "description": "Current open tasks by status/priority/product/lane."
+    },
+    {
+      "name": "openclaw_tasks_blocked",
+      "type": "gauge",
+      "labels": ["priority", "product", "lane"],
+      "description": "Current blocked tasks by priority/product/lane."
+    },
+    {
+      "name": "openclaw_task_cycle_time_seconds",
+      "type": "histogram",
+      "labels": ["product", "lane", "priority"],
+      "description": "Task cycle time distribution.",
+      "buckets": [60, 300, 900, 1800, 3600, 14400, 86400, 604800]
+    },
+    {
+      "name": "openclaw_cost_usd_total",
+      "type": "counter",
+      "labels": ["provider", "model", "surface"],
+      "description": "Accumulated estimated USD cost."
+    },
+    {
+      "name": "openclaw_clawsaver_calls_saved_total",
+      "type": "counter",
+      "labels": ["surface"],
+      "description": "Estimated API calls saved by ClawSaver."
+    },
+    {
+      "name": "openclaw_clawsaver_batches_total",
+      "type": "counter",
+      "labels": ["surface"],
+      "description": "Total ClawSaver batches emitted."
+    },
+    {
+      "name": "openclaw_clawsaver_savings_ratio",
+      "type": "gauge",
+      "labels": ["surface", "window"],
+      "description": "Estimated savings ratio from batching."
+    },
+    {
+      "name": "openclaw_gateway_up",
+      "type": "gauge",
+      "labels": ["host"],
+      "description": "Whether the OpenClaw gateway is up (1) or down (0)."
+    }
+  ],
+  "firstWave": [
+    "openclaw_provider_requests_total",
+    "openclaw_provider_latency_seconds",
+    "openclaw_incidents_total",
+    "openclaw_incidents_open",
+    "openclaw_queue_depth",
+    "openclaw_cost_usd_total",
+    "openclaw_sessions_active",
+    "openclaw_memory_extractions_total",
+    "openclaw_memory_rag_confidence",
+    "openclaw_tasks_open"
+  ]
+}

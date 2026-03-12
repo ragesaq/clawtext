@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-exec-failed
+type: error-pattern
+summary: Tool exec failed
+symptom: '/bin/bash: line 1: clayhub: command not found'
+trigger: Tool exec called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-10T02:44:14.012Z'
+lastSeenAt: '2026-03-10T02:44:14.012Z'
+status: raw
+evidence:
+  - 'Tool: exec'
+  - 'Error: /bin/bash: line 1: clayhub: command not found'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"command":"cd /tmp/clawtext-publish && clayhub publish . --version 1.4.0 --no-input 2>&1","timeout":60}'
+id: d6f353ff27c78e9a
+createdAt: '2026-03-10T02:44:14.012Z'
+updatedAt: '2026-03-10T02:44:14.012Z'

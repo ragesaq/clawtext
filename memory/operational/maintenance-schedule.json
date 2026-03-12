@@ -1,0 +1,27 @@
+[
+  {
+    "id": "review-digest",
+    "enabled": true,
+    "cadenceHours": 24,
+    "requiresApproval": false,
+    "description": "Generate a concise operational review digest for agent-led review surfacing.",
+    "nextRunAt": "2026-03-10T23:57:49.279Z",
+    "lastRunAt": "2026-03-09T23:57:49.279Z"
+  },
+  {
+    "id": "candidate-backlog",
+    "enabled": true,
+    "cadenceHours": 12,
+    "requiresApproval": true,
+    "description": "Check whether candidate backlog is building up enough to warrant a user review prompt.",
+    "nextRunAt": "2026-03-10T11:57:49.188Z"
+  },
+  {
+    "id": "operational-health",
+    "enabled": true,
+    "cadenceHours": 24,
+    "requiresApproval": false,
+    "description": "Generate an operational health summary for the self-improvement lane.",
+    "nextRunAt": "2026-03-10T23:57:49.188Z"
+  }
+]

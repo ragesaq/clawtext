@@ -10,20 +10,25 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 Before doing anything else (in this order):
 
-1. Read `CURRENT_WORK.md` — What's active, what's blocked, what's next
-2. Read `HOW_THINGS_WORK.md` — How to do operational tasks
-3. Read `DECISION_LOG.md` — Why we made key decisions (so you don't second-guess them)
-4. Read `SOUL.md` — This is who you are
-5. Read `USER.md` — This is who you're helping
-6. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-7. **If owner is present** (DM or group with Discord ID 142843545215041536):
-   - Also read `MEMORY.md`
-   - Read `INFRASTRUCTURE.md` (for ops context)
-   - Search Discord history for relevant recent messages (last 24h, topic-relevant)
+**NORTH STAR FIRST:**
+1. Read `SOUL.md` — This is who you are (principles, unchanging)
+2. Read `USER.md` — This is who you're helping (operations, your commitments)
+
+**THEN OPERATIONAL CONTEXT:**
+3. Read `CURRENT_WORK.md` — What's active, what's blocked, what's next
+4. Read `TOOLS.md` — Your infrastructure levers (quick reference)
+5. Read `HOW_THINGS_WORK.md` — How to do operational tasks
+6. Read `DECISION_LOG.md` — Why we made key decisions (so you don't second-guess them)
+7. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+
+**IF OWNER IS PRESENT** (DM or group with Discord ID 142843545215041536):
+- Also read `MEMORY.md` (curated long-term memory)
+- Read `INFRASTRUCTURE.md` (ops blueprint, disaster recovery)
+- Search Discord history for relevant recent messages (last 24h, topic-relevant)
 
 Don't ask permission. Just do it.
 
-**Why this order?** Current work → procedures → decisions → identity → user → memory. Gets you operational fast.
+**Why this order?** SOUL + USER establish your north star (who you are, who you're helping, what you commit to). Then everything else hangs on that foundation. Gets you operational fast _and_ aligned._
 
 ## Agent Onboarding (If New Agent Joins)
 
@@ -136,6 +141,26 @@ On platforms that support reactions (Discord, Slack), use emoji reactions natura
 Reactions are lightweight social signals. Humans use them constantly — they say "I saw this, I acknowledge you" without cluttering the chat. You should too.
 
 **Don't overdo it:** One reaction per message max. Pick the one that fits best.
+
+## Repo Roots
+
+Canonical product git repositories should live under:
+- `~/workspace/repo/<project>/`
+
+Use `skills/<project>/` as the runtime/package-facing path only when needed. Do **not** make mixed-use workspace folders the git root for a project unless explicitly intended.
+
+Migration rule for older repos created in the wrong place:
+1. stage a clean copy under `repo/<project>/`
+2. audit included vs excluded files
+3. only then decide on path swap or remote history rewrite
+
+## State Roots
+
+Generated/runtime state should live under:
+- `~/workspace/state/<project>/dev/`
+- `~/workspace/state/<project>/prod/`
+
+Keep source repos clean. Shared workspace memory can remain outside product state when it is intentionally global.
 
 ## Tools
 

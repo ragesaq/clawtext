@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-read-failed
+type: error-pattern
+summary: Tool read failed
+symptom: 'ENOENT: no such file or directory, access ''/home/lumadmin/.openclaw/workspace/skills/clawtext/SKILL.md'''
+trigger: Tool read called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 2
+firstSeenAt: '2026-03-09T23:58:55.185Z'
+lastSeenAt: '2026-03-09T23:58:55.237Z'
+status: candidate
+evidence:
+  - 'Tool: read'
+  - 'Error: ENOENT: no such file or directory, access ''/home/lumadmin/.openclaw/workspace/skills/clawtext/SKILL.md'''
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/skills/clawtext/SKILL.md"}'
+id: db48dd6d82fc411f
+createdAt: '2026-03-09T23:58:55.185Z'
+updatedAt: '2026-03-09T23:58:55.239Z'

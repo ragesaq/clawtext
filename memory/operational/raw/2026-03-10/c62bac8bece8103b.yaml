@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: Found 3 occurrences of the text in /home/lumadmin/.openclaw/workspace/compositor-fx/overlay/main.cpp. The text must be unique. Please provide more context to make it unique.
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-10T03:49:59.189Z'
+lastSeenAt: '2026-03-10T03:49:59.189Z'
+status: raw
+evidence:
+  - 'Tool: edit'
+  - 'Error: Found 3 occurrences of the text in /home/lumadmin/.openclaw/workspace/compositor-fx/overlay/main.cpp. The text must be unique. Please provide more context to make it unique.'
+  - 'Session: de48dc1e-1e59-42b9-986b-62af88daf375'
+  - 'Inputs: {"file_path":"/home/lumadmin/.openclaw/workspace/compositor-fx/overlay/main.cpp","newText":"            }\n        }\n        if (dashEventCount > 0 && frameCount <= 100) {\n            OvLog(\"DASH event frame=%d total=%d\", frameCount, dashEventCount);\n        }","oldText":"            }\n        }"}'
+id: c62bac8bece8103b
+createdAt: '2026-03-10T03:49:59.189Z'
+updatedAt: '2026-03-10T03:49:59.189Z'

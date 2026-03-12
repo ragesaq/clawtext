@@ -1,6 +1,23 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const util = require('util');
-const execp = util.promisify(exec);
+const execFileP = util.promisify(execFile);
+
+async function runOpenClaw(args, options = {}) {
+  return execFileP('openclaw', args, {
+    timeout: options.timeout ?? 20000,
+    maxBuffer: options.maxBuffer ?? 8 * 1024 * 1024,
+  });
+}
+
+function extractJson(output) {
+  const text = String(output || '').trim();
+  const first = text.indexOf('{');
+  const last = text.lastIndexOf('}');
+  if (first === -1 || last === -1 || last < first) {
+    throw new Error('No JSON found in OpenClaw output');
+  }
+  return JSON.parse(text.slice(first, last + 1));
+}
 
 // Fetcher: small wrapper around the `openclaw` CLI for reading thread/channel information
 // Context notes: inbound metadata injected by OpenClaw may expose fields like:
@@ -8,25 +25,33 @@ const execp = util.promisify(exec);
 // This module expects to be run in the same environment that has the openclaw CLI configured.
 
 async function fetchMessages(threadId, limit = 100) {
-  // Use openclaw message read subcommand
   const safeLimit = Math.min(limit, 500);
-  const cmd = `openclaw message read --channel discord --target channel:${threadId} --limit ${safeLimit} --json`;
   try {
-    const { stdout } = await execp(cmd, { timeout: 20000 });
+    const { stdout } = await runOpenClaw([
+      'message',
+      'read',
+      '--channel', 'discord',
+      '--target', `channel:${threadId}`,
+      '--limit', String(safeLimit),
+      '--json',
+    ]);
     try {
-      const parsed = JSON.parse(stdout);
+      const parsed = extractJson(stdout);
       const msgsRaw = parsed.messages || parsed || [];
-      // Filter out bot/system messages and attachments-only
-      const msgs = (Array.isArray(msgsRaw) ? msgsRaw : []).filter(m => {
+      const msgs = (Array.isArray(msgsRaw) ? msgsRaw : []).filter((m) => {
         if (!m) return false;
         if (m.type && (m.type === 'system' || m.type === 'bot')) return false;
         if (m.author && m.author.bot) return false;
         if (!m.content || (typeof m.content === 'string' && m.content.trim() === '')) return false;
         return true;
-      }).map(m => ({ id: m.id, author: m.author && (m.author.username || m.author.name), content: m.content, ts: m.ts }));
+      }).map((m) => ({
+        id: m.id,
+        author: m.author && (m.author.username || m.author.name),
+        content: m.content,
+        ts: m.ts,
+      }));
       return msgs;
-    } catch (e) {
-      // Fallback: return raw text lines
+    } catch (_e) {
       return stdout.split('\n').slice(-limit);
     }
   } catch (err) {
@@ -35,47 +60,66 @@ async function fetchMessages(threadId, limit = 100) {
 }
 
 async function getForumForThread(threadId) {
-  // Query thread metadata using channel info
-  const cmd = `openclaw message channel info --channel discord --target channel:${threadId} --json`;
   try {
-    const { stdout } = await execp(cmd, { timeout: 8000 });
-    const parsed = JSON.parse(stdout);
-    // parsed.channel.parent_id should be the forum (parent) for forum posts
+    const { stdout } = await runOpenClaw([
+      'message',
+      'channel',
+      'info',
+      '--channel', 'discord',
+      '--target', `channel:${threadId}`,
+      '--json',
+    ], { timeout: 8000 });
+    const parsed = extractJson(stdout);
     return (parsed && parsed.channel && parsed.channel.parent_id) || null;
-  } catch (err) {
-    // Best-effort fallback
+  } catch (_err) {
     return null;
   }
 }
 
 async function getThreadTitle(threadId) {
-  const cmd = `openclaw message channel info --channel discord --target channel:${threadId} --json`;
   try {
-    const { stdout } = await execp(cmd, { timeout: 8000 });
-    const parsed = JSON.parse(stdout);
+    const { stdout } = await runOpenClaw([
+      'message',
+      'channel',
+      'info',
+      '--channel', 'discord',
+      '--target', `channel:${threadId}`,
+      '--json',
+    ], { timeout: 8000 });
+    const parsed = extractJson(stdout);
     return (parsed && parsed.channel && (parsed.channel.name || parsed.channel.topic)) || `Thread ${threadId}`;
-  } catch (err) {
+  } catch (_err) {
     return `Thread ${threadId}`;
   }
 }
 
 async function archiveThread(threadId) {
-  // Best-effort archive: delete recent messages inside the thread (if any)
   try {
-    const infoCmd = `openclaw message channel info --channel discord --target channel:${threadId} --json`;
-    const { stdout } = await execp(infoCmd, { timeout: 8000 });
-    const parsed = JSON.parse(stdout);
+    const { stdout } = await runOpenClaw([
+      'message',
+      'channel',
+      'info',
+      '--channel', 'discord',
+      '--target', `channel:${threadId}`,
+      '--json',
+    ], { timeout: 8000 });
+    const parsed = extractJson(stdout);
     const last = parsed && parsed.channel && parsed.channel.last_message_id;
     if (last) {
-      const delCmd = `openclaw message delete --channel discord --target channel:${threadId} --message-id ${last} --json`;
-      await execp(delCmd, { timeout: 8000 });
+      await runOpenClaw([
+        'message',
+        'delete',
+        '--channel', 'discord',
+        '--target', `channel:${threadId}`,
+        '--message-id', String(last),
+        '--json',
+      ], { timeout: 8000 });
       return true;
     }
-    // If no message found, nothing to do
     return true;
   } catch (err) {
     throw new Error(`Failed to archive thread (best-effort): ${err.message}`);
   }
 }
 
-module.exports = { fetchMessages, getForumForThread, getThreadTitle, archiveThread };
+module.exports = { fetchMessages, getForumForThread, getThreadTitle, archiveThread, extractJson };

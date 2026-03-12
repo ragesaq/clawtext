@@ -1,0 +1,249 @@
+{
+  "version": "0.1.0",
+  "generatedAt": "2026-03-11T04:00:00Z",
+  "description": "Machine-readable shared event envelope and controlled vocabulary for OpenClaw.",
+  "envelope": {
+    "requiredFields": [
+      "id",
+      "type",
+      "ts",
+      "source",
+      "severity",
+      "status",
+      "subject",
+      "labels",
+      "payload"
+    ],
+    "fieldSpecs": {
+      "id": {
+        "type": "string",
+        "description": "Globally unique event id."
+      },
+      "type": {
+        "type": "string",
+        "pattern": "domain.entity.action",
+        "description": "Machine-readable event type."
+      },
+      "ts": {
+        "type": "string",
+        "format": "date-time",
+        "description": "UTC timestamp for when the event occurred."
+      },
+      "source": {
+        "type": "object",
+        "requiredFields": ["system", "component"],
+        "properties": {
+          "system": "string",
+          "component": "string",
+          "instance": "string"
+        }
+      },
+      "severity": {
+        "type": "enum",
+        "values": ["debug", "info", "low", "medium", "high", "critical"]
+      },
+      "status": {
+        "type": "enum",
+        "values": ["new", "classified", "queued", "processing", "resolved", "suppressed", "archived"]
+      },
+      "correlationId": {
+        "type": "string",
+        "description": "Shared id across related events in one operational chain.",
+        "optional": true
+      },
+      "dedupeKey": {
+        "type": "string",
+        "description": "Stable dedupe/collapse key for repeated noisy events.",
+        "optional": true
+      },
+      "subject": {
+        "type": "object",
+        "requiredFields": ["kind", "id"],
+        "properties": {
+          "kind": "string",
+          "id": "string"
+        }
+      },
+      "labels": {
+        "type": "object",
+        "description": "Flat searchable key/value labels for routing and filtering."
+      },
+      "payload": {
+        "type": "object",
+        "description": "Event-specific structured details."
+      },
+      "context": {
+        "type": "object",
+        "optional": true
+      },
+      "actions": {
+        "type": "array",
+        "optional": true
+      },
+      "links": {
+        "type": "array",
+        "optional": true
+      },
+      "retention": {
+        "type": "object",
+        "optional": true,
+        "properties": {
+          "class": {
+            "type": "enum",
+            "values": ["ephemeral", "standard", "important", "audit"]
+          }
+        }
+      }
+    }
+  },
+  "subjectKinds": [
+    "provider_request",
+    "incident",
+    "task",
+    "session",
+    "message",
+    "hook",
+    "cron_job",
+    "memory_batch",
+    "artifact",
+    "server"
+  ],
+  "recommendedLabels": [
+    "provider",
+    "model",
+    "surface",
+    "product",
+    "lane",
+    "environment",
+    "sessionType",
+    "queue",
+    "host",
+    "incidentClass"
+  ],
+  "domains": [
+    {
+      "id": "provider",
+      "eventTypes": [
+        "provider.request.started",
+        "provider.request.succeeded",
+        "provider.request.failed",
+        "provider.rate_limit.hit",
+        "provider.auth.invalid",
+        "provider.quota.exceeded"
+      ]
+    },
+    {
+      "id": "incident",
+      "eventTypes": [
+        "incident.created",
+        "incident.classified",
+        "incident.escalated",
+        "incident.resolved",
+        "incident.suppressed"
+      ]
+    },
+    {
+      "id": "discord",
+      "eventTypes": [
+        "discord.message.send_failed",
+        "discord.message.rejected"
+      ]
+    },
+    {
+      "id": "surface",
+      "eventTypes": [
+        "surface.user_message_rewritten"
+      ]
+    },
+    {
+      "id": "infra",
+      "eventTypes": [
+        "infra.gateway.timeout",
+        "infra.hook.failed",
+        "infra.cron.failed",
+        "infra.server.degraded"
+      ]
+    },
+    {
+      "id": "queue",
+      "eventTypes": [
+        "queue.event.enqueued",
+        "queue.event.dequeued",
+        "queue.backlog.high",
+        "queue.event.deduped"
+      ]
+    },
+    {
+      "id": "telemetry",
+      "eventTypes": [
+        "telemetry.sample.recorded",
+        "telemetry.rollup.completed"
+      ]
+    },
+    {
+      "id": "memory",
+      "eventTypes": [
+        "memory.extraction.completed",
+        "memory.cluster.rebuilt",
+        "memory.rag.injected",
+        "memory.learning.promoted"
+      ]
+    },
+    {
+      "id": "task",
+      "eventTypes": [
+        "task.created",
+        "task.status.changed",
+        "task.blocked",
+        "task.unblocked"
+      ]
+    },
+    {
+      "id": "project",
+      "eventTypes": [
+        "project.created",
+        "project.status.changed"
+      ]
+    },
+    {
+      "id": "artifact",
+      "eventTypes": [
+        "artifact.created",
+        "artifact.linked"
+      ]
+    },
+    {
+      "id": "policy",
+      "eventTypes": [
+        "policy.route.selected",
+        "policy.preference.applied"
+      ]
+    }
+  ],
+  "payloadExamples": {
+    "providerFailure": {
+      "errorClass": "timeout",
+      "retryable": true,
+      "attempt": 1,
+      "maxAttempts": 3,
+      "durationMs": 15842
+    },
+    "taskStatusChange": {
+      "from": "ready",
+      "to": "active",
+      "reason": "picked_up"
+    }
+  },
+  "dedupeGuidance": {
+    "collapseExamples": [
+      "same provider/model/errorClass within 5m",
+      "same Discord reject reason for same payload shape",
+      "same cron failure repeated multiple times"
+    ],
+    "neverDedupeExamples": [
+      "security or audit significant events",
+      "first occurrence after a quiet period",
+      "materially different payloads"
+    ]
+  }
+}

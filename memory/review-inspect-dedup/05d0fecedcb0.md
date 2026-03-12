@@ -1,0 +1,25 @@
+---
+key: 05d0fecedcb0
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["SUCCESS: Offset applied to device"]
+ts: 2026-03-06T18:12:12.327Z
+---
+
+# Candidate (count=1)
+
+[ .] -> preserving existing rotation: pitch=-., yaw=-., roll=-. [ .] -> applying via sharedmemoryipc: pos(x=.001m, y=.014m, z=.034m) [ .] -> success: offset applied to device [ .] ondashboardvisibilitychanged: visible=, adjustmentmode=, elapsed= ms, source=system button activate seq= [ .] dashboard opened - forcing device refresh [ .] dashboard re-opened - auto-stopping adjustment mode (user finished adjusting) [ .] stopadjustmentmode: active=, handle= --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:2293 button matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:31:03.983] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.174
+
+[2026-03-04 01:31:03.983] -> Applying via SharedMemoryIPC: pos(x=0.001m, y=0.014m, z=0.034m)
+
+[2026-03-04 01:31:03.987] -> SUCCESS: Offset applied to device 6
+
+[2026-03-04 01:31:06.011] onDashboardVisibilityChanged: visible=1, adjustmentMode=1, elapsed=26499 ms, source=system button activate seq=71
+
+[

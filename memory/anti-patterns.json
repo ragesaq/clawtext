@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ap_0db5b7deac6b",
+    "from": "RGCS.smoothing",
+    "to": "RageFX.functionality",
+    "status": "confirmed",
+    "reason": "RGCS and rageFX have different purposes. RGCS is for gunstock positional calibration and motion smoothing for better aim, rageFX is to give better visual fidelity to VR games",
+    "partialNote": "Both use QML for the UI, a steamVR driver for instituting steamVR controls, and minhook for injection",
+    "agentProposed": false,
+    "createdAt": "2026-03-10T19:12:12.927Z",
+    "updatedAt": "2026-03-10T19:12:12.927Z",
+    "confirmedBy": "user",
+    "tags": []
+  }
+]

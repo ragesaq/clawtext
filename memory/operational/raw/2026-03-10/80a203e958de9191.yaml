@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-edit-failed
+type: error-pattern
+summary: Tool edit failed
+symptom: Found 2 occurrences of the text in /home/lumadmin/.openclaw/workspace/MEMORY.md. The text must be unique. Please provide more context to make it unique.
+trigger: Tool edit called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 1
+firstSeenAt: '2026-03-10T03:20:13.811Z'
+lastSeenAt: '2026-03-10T03:20:13.811Z'
+status: raw
+evidence:
+  - 'Tool: edit'
+  - 'Error: Found 2 occurrences of the text in /home/lumadmin/.openclaw/workspace/MEMORY.md. The text must be unique. Please provide more context to make it unique.'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/MEMORY.md","oldText":"### ClawText RAG System (Complete ✅)\n- **Phase 2 Status:** Live (validation tool, dedup controls, agent onboarding)\n- **Location:** ~/workspace/skills/clawtext-ingest/\n- **Key files:** HOW_THINGS_WORK.md (§3-4), scripts/validate-rag.js\n- **Operational:** RAG quality validation, cluster rebuild automation, empirical tuning","newText":"### ClawText RAG System (v1.4.0 Live ✅)\n- **Status:** Production (hot cache, semantic clustering, automatic injection)\n- **Location:** ~/.openclaw/workspace/skills/clawtext/\n- **Key files:** README.md, OPERATIONAL_LEARNING.md, scripts/build-clusters.js, scripts/validate-rag.js\n- **Operational:** Multi-tier memory, semantic clustering, hot cache (~1ms), RAG validation, automatic injection"}'
+id: 80a203e958de9191
+createdAt: '2026-03-10T03:20:13.811Z'
+updatedAt: '2026-03-10T03:20:13.811Z'

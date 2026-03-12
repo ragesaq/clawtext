@@ -15,49 +15,199 @@
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/2026-03-06.md",
-      "updatedAt": "2026-03-08T03:04:07.413Z"
+      "updatedAt": "2026-03-12T05:55:31.957Z"
     },
     {
-      "content": "## Packaging and build policy for RageFX: VSCode + private git + WiX MSI + deterministic versioning\n\nDecision: Package the compositor (compositor-fx / RageFX) as a private git repo for VSCode development, produce an MSI via WiX for distribution, and enforce strict versioning: start at 1.0.0 and increment automatically on atomic events (e.g., commits). Ensure a hygienic install (clear QML cache), full clean builds, validation checks in the pipeline, and compatibility with the existing RGCS build MCP server. Actionable: add to_vscode.md with build and install instructions, copy WiX installer metadata from RGCS, and include version info in startup/log headers.",
+      "content": "## Configuration change: add openai-codex, remove legacy Slack config, add ClawHub to secrets\n\nDecision/Action: The workspace config was updated to add `openai-codex`. The user requested removal of the legacy Slack configuration and to add `clawhub` credentials into the secrets store. Actionable: remove Slack config from workspace/OpenClaw config, add ClawHub entries into secrets (after backup and validation of `openclaw.json`), and document the change in the migration runbook so secrets are audited and recoverable if needed.",
       "keywords": [
-        "packaging,VSCode,WiX,MSI,versioning,qml-cache,build-pipeline,validation"
+        "openai-codex,slack,legacy,secrets,clawhub,openclaw.json,config,migration"
       ],
       "type": "decision",
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/2026-03-08.md",
-      "updatedAt": "2026-03-08T03:04:07.423Z"
+      "updatedAt": "2026-03-12T05:55:31.961Z"
     },
     {
-      "content": "## Embedding model configured: qwen/qwen3-embedding-8b\n\nFact: The embedding configuration reported in-session is `\"model\": \"qwen/qwen3-embedding-8b\"`. Actionable: verify embeddings pipeline (indexing -> search) uses this model and confirm the gateway/restart steps if necessary.",
+      "content": "## MCP build server: API token removed, remote build automation temporarily disabled\n\nRecent changes to the MCP/HTTP build server removed an API token requirement in git, but attempts to drive builds remotely from the assistant caused tools in the RageFX and RGCS channels to hang. The user explicitly requested skipping remote build automation for now and instead just committing code changes and letting them run builds manually. Until further notice: do not call the new MCP build tools from this agent in production sessions; prefer git commits and manual builds while the server and authentication model are being stabilized.",
       "keywords": [
-        "embeddings,qwen/qwen3-embedding-8b,config,model,vector-store,search"
+        "build-server,MCP,API-token,git,remote-build,stuck-tools,manual-builds"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## GitHub Copilot provider currently unstable and can reset the OpenClaw gateway\n\nWhen the GitHub Copilot provider is active, user sessions are getting disconnected, and any time OpenClaw touches the provider the gateway appears to reset. The user has hit rate limits on GitHub Copilot during experiments with remote MCP builds and had to restore configs and kill all sessions associated with the provider. Operationally: treat the GitHub Copilot provider as unstable, avoid invoking it until root cause is found, and prefer disabling/killing associated sessions before further debugging.",
+      "keywords": [
+        "github-copilot,provider,rate-limit,gateway-reset,sessions,auth,debugging"
+      ],
+      "type": "error-pattern",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Model config: switch main model alias to openai/gpt-5.1\n\nThe user requested changing the primary model configuration from `openai-codex/gpt-5.1` to `openai/gpt-5.1` as the new “main” model. Despite wiring in a provider with higher advertised context, the OpenClaw status page currently still reports a 128k context window, which may reflect gateway limits rather than provider limits. Future model-related changes should treat `openai/gpt-5.1` as the default main model unless explicitly overridden.",
+      "keywords": [
+        "model-config,openai,gpt-5.1,openai-codex,context,main,OpenClaw"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Embeddings backend: restore OpenRouter/Qwen after config rollback\n\nAfter restoring older backups, the user confirmed that the preferred embeddings backend is OpenRouter using a Qwen model, which had been configured previously for the memory system. We should ensure embeddings are re-pointed to OpenRouter/Qwen as the canonical configuration and verify that memory search/ClawText are using that backend correctly. Future config or migration work should treat OpenRouter/Qwen as the default embeddings provider unless explicitly changed.",
+      "keywords": [
+        "embeddings,openrouter,qwen,clawtext,memory,restore,config"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## User wants OpenAI usage and cost tracking for openai-codex\n\nThe user asked for an OpenAI cost tracker to understand how their openai-codex subscription is being consumed and what limits apply. We should plan a small tool or dashboard that surfaces request volume and spend per model/provider, with clear visibility into subscription limits for the OpenAI/gpt-5.1 (openai-codex) setup. When designing new automation or agents, prefer routing their usage through whatever tracking mechanism we build so costs stay understandable.",
+      "keywords": [
+        "openai,cost,usage-tracking,subscription,openai-codex,limits,monitoring"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Temporarily disable OpenClaw secrets integration due to instability\n\nThe user has had to restore backups multiple times because misconfigured secrets kept breaking the environment and explicitly asked to \"take secrets out\" for now. Until the secrets system is properly set up and documented, prefer file-based configuration over the OpenClaw secrets mechanism and avoid migrating additional API keys into secrets. When we revisit this, we should follow the official migration guide and validate against a backup `openclaw.json` before switching everything over.",
+      "keywords": [
+        "secrets,config,backups,stability,openclaw,environment"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Plan to add GPT-5.4 and GPT-5.3-codex as additional OpenAI models\n\nThe user requested that we add more OpenAI models, specifically `openai-codex/gpt-5.4` and `openai-codex/gpt-5.3-codex`, to the configured model catalog. This should be treated as a configuration task: wire these models into OpenClaw with appropriate aliases and ensure they can be selected per-channel without disrupting the existing `openai/gpt-5.1` main model.",
+      "keywords": [
+        "openai,models,gpt-5.4,gpt-5.3-codex,configuration,capabilities"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## memorySearch embeddings misconfigured — provider mismatch with OpenRouter/Qwen\n\nOpenClaw's memorySearch config currently sets `provider: \"openai\"` while pointing `remote.baseUrl` at OpenRouter with `model: \"openrouter/qwen/qwen3-embedding-8b\"`. At runtime, `memory_search` calls fail with `openai embeddings failed: 401 Missing Authentication header`, meaning embedding-backed memory search is effectively disabled even though the ClawText RAG pipeline still works from local clusters. Action: switch `memorySearch.provider` to `\"openrouter\"`, ensure the OpenRouter API key is wired correctly, restart the gateway, and revalidate `memory_search` before relying on embedding search.",
+      "keywords": [
+        "memorySearch",
+        "embeddings",
+        "openrouter",
+        "openai",
+        "provider-mismatch",
+        "401",
+        "auth",
+        "config"
+      ],
+      "type": "error-pattern",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## OpenClaw: key configuration and state risk surfaces\n\nSource/docs review confirms several sensitive areas in this OpenClaw install: (1) model/provider config and `agents.defaults.models` act as a hard gate, so typos or miswired providers can cause confusing fallback or outright failure and should always be validated; (2) auth profile wiring is deterministic but easy to misconfigure, so critical providers need explicit auth/profile validation; (3) the session store writes atomically, but if the JSON becomes unreadable it can be treated as `{}` and later writes can clobber state, so we should run cleanup/repair checks and keep backups; (4) compaction is mature and should generally be left enabled with conservative thresholds; (5) memory config drift is common — `agents.defaults.memorySearch` is the modern place, and embeddings must point at a working provider/model; and (6) cron is relatively robust, with stale run markers cleared on startup, so most instability risk comes from config drift rather than cron itself.",
+      "keywords": [
+        "openclaw,config,models,auth,session-store,compaction,cron,embeddings"
+      ],
+      "type": "learning",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## OpenClaw: baseline health-check command checklist\n\nFor future audits of this OpenClaw installation, use the following CLI checklist as a repeatable baseline sanity check:\n1. `openclaw models status --check --probe` — validate model wiring and probe actual callability.\n2. `openclaw sessions cleanup --dry-run --fix-missing` — reconcile session metadata with reality without deleting anything yet.\n3. `openclaw cron list` — confirm configured cron jobs and their enabled/disabled state.\n4. `openclaw cron runs --id <critical-job>` — inspect history for important isolated cron jobs.\n5. `openclaw memory status` — verify memory DB health, compaction status, and embedding-backed search readiness.",
+      "keywords": [
+        "openclaw,health-check,models,sessions,cron,memory,status"
+      ],
+      "type": "code-pattern",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## OpenClaw: recommended cleanup order for a stable baseline\n\nBased on the latest audit, the safest path to a clean, stable baseline is: (1) fix the global default model so it no longer unexpectedly inherits the GitHub Copilot provider; (2) pin explicit models on important isolated cron jobs, especially any with `model: null`, so they don’t accidentally inherit unstable defaults; (3) repair memory embeddings by choosing a provider/model that OpenClaw can actually call successfully and wiring it through `agents.defaults.memorySearch`; (4) run a session cleanup dry-run with `--fix-missing` to reconcile session metadata with stored transcripts; and (5) clean up stale temporary memory DB files left over from crashes/restarts. This sequence reduces instability without taking risky destructive actions and should be reused whenever the install drifts into an unknown state.",
+      "keywords": [
+        "cleanup-order,default-model,cron-models,embeddings,session-cleanup,temp-db,stability"
+      ],
+      "type": "decision",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Periodic plugin reconciliation: stable (no plugin state changes detected)\n\nConfirmed: the periodic plugin reconciliation check ran and reported no plugin state changes. Operational impact: plugin subsystem appears stable at the time of the check; continue normal monitoring.",
+      "keywords": [
+        "plugin-reconciliation,stable,healthcheck,plugins,status,periodic"
       ],
       "type": "fact",
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/2026-03-08.md",
-      "updatedAt": "2026-03-08T03:04:07.423Z"
+      "updatedAt": "2026-03-12T05:55:31.961Z"
     },
     {
-      "content": "## Implementation Timeline\n\n```\nDay 1 (6-8 hours):\n├─ Morning (2-3h):\n│  ├─ P1: Automatic Integration (middleware)\n│  └─ P2: Typoglycemia Detector (50%)\n├─ Afternoon (3-4h):\n│  ├─ P2: Typoglycemia (50%)\n│  └─ P3: Output Guard (50%)\n└─ Evening (1-2h):\n   └─ Integration testing, code review\n\nDay 2 (6-8 hours):\n├─ Morning (2-3h):\n│  ├─ P3: Output Guard (50%)\n│  └─ P4: Structured Prompt Enforcer\n├─ Afternoon (3-4h):\n│  ├─ P4: Structured Prompt (50%)\n│  └─ P5: Best-of-N Defense\n└─ Evening (1-2h):\n   └─ Code review, unit tests\n\nDay 3 (3-4 hours):\n├─ Morning (3-4h):\n│  ├─ P6: Adversarial Test Suite (50%)\n│  ├─ P6: Canary Tests (50%)\n│  └─ Integration testing\n└─ Afternoon:\n   └─ Documentation, deployment prep\n```",
+      "content": "## GitHub Copilot provider: integration fixed and working\n\nUpdate: the user reported the GitHub Copilot integration has been fixed and the `github-copilot/gpt-5-mini` model is now functioning for the workspace. Actionable: monitor for gateway resets or rate-limiting regressions, and proceed cautiously when re-enabling workflows that previously triggered instability.",
       "keywords": [
-        "hours",
-        "morning",
-        "integration",
-        "afternoon",
-        "typoglycemia",
-        "output",
-        "guard",
-        "evening",
-        "testing",
-        "code"
+        "github-copilot,fixed,provider,stability,model,git"
       ],
-      "type": "code-pattern",
+      "type": "fact",
       "project": "infrastructure",
       "confidence": 0.8,
-      "sourceFile": "memory/clawsec-hardening-plan.md",
-      "updatedAt": "2026-03-08T03:04:07.424Z"
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "## Embeddings: fixed and restored to OpenRouter/Qwen\n\nUpdate: the embeddings backend was fixed and restored to use OpenRouter with the Qwen embedding model. Action: run `memory_search` validation and test ClawText pipelines to confirm embedding-backed search returns expected results and that no 401/auth errors remain.",
+      "keywords": [
+        "embeddings,fixed,openrouter,qwen,memory-search,validation"
+      ],
+      "type": "fact",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-08.md",
+      "updatedAt": "2026-03-12T05:55:31.961Z"
+    },
+    {
+      "content": "### 5️⃣ Provider Health / Metrics\n\n**Current State:** ❌ **Not Implemented**\n- ❌ No metrics collection (uptime, latency, error rates)\n- ❌ No health dashboard\n- ❌ No fallback routing logic\n- ❌ No user-facing error messages\n\n**Lightweight Prototype Plan:**\n```\nPhase 5A — Metrics Collector (1.5 hours)\n  - Middleware around all provider calls (OpenAI, Anthropic, etc.)\n  - Track:\n    - Request timestamp\n    - Response time (ms)\n    - Status code / error type\n    - Tokens used (input/output)\n    - Cost (if tracked)\n  - Store in `memory/provider-metrics.jsonl` (rolling 24h)\n\nPhase 5B — Health Dashboard UI (2 hours)\n  - New tab: \"Provider Health\"\n  - Real-time status: ✅ OpenAI (12ms), ⚠️ Anthropic (340ms), ❌ Google (timeout)\n  - Charts: latency over time (last 24h), error rate, throughput\n  - Stats: uptime %, total requests, avg cost/request\n  - \"Test Provider\" button: ping each, show response time\n\nPhase 5C — Fallback Routing (1.5 hours)\n  - Config: primary provider, fallback list\n  - Logic:\n    - If primary error rate > 10% in last 10 min → switch to fallback\n    - If primary latency > 5s avg → switch to fallback\n    - Auto-retry primary every 5 min\n  - User notification: \"Switched to Anthropic due to OpenAI issues\"\n\nPhase 5D — User-Facing Errors (1 hour)\n  - Replace technical errors with plain language:\n    - \"Provider overloaded\" → \"Model is busy. Retrying in 30s...\"\n    - \"Rate limit\" → \"You've hit the limit. Next slot: 2 min\"\n    - \"Auth failed\" → \"API key expired. [Update Key] →\"\n  - Add retry button with exponential backoff\n```\n\n**Quick Wins:**\n- Add \"Provider Status\" indicator to status bar (green/yellow/red)\n- Show \"Last successful response time\" in header\n- Auto-retry failed requests (3 attempts, 2s/5s/10s backoff)",
+      "keywords": [
+        "provider",
+        "error",
+        "fallback",
+        "time",
+        "health",
+        "metrics",
+        "phase",
+        "status",
+        "primary",
+        "latency"
+      ],
+      "type": "error-pattern",
+      "project": "infrastructure",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-10-clawtext-browser-big-picture.md",
+      "updatedAt": "2026-03-12T05:55:31.964Z"
     },
     {
       "content": "## Deployment Checklist\n\n- [ ] All code compiles without errors\n- [ ] Unit tests pass (100%)\n- [ ] Integration tests pass (100%)\n- [ ] Adversarial tests pass (>99%)\n- [ ] Canary tests pass (attack success <1%)\n- [ ] Documentation complete\n- [ ] Code review approved\n- [ ] Performance benchmarks acceptable\n- [ ] Security audit passed\n- [ ] Ready for production deployment",
@@ -77,7 +227,7 @@
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/clawsec-hardening-plan.md",
-      "updatedAt": "2026-03-08T03:04:07.424Z"
+      "updatedAt": "2026-03-12T05:55:31.967Z"
     },
     {
       "content": "## Troubleshooting\n\n**Issue:** \"Middleware not installed\" error  \n**Fix:** Call `install_clawsec()` before any searches\n\n**Issue:** Legitimate queries being blocked  \n**Fix:** Check `web_search_config.json` for overly strict patterns\n\n**Issue:** Performance degradation  \n**Fix:** Profile with cProfile: `python -m cProfile -s cumulative src/web_search_wrapper.py`",
@@ -97,7 +247,7 @@
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/clawsec-quickstart.md",
-      "updatedAt": "2026-03-08T03:04:07.426Z"
+      "updatedAt": "2026-03-12T05:55:31.968Z"
     },
     {
       "content": "### 2. **Config File Path Assumptions**\n**Issue:** Wrapper assumes `web_search_config.json` location; path might not exist.  \n**Status:** Has fallback defaults, but logs warning (good).",
@@ -117,57 +267,58 @@
       "project": "infrastructure",
       "confidence": 0.8,
       "sourceFile": "memory/clawsec-security-audit-report.md",
-      "updatedAt": "2026-03-08T03:04:07.426Z"
+      "updatedAt": "2026-03-12T05:55:31.969Z"
     },
     {
-      "content": "## Deployment Readiness\n\n```\nPhase 1 (Middleware)        ✅ READY (v1.3.0)\n├─ Code complete\n├─ Tests written\n├─ Docs done\n└─ Deploy: npm update\n\nPhase 2-5 (Enhancements)    ✅ READY (v1.4.0)\n├─ Code complete\n├─ Tests written\n├─ Docs done\n└─ Deploy: npm update\n\nPhase 6 (Testing)           ✅ READY\n├─ Adversarial suite written\n├─ Canary tests written\n└─ Deploy: integration test before release\n\nFull Hardening Release      🎯 v2.0.0\n└─ Target: 2026-03-05 (after testing)\n```",
+      "content": "What this validates about next steps\n\nThe next step is **not** architecture work.\nThe next step is **build + validation**.\n\n### Correct build workflow\n- Use the **VSCode build system / build server workflow** for RageFX\n- Do **not** treat `build-all.ps1` as the authoritative day-to-day build path for this project\n\n### What to validate in the next build/test\n1. Dashboard appears reliably\n2. Buttons produce translated mouse logs\n3. Sliders drag and update values\n4. Combo box opens\n5. LUT path field is usable\n6. UI interactions trigger config save / runtime reload behavior\n\n### What logs should appear if the port is working\nLook for logs like:\n- `dashboard mouse down ... accepted=... isAccepted=...`\n- `dashboard mouse up ...`\n- `dashboard focus enter`\n- `dashboard scroll ...`\n- runtime config save / reload logs after interaction",
       "keywords": [
-        "written",
-        "phase",
-        "ready",
-        "tests",
-        "deploy",
-        "code",
-        "complete",
-        "docs",
-        "done",
-        "npm"
+        "build",
+        "dashboard",
+        "logs",
+        "what",
+        "mouse",
+        "step",
+        "workflow",
+        "path",
+        "config",
+        "save"
       ],
-      "type": "code-pattern",
+      "type": "fact",
       "project": "infrastructure",
-      "confidence": 0.8,
-      "sourceFile": "memory/clawsec-visual-summary.md",
-      "updatedAt": "2026-03-08T03:04:07.427Z"
+      "confidence": 0.65,
+      "sourceFile": "memory/ingested-files-2026-03-09.md",
+      "updatedAt": "2026-03-12T05:55:31.972Z"
     },
     {
-      "content": "### ClawSaver: Session Debouncer ✅ PUBLISHED & POLISHED\n**Status:** 🟢 Live on ClawHub v1.4.2, human-readable documentation  \n**Version:** 1.4.2 (just updated with docs revision)\n**Installation:** `clawhub install clawsaver` or `npm install clawsaver`\n\n**Core:**\n- SessionDebouncer.js (4.2 KB, zero dependencies)\n- 10/10 unit tests passing ✅\n- Production-ready, fully observable\n\n**Documentation (v1.4.2 Update):**\n- **START_HERE.md** — Navigation guide (which doc to read based on your role/need)\n- **README.md** — Complete human-readable guide with real examples\n- **QUICKSTART.md** — 5-minute path to running\n- **SUMMARY.md** — Executive overview (costs, ROI, risk)\n- **SKILL.md** — Formal definition for registries\n- **INTEGRATION.md** — Detailed patterns and edge cases\n- Plus decision record, examples, checklist, manifest\n\n**Key Revision:**\n- Completely rewritten for human readability\n- Conversational tone, real scenarios, no jargon\n- Agent-extractable data still accessible (structured sections, tables, code examples)\n- Each doc stands alone; START_HERE.md maps the whole system\n\n**What It Does:**\n- Batches user messages automatically\n- Reduces model API calls 20–40%\n- Zero configuration needed\n- 20 minutes setup, zero maintenance\n\n**Status:** ✅ Published on ClawHub, discoverable, polished",
+      "content": "## Proposed ClawDash top-level surfaces\n\nSuggested initial ClawDash sections:\n\n1. **Now**\n   - what needs attention now\n   - critical incidents, due items, blocked work\n\n2. **Health**\n   - providers, models, incidents, queue depth, server state\n\n3. **Costs / Usage**\n   - provider/model utilization, spend, efficiency trends\n\n4. **Projects**\n   - products, lanes, milestones, board view\n\n5. **Tasks**\n   - personal + professional + project tasks\n\n6. **Memory / Learnings**\n   - promoted patterns, open learnings, operational summaries\n\n7. **Review**\n   - aging items, drift, stale projects, unresolved incidents, cleanup needs",
       "keywords": [
-        "clawsaver",
-        "clawhub",
-        "human",
-        "zero",
-        "examples",
-        "published",
-        "polished",
-        "status",
-        "readable",
-        "documentation"
+        "incidents",
+        "clawdash",
+        "needs",
+        "items",
+        "projects",
+        "tasks",
+        "learnings",
+        "proposed",
+        "top",
+        "level"
       ],
-      "type": "decision",
+      "type": "fact",
       "project": "infrastructure",
       "confidence": 0.8,
-      "sourceFile": "MEMORY.md",
-      "updatedAt": "2026-03-08T03:04:07.431Z"
+      "sourceFile": "memory/ingested-text-2026-03-10.md",
+      "updatedAt": "2026-03-12T05:55:31.985Z"
     }
   ],
-  "builtAt": "2026-03-08T03:04:07.431Z",
+  "builtAt": "2026-03-12T05:55:31.987Z",
   "sourceFiles": [
     "memory/2026-03-06.md",
     "memory/2026-03-08.md",
+    "memory/2026-03-10-clawtext-browser-big-picture.md",
     "memory/clawsec-hardening-plan.md",
     "memory/clawsec-quickstart.md",
     "memory/clawsec-security-audit-report.md",
-    "memory/clawsec-visual-summary.md",
-    "MEMORY.md"
+    "memory/ingested-files-2026-03-09.md",
+    "memory/ingested-text-2026-03-10.md"
   ]
 }

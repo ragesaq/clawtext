@@ -1,0 +1,21 @@
+patternKey: error-pattern.tool.tool-read-failed
+type: error-pattern
+summary: Tool read failed
+symptom: 'EISDIR: illegal operation on a directory, read'
+trigger: Tool read called
+rootCause: TBD
+fix: TBD
+scope: tool
+confidence: 0.5
+recurrenceCount: 2
+firstSeenAt: '2026-03-10T00:17:12.633Z'
+lastSeenAt: '2026-03-10T02:59:23.687Z'
+status: raw
+evidence:
+  - 'Tool: read'
+  - 'Error: EISDIR: illegal operation on a directory, read'
+  - 'Session: 99608d52-0869-4416-a9be-1b685711ff51'
+  - 'Inputs: {"path":"/home/lumadmin/.openclaw/workspace/skills/clawtext"}'
+id: ff208a7b5d5adcbc
+createdAt: '2026-03-10T00:17:12.633Z'
+updatedAt: '2026-03-10T02:59:23.687Z'

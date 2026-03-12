@@ -1,0 +1,40 @@
+{
+  "projectId": "ragefx",
+  "memories": [
+    {
+      "content": "## Added OpenGL activity hooks to classify compositor render path (commit 91d539e)\n\nAfter timeline diagnostics showed persistent zero D3D11 shader-hook traffic while `d3d11.dll` and `opengl32.dll` were loaded, added explicit OpenGL-path diagnostics:\n- Hook `glUseProgram` and `wglSwapBuffers` when available.\n- Track counters in timeline (`glUse`, `wglSwap`) alongside D3D counters.\n- Extend hook-install log to include OpenGL hook counts.\n- Extend watchdog summary and add explicit info message when OpenGL activity exists but D3D shader hooks remain idle.\n\nPurpose: decisively separate \"late D3D injection\" from \"compositor is actually rendering through OpenGL path\" and unblock next architectural pivot.",
+      "keywords": [
+        "v1.0.0.32",
+        "path-classification",
+        "glUseProgram",
+        "wglSwapBuffers",
+        "zero-d3d-traffic"
+      ],
+      "type": "implementation",
+      "project": "ragefx",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-10.md",
+      "updatedAt": "2026-03-12T05:55:31.965Z"
+    },
+    {
+      "content": "## Log analysis before SMAA build: compositor replacement path is now proven live\n\nUser-provided long log shows mixed runs across builds/states:\n- Some runs still had zero hook traffic (timing/path ambiguity windows).\n- Later runs clearly show active D3D11 traffic (`CreatePixelShader` 100-200+, `PSSetShader` ~30), distortion candidate hit (`size=12212`), and successful replacement.\n- Crucially, replacement success appears once shader source resolves via `..\\\\..\\\\resources\\\\shaders\\\\composite_ps.hlsl`, confirming the two-level shader path fix works in practice.\n\nRemaining blocker from same logs:\n- LUT path remains malformed in some states (`C:\\\\UserssaqAppDataLocalRageFXlutsEZLUT23-65.cube`), so LUT fails open and compositor runs without LUT.\n\nAdditional observation:\n- Very frequent `ShaderHookReload` + compile/hot-swap events indicate over-eager config reload behavior (likely no-change churn), which is functional but noisy and potentially perf-costly.\n\nConclusion captured for thread:\n- Core compositor replacement pipeline is recovered and stable enough to proceed with the SMAA/anti-ringing build testing.\n- Next targeted fixes after SMAA validation: robust LUT path recovery and debounce/hash-gate config-triggered recompiles.",
+      "keywords": [
+        "log-analysis",
+        "replacement-success",
+        "shader-path",
+        "LUT-path",
+        "hot-reload",
+        "SMAA-readiness"
+      ],
+      "type": "validation",
+      "project": "ragefx",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-10.md",
+      "updatedAt": "2026-03-12T05:55:31.965Z"
+    }
+  ],
+  "builtAt": "2026-03-12T05:55:31.987Z",
+  "sourceFiles": [
+    "memory/2026-03-10.md"
+  ]
+}

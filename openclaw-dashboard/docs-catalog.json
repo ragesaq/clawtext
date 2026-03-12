@@ -1,0 +1,12 @@
+[
+  {"id":"clawdash-handoff","title":"ClawDash Handoff — 2026-03-10","category":"handoff","path":"docs/CLAWDASH_HANDOFF_2026-03-10.md"},
+  {"id":"clawdash-handoff-summary","title":"ClawDash Handoff Summary — 2026-03-10","category":"handoff","path":"docs/CLAWDASH_HANDOFF_SUMMARY_2026-03-10.md"},
+  {"id":"clawtask-board-draft","title":"ClawTask Board Draft — 2026-03-10","category":"handoff","path":"docs/CLAWTASK_BOARD_DRAFT_2026-03-10.md"},
+  {"id":"clawtask-first-milestone-plan","title":"ClawTask First Milestone Plan — 2026-03-10","category":"milestone","path":"docs/CLAWTASK_FIRST_MILESTONE_PLAN_2026-03-10.md"},
+  {"id":"clawtask-domain-model-v0","title":"ClawTask Domain Model v0","category":"model","path":"docs/CLAWTASK_DOMAIN_MODEL_V0.md"},
+  {"id":"clawdash-ia-v0","title":"ClawDash Information Architecture v0","category":"model","path":"docs/CLAWDASH_IA_V0.md"},
+  {"id":"clawtask-m1-scope-lock","title":"ClawTask Milestone 1 Scope Lock v0","category":"milestone","path":"docs/CLAWTASK_MILESTONE1_SCOPE_LOCK_V0.md"},
+  {"id":"clawtask-status-workflow","title":"ClawTask Status Workflow v0","category":"workflow","path":"docs/CLAWTASK_STATUS_WORKFLOW_V0.md"},
+  {"id":"clawtask-dependency-notation","title":"ClawTask Dependency Notation v0","category":"workflow","path":"docs/CLAWTASK_DEPENDENCY_NOTATION_V0.md"},
+  {"id":"clawdash-lane-post-drafts","title":"ClawDash Lane Post Drafts v0","category":"lane","path":"docs/CLAWDASH_LANE_POST_DRAFTS_V0.md"}
+]

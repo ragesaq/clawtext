@@ -1,0 +1,6 @@
+Fixed in 39072c924 — thank you, Greptile! You caught two real bugs:
+
+1. `actionParams` was stripping `action` before `handleDiscordAction` needed it. Now passes full `params`.
+2. `channelId` resolution was mutating the discarded `actionParams` instead of `params`. Now mutates `params.channelId` directly.
+
+Both issues would have silently broken every discord tool invocation.

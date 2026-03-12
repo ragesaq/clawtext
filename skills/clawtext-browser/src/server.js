@@ -106,10 +106,12 @@ export function createServer(options = {}) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = parseInt(process.env.PORT || '3737');
   const { app } = createServer({ port });
-  const host = process.env.HOST || '127.0.0.1';
+  // Bind to all interfaces (0.0.0.0) so it's accessible via Tailscale IP
+  const host = process.env.HOST || '0.0.0.0';
   app.listen(port, host, () => {
     console.log(`🧠 ClawText Browser running at http://${host}:${port}`);
     console.log(`   API: http://${host}:${port}/api/health`);
-    console.log(`   Graph: http://localhost:${port}/api/graph`);
+    console.log(`   Tailscale: http://luminous.tailedd004.ts.net:${port}`);
+    console.log(`   Local: http://localhost:${port}`);
   });
 }

@@ -1,0 +1,31 @@
+{
+  "allowlist": ["setdeviceoffset", "driveroffsets", "smoothing", "openvr", "gamedetector"],
+  "threshold": 0.75,
+  "weights": {
+    "priority": {"low": 0.2, "medium": 0.5, "high": 0.8, "critical": 1.0},
+    "category": 0.4,
+    "keyword": 0.2,
+    "patternKey": 0.15,
+    "recurrenceScale": 0.03,
+    "suggestedAction": 0.1,
+    "phrase": 0.5
+  },
+  "maxRecurrenceBonus": 0.3,
+  "promoteCountThreshold": 20,
+  "summarizer_confidence_threshold": 0.7,
+  "requiredParamPatterns": {
+    "setdeviceoffset": "(dev=\\d+|hand=(left|right)|pos=\\()"
+  },
+  "phraseRules": [
+    {"pattern": "setdeviceoffset", "weight": 0.5},
+    {"pattern": "target=DriverOffsets", "weight": 0.6},
+    {"pattern": "SUCCESS: Offset applied to device", "weight": 0.7},
+    {"pattern": "applyProfileOffsetsToControllers", "weight": 0.6},
+    {"pattern": "applyProfile: Loading and applying profile", "weight": 0.5},
+    {"pattern": "re-apply smoothing", "weight": 0.6},
+    {"pattern": "re-apply smoothing on late device arrival", "weight": 0.7},
+    {"pattern": "\\[DEBUG\\] \\[EVENTS\\] MouseButton", "weight": 0.4},
+    {"pattern": "Device \\d+ = Right Controller", "weight": 0.4},
+    {"pattern": "deviceCountChanged", "weight": 0.5}
+  ]
+}

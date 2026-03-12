@@ -1,0 +1,18 @@
+{
+  "projectId": "clawdash",
+  "memories": [
+    {
+      "content": "## Executive summary\n\nThe project is no longer just “build a memory system.”\n\nIt is converging into a broader platform with reusable pillars:\n\n1. **Event Bus / Queue** — operational intake and burst handling\n2. **Incident / Triage Engine** — detect, classify, retry, fallback, escalate\n3. **Metrics / Telemetry Store** — long-lived operational truth\n4. **Memory / Learning Stack** — qualitative and semantic learning\n5. **Policy / Preference / Routing Layer** — choose models/providers/actions intelligently\n6. **Project / Task / Artifact Layer** — coordination across work, projects, life, and creative efforts\n\n**ClawText** remains the memory/learning substrate.\n\n**ClawDash** becomes the face of the system:\n- health\n- costs\n- project board\n- task list\n- operational visibility\n- provider state\n- personal/professional re-entry point\n\n**E-shadow / e-butler** becomes the attention/executive layer:\n- reminders\n- obligations\n- re-entry into neglected contexts\n- personal/professional follow-ups\n- low-friction next actions",
+      "keywords": [],
+      "type": "text",
+      "project": "clawdash",
+      "confidence": 0.8,
+      "sourceFile": "memory/ingested-text-2026-03-10.md",
+      "updatedAt": "2026-03-12T05:55:31.985Z"
+    }
+  ],
+  "builtAt": "2026-03-12T05:55:31.987Z",
+  "sourceFiles": [
+    "memory/ingested-text-2026-03-10.md"
+  ]
+}

@@ -1,0 +1,29 @@
+[Unit]
+Description=ClawText Browser - Memory Browser & Anti-Pattern Manager
+After=network.target tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+Type=simple
+User=lumadmin
+Group=lumadmin
+WorkingDirectory=/home/lumadmin/.openclaw/workspace/skills/clawtext-browser
+Environment=PORT=3737
+Environment=HOST=0.0.0.0
+Environment=MEMORY_DIR=/home/lumadmin/.openclaw/workspace/memory
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=clawtext-browser
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/lumadmin/.openclaw/workspace/memory
+ReadOnlyPaths=/home/lumadmin/.openclaw/workspace/skills/clawtext-browser
+
+[Install]
+WantedBy=multi-user.target

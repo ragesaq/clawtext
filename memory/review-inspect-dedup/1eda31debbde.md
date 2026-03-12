@@ -1,0 +1,37 @@
+---
+key: 1eda31debbde
+count: 2
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["SUCCESS: Offset applied to device"]
+ts: 2026-03-06T18:12:12.310Z
+---
+
+# Candidate (count=2)
+
+[ .] -> applying via sharedmemoryipc: pos(x=.025m, y=.010m, z=.036m) [ .] -> success: offset applied to device [ .] settranslationoffsets: role=left, x=-., y=., z=-. [ .] -> openvr deviceid for left = [ .] -> preserving existing rotation: pitch=-., yaw=-., roll=-. [ .] -> applying via sharedmemoryipc: pos(x=.025m, y=.010m, z=.036m) [ .] -> success: offset applied to device --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:1829 device matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:30:44.317] -> Applying via SharedMemoryIPC: pos(x=0.025m, y=0.010m, z=0.036m)
+
+[2026-03-04 01:30:44.325] -> SUCCESS: Offset applied to device 6
+
+[2026-03-04 01:30:44.350] setTranslationOffsets: role=Left, x=-3.62, y=0.99, z=-2.55
+
+[2026-03-04 01:30:44.350] -> OpenVR deviceId for Left = 6
+
+[2026-03-04 01:30:44.350] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.17
+
+- 2026-03-04-hmd-cutoff.md:1834 device matched:["SUCCESS: Offset applied to device"]
+  
+  [2026-03-04 01:30:44.350] -> Applying via SharedMemoryIPC: pos(x=0.025m, y=0.010m, z=0.036m)
+
+[2026-03-04 01:30:44.351] -> SUCCESS: Offset applied to device 6
+
+[2026-03-04 01:30:44.580] setTranslationOffsets: role=Left, x=-3.60, y=1.03, z=-2.55
+
+[2026-03-04 01:30:44.580] -> OpenVR deviceId for Left = 6
+
+[2026-03-04 01:30:44.580] -> Preserving existing rotation: pitch=-0.000, yaw=-1.206, roll=-4.17

@@ -1,0 +1,24 @@
+{
+  "projectId": "openrouter",
+  "memories": [
+    {
+      "content": "## OpenRouter billing API doesn't require OAuth — uses direct Bearer auth\n\nResearch finding: OpenRouter's billing endpoints (`/api/v1/auth/key` and `/api/v1/credits`) use **direct Bearer token authentication**, not OAuth flow. This differs from GitHub Copilot which requires OAuth.\n\nAuthentication format: `Authorization: Bearer <OPENROUTER_API_KEY>`\n\nThis simplifies integration — the management API key can be used directly without implementing an OAuth flow. The 401 responses from unauthenticated requests confirm the endpoints exist and expect Bearer token auth.",
+      "keywords": [
+        "openrouter",
+        "billing",
+        "oauth",
+        "authentication",
+        "api-endpoints"
+      ],
+      "type": "learning",
+      "project": "openrouter",
+      "confidence": 0.8,
+      "sourceFile": "memory/2026-03-11.md",
+      "updatedAt": "2026-03-11T08:43:01.853Z"
+    }
+  ],
+  "builtAt": "2026-03-11T08:43:01.875Z",
+  "sourceFiles": [
+    "memory/2026-03-11.md"
+  ]
+}

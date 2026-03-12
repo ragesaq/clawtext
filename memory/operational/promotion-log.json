@@ -1,0 +1,10 @@
+[
+  {
+    "patternKey": "error-pattern.tool.phase-7c-synthetic-promotion-test-phase7",
+    "target": "TOOLS.md",
+    "destinationPath": "/home/lumadmin/.openclaw/workspace/TOOLS.md",
+    "reviewer": "agent-phase7c-test",
+    "timestamp": "2026-03-09T23:55:21.108Z",
+    "notes": "Synthetic verification promotion"
+  }
+]

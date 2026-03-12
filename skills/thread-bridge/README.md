@@ -12,6 +12,13 @@ Primary functions:
 - freshThread(forumChannelId, title, seedText, options, ctx)
 - getCallerContext(inboundMeta)
 
+Continuity integration (new):
+- refresh/split auto-run ClawBridge extract in `dual` mode by default and attach generated artifacts into the created thread/post.
+- Toggle with `options.continuity`:
+  - `true` (default) => `{ enabled:true, mode:'dual', ingest:false }`
+  - `false` => disable continuity attach
+  - object => `{ enabled?:boolean, mode?:'continuity'|'memory'|'dual', ingest?:boolean }`
+
 Key features
 - Auto-context detection: pass the inbound metadata object injected by OpenClaw
   into getCallerContext() or provide it as the third parameter (ctx) to the
@@ -47,5 +54,7 @@ Notes
 - Only allowed to create posts in the configured ALLOWED_FORUMS list.
 - When targeting a forum channel the skill creates a Forum Post (top-level post).
 - When targeting a regular text channel the skill creates a Channel Thread.
+- Long initial messages are automatically chunked: short root post first, then continuation replies in the created thread.
+- Title and message bodies are normalized and passed as argv arguments (no shell interpolation of content/title text).
 - Archiving requires confirmArchive:true to avoid accidental closures.
 - All operations are logged to memory/thread-bridge-log.jsonl

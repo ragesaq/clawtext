@@ -1,0 +1,25 @@
+---
+key: fccee712d47c
+count: 1
+files: 2026-03-04-hmd-cutoff.md
+matchedPhrases: ["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+ts: 2026-03-06T18:12:12.344Z
+---
+
+# Candidate (count=1)
+
+. [info] gamedetector: game detected via vr api: contractors_showdown . [debug] [events] mousebuttondown at (,) button=left timestamp= . [debug] [events] mousebuttonpress accepted=true isaccepted=false . [debug] [events] mousebuttonup at (,) button=left timestamp= . [info] [smoothing] >>> set_device_type_strength: hmd . -> .65387e- deviceids=(openvr) . [info] [smoothing] applying to openvr devices... . [info] [smoothing] hmd smoothing applied for device : enabled=true strength=. --- _suggested action:_ review this snippet for promotion; annotate priority/category/suggested action if ok.
+
+## Examples
+
+- 2026-03-04-hmd-cutoff.md:5392 timestamp matched:["\\[DEBUG\\] \\[EVENTS\\] MouseButton"]
+  
+  2026-03-04 01:14:17.456 [INFO] GameDetector: Game detected via VR API: contractors_showdown
+
+2026-03-04 01:14:17.532 [DEBUG] [EVENTS] MouseButtonDown at (227,504) button=Left timestamp=3736
+
+2026-03-04 01:14:17.532 [DEBUG] [EVENTS] MouseButtonPress accepted=true isAccepted=false
+
+2026-03-04 01:14:17.651 [DEBUG] [EVENTS] MouseButtonUp at (227,504) button=Left timestamp=3737
+
+2026-03-04 01:14:17.652
