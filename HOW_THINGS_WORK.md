@@ -16,6 +16,30 @@ This file documents **how to do things** in the system. Read this when you need 
 
 ---
 
+## 📝 Writing Product Documentation
+
+**See:** [`docs/GOLD_STANDARD_POST_PATTERNS.md`](./docs/GOLD_STANDARD_POST_PATTERNS.md)
+
+Reusable patterns for high-quality product READMEs, product announcements, and documentation. Maintains consistency across products while supporting flexibility.
+
+**Covers:**
+- Problem statement + concrete example
+- Architecture/feature deep dives (tables, diagrams, flows)
+- Version history table (showing evolution across releases)
+- "What's New" sections (feature-focused, not just changelog)
+- Installation + agent-assisted setup
+- Role-based documentation map
+- Length calibration (utility vs. system products)
+- Quality checklist
+
+**Use this when:**
+- Writing a new product README
+- Adding major features to existing docs
+- Creating skill documentation
+- Announcing new releases
+
+---
+
 ## 📦 Building OpenClaw Plugins
 
 **See:** [`PLUGIN_STANDARDS.md`](./PLUGIN_STANDARDS.md)
