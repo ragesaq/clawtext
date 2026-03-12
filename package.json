@@ -13,7 +13,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/add-js-extensions.js",
     "dev": "tsc --watch",
     "breadcrumb:log": "node scripts/log-memory-evolution-breadcrumb.mjs",
     "eval:memory-evolution": "node scripts/eval-memory-evolution.mjs"
