@@ -312,15 +312,9 @@ openclaw plugins update clawtext      # Single plugin
 openclaw plugins update --all         # All plugins
 ```
 
-### Existing Installation?
+### Migrating from Older Versions
 
-**If you have ClawText installed via git clone**, ask an agent to migrate:
-
-```
-Migrate my ClawText installation to the new plugin system so I can use `openclaw plugins update`.
-```
-
-Agents can automate the full migration end-to-end (preserves all memory). Or follow the manual steps in [AGENT_SETUP.md](./AGENT_SETUP.md) → Migration.
+See [AGENT_SETUP.md → Migration](./AGENT_SETUP.md#migration-path-from-git-clone-to-plugin-system) for agent-led or manual upgrade paths (preserves all memory).
 
 ### Development / Local Setup
 
