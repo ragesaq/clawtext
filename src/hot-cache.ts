@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getClawTextCacheDir } from './runtime-paths.js';
 import crypto from 'crypto';
 
 export interface HotCacheConfig {
@@ -65,7 +66,7 @@ export class HotMemoryCache {
 
   constructor(workspacePath: string, config: Partial<HotCacheConfig> = {}) {
     this.workspacePath = workspacePath;
-    this.cacheDir = path.join(workspacePath, 'memory', 'cache');
+    this.cacheDir = getClawTextCacheDir(workspacePath);
     this.persistPath = path.join(this.cacheDir, 'hot.json');
     this.statsPath = path.join(this.cacheDir, 'stats.json');
     this.stats = {

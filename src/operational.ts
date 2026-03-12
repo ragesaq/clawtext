@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 import crypto from 'crypto';
+import { getClawTextOperationalDir } from './runtime-paths.js';
 
 /**
  * Operational memory entry types
@@ -91,7 +92,7 @@ export class OperationalMemoryManager {
 
   constructor(workspacePath: string) {
     this.workspacePath = workspacePath;
-    this.operationalDir = path.join(workspacePath, 'memory', 'operational');
+    this.operationalDir = getClawTextOperationalDir(workspacePath);
     this.rawDir = path.join(this.operationalDir, 'raw');
     this.candidatesDir = path.join(this.operationalDir, 'candidates');
     this.patternsDir = path.join(this.operationalDir, 'patterns');
@@ -354,7 +355,7 @@ export class OperationalMemoryManager {
     if (!entry) return null;
 
     try {
-      const filepath = path.join(this.workspacePath, 'memory', 'operational', entry.filePath);
+      const filepath = path.join(this.operationalDir, entry.filePath);
       if (!fs.existsSync(filepath)) return null;
 
       const yamlContent = fs.readFileSync(filepath, 'utf8');

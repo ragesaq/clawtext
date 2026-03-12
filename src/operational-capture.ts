@@ -12,6 +12,7 @@
  */
 
 import { OperationalMemoryManager, OperationalMemory, PatternType, Scope } from './operational.js';
+import { getClawTextOperationalDir } from './runtime-paths.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -64,7 +65,7 @@ export class OperationalCaptureManager {
    */
   private loadSignatureIndex(): void {
     try {
-      const indexPath = path.join(this.workspacePath, 'memory', 'operational', 'signatures.json');
+      const indexPath = path.join(getClawTextOperationalDir(this.workspacePath), 'signatures.json');
       if (fs.existsSync(indexPath)) {
         const data = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
         this.signatureIndex = new Map(Object.entries(data));
@@ -80,7 +81,7 @@ export class OperationalCaptureManager {
    */
   private saveSignatureIndex(): void {
     try {
-      const indexPath = path.join(this.workspacePath, 'memory', 'operational', 'signatures.json');
+      const indexPath = path.join(getClawTextOperationalDir(this.workspacePath), 'signatures.json');
       const data = Object.fromEntries(this.signatureIndex);
       fs.writeFileSync(indexPath, JSON.stringify(data, null, 2) + '\n');
     } catch (error) {

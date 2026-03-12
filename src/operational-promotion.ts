@@ -10,6 +10,7 @@
 
 import { OperationalMemoryManager, OperationalMemory } from './operational.js';
 import { classifyDurability, DurabilityAssessment } from './durability-classifier.js';
+import { getClawTextOperationalDir } from './runtime-paths.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -65,7 +66,7 @@ export class OperationalPromotionManager {
   constructor(workspacePath: string) {
     this.workspacePath = workspacePath;
     this.memoryManager = new OperationalMemoryManager(workspacePath);
-    this.promotionLogPath = path.join(workspacePath, 'memory', 'operational', 'promotion-log.json');
+    this.promotionLogPath = path.join(getClawTextOperationalDir(workspacePath), 'promotion-log.json');
   }
 
   private refreshState(): void {

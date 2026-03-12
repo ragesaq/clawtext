@@ -129,7 +129,7 @@ To ensure changes are discoverable by agents and operators over time, each chang
 
 2. **Operational breadcrumb (memory runtime)**
    - Append JSONL event in runtime memory path:
-   - `memory/operational/change-breadcrumbs.jsonl`
+   - `state/clawtext/prod/operational/change-breadcrumbs.jsonl`
    - Fields: `ts`, `changeId`, `feature`, `flag`, `status`, `impact`, `rollback`, `references`
    - Helper command:
 

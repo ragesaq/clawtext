@@ -22,7 +22,7 @@ if (!args.changeId || !args.feature || !args.status || !args.flag || !args.rollb
 }
 
 const cwd = process.cwd();
-const output = args.output || path.join(cwd, 'memory', 'operational', 'change-breadcrumbs.jsonl');
+const output = args.output || path.join(cwd, 'state', 'clawtext', 'prod', 'operational', 'change-breadcrumbs.jsonl');
 fs.mkdirSync(path.dirname(output), { recursive: true });
 
 const entry = {

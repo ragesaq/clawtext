@@ -10,6 +10,7 @@
  */
 
 import { OperationalMemoryManager, OperationalMemory, Status, PatternType, Scope } from './operational.js';
+import { getClawTextOperationalDir } from './runtime-paths.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -126,7 +127,7 @@ export class OperationalReviewManager {
   constructor(workspacePath: string) {
     this.workspacePath = workspacePath;
     this.memoryManager = new OperationalMemoryManager(workspacePath);
-    this.reviewLogPath = path.join(workspacePath, 'memory', 'operational', 'review-log.json');
+    this.reviewLogPath = path.join(getClawTextOperationalDir(workspacePath), 'review-log.json');
     this.reviewLog = [];
 
     this.loadReviewLog();

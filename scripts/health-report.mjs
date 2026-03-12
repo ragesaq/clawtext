@@ -29,7 +29,7 @@ function tailLines(file, limit = 5) {
 }
 
 const reviewDir = path.join(memoryDir, 'review');
-const cacheDir = path.join(memoryDir, 'cache');
+const cacheDir = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'cache');
 const clustersDir = path.join(memoryDir, 'clusters');
 const stagingDir = path.join(memoryDir, 'staging');
 const logArchiveDir = path.join(memoryDir, 'log-archive');

@@ -7,7 +7,7 @@ metadata: { "openclaw": { "emoji": "🧠", "events": ["message:preprocessed", "m
 # ClawText Auto-Extract Hook
 
 This hook fires on every message (received or sent) and appends it to a rolling
-buffer file at `memory/extract-buffer.jsonl`. A separate cron job reads that
+buffer file at `state/clawtext/prod/ingest/extract-buffer.jsonl`. A separate cron job reads that
 buffer every 20 minutes, uses an LLM to extract meaningful facts, decisions, and
 learnings, and writes them into the daily memory file — fully automatically.
 
@@ -23,5 +23,5 @@ learnings, and writes them into the daily memory file — fully automatically.
 
 ## Buffer File
 
-`~/.openclaw/workspace/memory/extract-buffer.jsonl` — one JSON record per line.
+`~/.openclaw/workspace/state/clawtext/prod/ingest/extract-buffer.jsonl` — one JSON record per line.
 Records older than 24 hours are pruned by the cron job.

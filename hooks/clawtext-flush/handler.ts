@@ -4,8 +4,9 @@ import os from 'os';
 import { execSync } from 'child_process';
 
 const WORKSPACE = path.join(os.homedir(), '.openclaw/workspace');
-const BUFFER_FILE = path.join(WORKSPACE, 'memory/extract-buffer.jsonl');
-const STATE_FILE  = path.join(WORKSPACE, 'memory/extract-state.json');
+const INGEST_STATE_DIR = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'ingest');
+const BUFFER_FILE = path.join(INGEST_STATE_DIR, 'extract-buffer.jsonl');
+const STATE_FILE  = path.join(INGEST_STATE_DIR, 'extract-state.json');
 const BUILD_SCRIPT = path.join(WORKSPACE, 'skills/clawtext/scripts/build-clusters.js');
 
 /**
@@ -22,6 +23,7 @@ const handler = async (event) => {
   if (event.type !== 'agent' || event.action !== 'reset') return;
 
   try {
+    if (!fs.existsSync(INGEST_STATE_DIR)) fs.mkdirSync(INGEST_STATE_DIR, { recursive: true });
     if (!fs.existsSync(BUFFER_FILE)) return;
 
     const state = fs.existsSync(STATE_FILE)

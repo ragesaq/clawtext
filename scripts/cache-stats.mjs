@@ -4,8 +4,8 @@ import fs from 'fs';
 import path from 'path';
 
 const workspacePath = process.argv[2] || process.env.HOME + '/.openclaw/workspace';
-const cachePath = path.join(workspacePath, 'memory', 'cache', 'hot.json');
-const statsPath = path.join(workspacePath, 'memory', 'cache', 'stats.json');
+const cachePath = path.join(workspacePath, 'state', 'clawtext', 'prod', 'cache', 'hot.json');
+const statsPath = path.join(workspacePath, 'state', 'clawtext', 'prod', 'cache', 'stats.json');
 
 function readJson(file, fallback) {
   if (!fs.existsSync(file)) return fallback;

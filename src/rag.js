@@ -189,14 +189,14 @@ export class ClawTextRAG {
       // ensure mem0 index exists
       mem0.initMem0();
       // index archive if mem0 empty (bootstrap)
-      const stats = require('fs').statSync(path.join(__dirname, '..', 'memory', 'mem0.jsonl'));
+      const stats = require('fs').statSync(path.join(this.workspacePath, 'state', 'clawtext', 'prod', 'mem0.jsonl'));
       // if file exists and non-empty, skip; otherwise index
       if (stats.size === 0){ mem0.indexArchiveToMem0(); }
       const results = mem0.queryMem0(query, this.config.maxMemories, this.config.phraseRules || []);
       return results;
     }catch(e){
       // fallback to file scan if mem0 unavailable
-      const archiveDir = path.join(__dirname, '..', 'memory', 'log-archive');
+      const archiveDir = path.join(this.workspacePath, 'memory', 'log-archive');
       if (!fs.existsSync(archiveDir)) return [];
       const files = fs.readdirSync(archiveDir).filter(f=>f.endsWith('.md'));
       const results = [];

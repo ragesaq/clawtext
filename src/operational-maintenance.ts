@@ -10,6 +10,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { getClawTextOperationalDir } from './runtime-paths.js';
 import OperationalReviewManager from './operational-review.js';
 import OperationalRetrievalManager from './operational-retrieval.js';
 import { OperationalMemoryManager } from './operational.js';
@@ -56,9 +57,10 @@ export class OperationalMaintenanceManager {
 
   constructor(workspacePath: string) {
     this.workspacePath = workspacePath;
-    this.schedulePath = path.join(workspacePath, 'memory', 'operational', 'maintenance-schedule.json');
-    this.runLogPath = path.join(workspacePath, 'memory', 'operational', 'maintenance-run-log.json');
-    this.reportsDir = path.join(workspacePath, 'memory', 'operational', 'maintenance-reports');
+    const operationalDir = getClawTextOperationalDir(workspacePath);
+    this.schedulePath = path.join(operationalDir, 'maintenance-schedule.json');
+    this.runLogPath = path.join(operationalDir, 'maintenance-run-log.json');
+    this.reportsDir = path.join(operationalDir, 'maintenance-reports');
     this.reviewManager = new OperationalReviewManager(workspacePath);
     this.retrievalManager = new OperationalRetrievalManager(workspacePath);
     this.memoryManager = new OperationalMemoryManager(workspacePath);

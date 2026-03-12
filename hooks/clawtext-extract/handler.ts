@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const BUFFER_FILE = path.join(os.homedir(), '.openclaw/workspace/memory/extract-buffer.jsonl');
+const WORKSPACE = path.join(os.homedir(), '.openclaw/workspace');
+const STATE_DIR = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'ingest');
+const BUFFER_FILE = path.join(STATE_DIR, 'extract-buffer.jsonl');
 
 /**
  * ClawText Auto-Extract Hook
@@ -83,6 +85,8 @@ const handler = async (event) => {
       // Tag raw logs so extraction cron skips cluster promotion
       ...(rawLog ? { _raw_log: true } : {}),
     };
+
+    if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
 
     // Append to buffer (fire-and-forget, no await to stay fast)
     const line = JSON.stringify(record) + '\n';

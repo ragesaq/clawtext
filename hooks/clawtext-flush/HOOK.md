@@ -7,7 +7,7 @@ metadata: { "openclaw": { "emoji": "💾", "events": ["agent:reset"] } }
 # ClawText Session-End Flush Hook
 
 Fires when the agent session is reset (`/new`). Immediately writes any unprocessed
-buffer records from `memory/extract-buffer.jsonl` into today's daily memory file as
+buffer records from `state/clawtext/prod/ingest/extract-buffer.jsonl` into today's daily memory file as
 a session snapshot, then triggers a background cluster rebuild.
 
 This ensures content is never lost between 20-minute extraction cron windows.
