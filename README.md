@@ -1,6 +1,6 @@
 # ClawText — Comprehensive Memory Platform for OpenClaw
 
-**Version:** 1.4.1 | **Status:** Production | **Type:** OpenClaw Skill/Plugin
+**Version:** 1.5.0 | **Status:** Production | **Type:** OpenClaw Skill/Plugin
 
 > A complete knowledge lifecycle system — capturing, ingesting, retrieving, curating, and actively learning from patterns to make your agents more capable and resilient over time.
 
@@ -78,6 +78,47 @@ Runtime-generated state now lives under `~/.openclaw/workspace/state/clawtext/pr
 - Extraction checkpoints
 
 This keeps the repo clean and separates sources (git-tracked) from runtime state (not git-tracked).
+
+---
+
+## What's New in v1.5.0
+
+### Lightweight Relationship Tracking
+
+v1.5 adds explicit, human-readable relationship tracking for grouping and cross-referencing related memories, patterns, and decisions.
+
+**Why relationships matter:**
+- **Grouped discovery** — "Show me all RGCS quaternion issues" returns a logical group, not scattered search results
+- **Cross-project tracking** — Explicit links show how changes in one project affect others (e.g., RGCS VR tracking → Lumbot voice latency)
+- **Decision trees** — Complex decisions can reference their dependencies and cascading impacts
+- **Agent-maintainable** — Pure YAML, no database, human-readable
+
+**Structure:** `memory/clusters/relationships.yaml` (optional, maintained by agents or humans)
+
+```yaml
+shortcuts:
+  - name: "RGCS Quaternion Issues"
+    connects:
+      - "anti-pattern:quaternion-double-normalize"
+      - "recovery-pattern:NaN-edge-case-fix"
+      - "decision:RGCS-OneEuro-filter-params"
+
+edges:
+  - type: "causes"
+    from: "anti-pattern:quaternion-double-normalize"
+    to: "error-pattern:NaN-in-quaternion-math"
+    confidence: 0.92
+```
+
+**Agent workflow:** Weekly relationship review (15 min) keeps relationships fresh, promotes new connections, archives dormant ones. See `HEARTBEAT.md` and `AGENT_CLAWTEXT_BEST_PRACTICES.md` for details.
+
+**Best for:**
+- Complex operational patterns
+- Cross-project dependencies
+- Decision rationale chains
+- Known recurring issues that need quick grouping
+
+Relationships are *optional* — the system works great without them. But they become valuable as your memory grows and you want explicit structure beyond semantic similarity.
 
 ---
 
