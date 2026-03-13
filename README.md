@@ -472,14 +472,55 @@ stickyTtlDays: 60,          // Days before high-confidence memory expires
 - Hit rate dropping → lower thresholds
 - Cache filling with noise → raise thresholds
 
-### Monitor
+### Monitor & Maintain
 
+**Memory Health Report** (New in v1.6.0):
 ```bash
-npm run health
-# Reports: hit rate, cache size, staleness, review backlog, recommendations
+npm run memory:report
+# or: clawtext memory report
+
+# Output:
+# - Overall health score (0-100, A-F grade)
+# - Metrics: total memories, daily notes, clusters
+# - Critical/Medium/Low priority issues
+# - Recent activity summary
+# - Cluster status
+# - Recommended actions
 ```
 
-Target hit rate: **>95%**
+**Example Output:**
+```
+================================================================================
+MEMORY SYSTEM HEALTH REPORT
+Generated: 2026-03-13T10:07:09.571Z
+================================================================================
+
+📊 OVERALL HEALTH
+Score: 90/100 (Grade: A)
+
+📈 METRICS
+Total Memories: 15,883 words | Total Lines: 2,373
+Daily Notes: 11 (11 recent, 0 stale) | Clusters: 8 | MEMORY.md Entries: 34
+
+🟡 MEDIUM PRIORITY
+⚡ MEMORY.md contains outdated workspace paths
+   Action: Run path update script or manual find/replace
+
+🎯 RECOMMENDED ACTIONS
+1. Update workspace paths in MEMORY.md
+```
+
+**Promotion Workflow Integration:**
+- Run weekly (part of HEARTBEAT.md checklist)
+- Review stale notes → promote to MEMORY.md or archive
+- Address critical gaps immediately
+- Track system health over time
+
+**Target Metrics:**
+- Health score: **>85** (Grade B or better)
+- Hit rate: **>95%**
+- Stale notes: **0** (all reviewed within 7 days)
+- Cluster freshness: **<14 days**
 
 ---
 

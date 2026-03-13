@@ -12,11 +12,15 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "bin": {
+    "clawtext": "./scripts/cli.js"
+  },
   "scripts": {
     "build": "tsc && node scripts/add-js-extensions.js",
     "dev": "tsc --watch",
     "breadcrumb:log": "node scripts/log-memory-evolution-breadcrumb.mjs",
-    "eval:memory-evolution": "node scripts/eval-memory-evolution.mjs"
+    "eval:memory-evolution": "node scripts/eval-memory-evolution.mjs",
+    "memory:report": "node scripts/memory-health-report.js"
   },
   "keywords": [
     "memory",
