@@ -73,20 +73,30 @@ I ran one compact end-to-end trace against the current operational lane implemen
 
 ### Meaning
 
-The operational lane mechanics are real and functioning in current code, but the live system is split between:
-- **new canonical state-root operational data**: `state/clawtext/prod/operational/`
-- **older legacy operational corpus**: `memory/operational/`
+The operational lane mechanics are real and functioning in current code.
 
-This means the lane is working for new items, but older accumulated operational knowledge is effectively stranded until migration or compatibility handling is added.
+### Migration follow-up completed (2026-03-14)
+
+Legacy operational data has now been migrated/bridged into the canonical state root:
+- copied legacy corpus from `memory/operational/` into `state/clawtext/prod/operational/`
+- rebuilt `index.json`
+- merged signatures + review/promotion logs
+- archived the legacy directory under `memory/archive/operational-legacy-2026-03-14`
+- replaced `memory/operational/` with a compatibility symlink to the state-root location
+
+After migration:
+- `operational:status` now sees the historical corpus again
+- `operational:review:queue` now surfaces the legacy candidate backlog again
+- `retrieval:health` now reports reviewed patterns from the migrated corpus again
 
 ## Highest-priority remaining gaps
 
 1. **Push local runtime hardening upstream** so GitHub matches the server.
 2. **Finish state-root narrative cleanup** anywhere docs still imply `memory/extract-*` is canonical.
-3. **Migrate or bridge legacy `memory/operational/` into `state/clawtext/prod/operational/`** so historical operational knowledge is visible again.
-4. **Decide relationship feature scope**: integrated runtime feature vs manual curation overlay.
-5. **Resolve version drift**: either cut 1.6.0 cleanly or remove 1.6 references.
-6. **Decide whether promoted operational patterns should remain retrieval-visible** or whether promotion intentionally removes them from operational retrieval.
+3. **Decide relationship feature scope**: integrated runtime feature vs manual curation overlay.
+4. **Resolve version drift**: either cut 1.6.0 cleanly or remove 1.6 references.
+5. **Decide whether promoted operational patterns should remain retrieval-visible** or whether promotion intentionally removes them from operational retrieval.
+6. **Review retrieval ranking quality for migrated operational knowledge**, since reviewed synthetic patterns may currently outrank more practically relevant recent candidates.
 
 ## Tight next actions
 
