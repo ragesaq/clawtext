@@ -26,13 +26,17 @@ JSON exports      ──►                  ──►  Retrieval
 ## Installation Together
 
 ```bash
-# Install both
-git clone https://github.com/ragesaq/clawtext.git ~/.openclaw/workspace/skills/clawtext
-git clone https://github.com/ragesaq/clawtext-ingest.git ~/.openclaw/workspace/skills/clawtext-ingest
+# Install ClawText through the plugin manager
+openclaw plugins install @openclaw/clawtext
+# or for local development
+openclaw plugins install --link /path/to/clawtext
 
-cd ~/.openclaw/workspace/skills/clawtext && npm install
-cd ~/.openclaw/workspace/skills/clawtext-ingest && npm install
+# Install clawtext-ingest wherever you keep local tools/repos
+git clone https://github.com/ragesaq/clawtext-ingest.git /path/to/clawtext-ingest
+cd /path/to/clawtext-ingest && npm install
 ```
+
+If `~/.openclaw/workspace/skills/clawtext` exists, treat it as a linked alias or older workspace convenience path, not the primary installation contract.
 
 ## Typical Workflow
 

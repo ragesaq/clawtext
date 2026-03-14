@@ -131,19 +131,23 @@ ClawText includes built-in health monitoring for cache, clusters, and operationa
 
 ### Manual Verification
 
+Run these from the ClawText repo root or linked install root:
+
 ```bash
 # Cache health
-node ~/.openclaw/workspace/skills/clawtext/scripts/validate-rag.js --cache
+node scripts/validate-rag.js --cache
 
 # Cluster integrity
-node ~/.openclaw/workspace/skills/clawtext/scripts/build-clusters.js --validate
+node scripts/build-clusters.js --validate
 
 # Operational learning status
-node ~/.openclaw/workspace/skills/clawtext/scripts/operational-cli.mjs status
+node scripts/operational-cli.mjs status
 
 # Full health report
-node ~/.openclaw/workspace/skills/clawtext/scripts/operational-cli.mjs report
+node scripts/operational-cli.mjs report
 ```
+
+If your local setup exposes `~/.openclaw/workspace/skills/clawtext`, treat that as a linked alias/convenience path, not the canonical install contract.
 
 ## Tuning Guide
 

@@ -30,40 +30,23 @@ It is designed to keep `MEMORY.md` small and high-signal while allowing larger p
 
 ## Installation
 
-Canonical location:
+Canonical install flows:
+
+### Published / user install
 
 ```bash
-~/.openclaw/workspace/skills/clawtext
+openclaw plugins install @openclaw/clawtext
 ```
 
-Install:
+### Local development install
 
 ```bash
-git clone https://github.com/ragesaq/clawtext.git ~/.openclaw/workspace/skills/clawtext
-cd ~/.openclaw/workspace/skills/clawtext
-npm install
-npm run build
+openclaw plugins install --link /path/to/clawtext
 ```
 
-Enable in `~/.openclaw/openclaw.json`:
+If `~/.openclaw/workspace/skills/clawtext` exists, treat it as a linked alias or workspace convenience path — **not** the canonical install contract.
 
-```json
-{
-  "plugins": {
-    "load": {
-      "paths": [
-        "~/.openclaw/workspace/skills/clawtext"
-      ]
-    },
-    "allow": ["clawtext"],
-    "entries": {
-      "clawtext": { "enabled": true }
-    }
-  }
-}
-```
-
-Restart the gateway after enabling.
+Manual `plugins.load.paths` editing in `~/.openclaw/openclaw.json` is recovery/debug-only, not the primary install story.
 
 ## Validation
 
