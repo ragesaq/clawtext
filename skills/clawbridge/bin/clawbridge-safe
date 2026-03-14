@@ -1,0 +1,274 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NODE_BIN="${CLAWBRIDGE_NODE_BIN:-node}"
+BRIDGE_BIN="${CLAWBRIDGE_SCRIPT:-$SCRIPT_DIR/clawbridge.js}"
+WORKSPACE="${CLAWBRIDGE_WORKSPACE:-$HOME/.openclaw/workspace}"
+LOCK_ROOT="${CLAWBRIDGE_LOCK_DIR:-${XDG_RUNTIME_DIR:-/tmp}/clawbridge}"
+LOCK_PATH="${LOCK_ROOT}/bridge-job.lock"
+LOG_DIR="${WORKSPACE}/logs/clawbridge"
+LOG_PATH="${LOG_DIR}/clawbridge-safe-$(date -u +%Y%m%dT%H%M%SZ).log"
+mkdir -p "$LOG_DIR" "$LOCK_ROOT"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  clawbridge-safe [clawbridge args...]
+
+Safe wrapper behavior:
+  - prepends `extract-discord-thread` when omitted
+  - applies bounded defaults
+  - runs an automatic preflight (`--estimate-only`) first
+  - blocks unsafe live sends unless explicitly allowed
+  - rejects `--attach-thread thread:ID`
+  - requires `--allow-create-thread` if no attach target is provided for live sends
+
+Wrapper-only flags:
+  --allow-create-thread   Permit live runs that create a new destination thread
+  --no-preflight          Skip automatic estimate-only preflight (not recommended)
+
+Safe defaults when omitted:
+  --limit 20
+  --max-read-limit 120
+  --max-runtime-ms 120000
+  --max-text-chars 2000
+  --max-list-items 15
+  --max-total-chunks 12
+
+Examples:
+  clawbridge-safe --source-thread 1234 --target-forum 5678 --attach-thread 9999 \
+    --mode continuity --objective "continue" --next "seed tasks"
+
+  clawbridge-safe --source-thread 1234 --target-forum 5678 --title "New thread" \
+    --allow-create-thread --mode continuity
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 1
+fi
+
+if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+  usage
+  exit 0
+fi
+
+add_if_missing() {
+  local flag="$1"
+  local value="$2"
+  local -n args_ref="$3"
+
+  for ((i = 0; i < ${#args_ref[@]}; i += 1)); do
+    local a="${args_ref[$i]}"
+    if [[ "$a" == "$flag" || "$a" == ${flag}=* ]]; then
+      return 0
+    fi
+  done
+
+  args_ref+=("$flag" "$value")
+}
+
+has_flag() {
+  local flag="$1"
+  local -n args_ref="$2"
+  for ((i = 0; i < ${#args_ref[@]}; i += 1)); do
+    local a="${args_ref[$i]}"
+    if [[ "$a" == "$flag" || "$a" == ${flag}=* ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+extract_flag_value() {
+  local flag="$1"
+  local -n args_ref="$2"
+  for ((i = 0; i < ${#args_ref[@]}; i += 1)); do
+    local a="${args_ref[$i]}"
+    if [[ "$a" == "$flag" ]]; then
+      echo "${args_ref[$((i + 1))]:-}"
+      return 0
+    fi
+    if [[ "$a" == ${flag}=* ]]; then
+      echo "${a#*=}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+remove_wrapper_flags() {
+  local -n in_ref="$1"
+  local out=()
+
+  for ((i = 0; i < ${#in_ref[@]}; i += 1)); do
+    case "${in_ref[$i]}" in
+      --allow-create-thread|--no-preflight)
+        ;;
+      *)
+        out+=("${in_ref[$i]}")
+        ;;
+    esac
+  done
+
+  in_ref=("${out[@]}")
+}
+
+validate_targets() {
+  local args_name="$1"
+
+  local re='^(channel:)?[0-9]{12,32}$'
+  local source="$(extract_flag_value --source-thread "$args_name" || true)"
+  local target="$(extract_flag_value --target-forum "$args_name" || true)"
+  local attach="$(extract_flag_value --attach-thread "$args_name" || true)"
+
+  if [[ -n "$source" && ! "$source" =~ ^(channel:)?[0-9]{12,32}$ ]]; then
+    echo "ClawBridge Guardrail: invalid --source-thread value '$source'" >&2
+    exit 1
+  fi
+
+  if [[ -n "$target" && ! "$target" =~ ^(channel:)?[0-9]{12,32}$ ]]; then
+    echo "ClawBridge Guardrail: invalid --target-forum value '$target'" >&2
+    exit 1
+  fi
+
+  if [[ -n "$attach" ]]; then
+    if [[ "$attach" == thread:* ]]; then
+      echo "ClawBridge Guardrail: invalid --attach-thread '$attach' (use raw id or channel:ID, never thread:ID)" >&2
+      exit 1
+    fi
+    if [[ ! "$attach" =~ $re ]]; then
+      echo "ClawBridge Guardrail: invalid --attach-thread value '$attach'" >&2
+      exit 1
+    fi
+  fi
+}
+
+run_with_timeout() {
+  local runtime_ms="$1"
+  shift
+  local runtime_s=$(( (runtime_ms + 999) / 1000 ))
+  if (( runtime_s < 1 )); then runtime_s=1; fi
+
+  if command -v timeout >/dev/null 2>&1; then
+    timeout --preserve-status --foreground --signal=TERM --kill-after=5s "${runtime_s}s" "$@"
+  else
+    "$@"
+  fi
+}
+
+ARGLIST=("$@")
+ALLOW_CREATE_THREAD=0
+NO_PREFLIGHT=0
+
+if has_flag --allow-create-thread ARGLIST; then
+  ALLOW_CREATE_THREAD=1
+fi
+if has_flag --no-preflight ARGLIST; then
+  NO_PREFLIGHT=1
+fi
+
+remove_wrapper_flags ARGLIST
+
+if [[ "${ARGLIST[0]}" != "extract-discord-thread" && "${ARGLIST[0]}" != "help" && "${ARGLIST[0]}" != "--help" && "${ARGLIST[0]}" != "-h" ]]; then
+  ARGLIST=("extract-discord-thread" "${ARGLIST[@]}")
+fi
+
+add_if_missing --limit 20 ARGLIST
+add_if_missing --max-read-limit 120 ARGLIST
+add_if_missing --max-runtime-ms 120000 ARGLIST
+add_if_missing --max-text-chars 2000 ARGLIST
+add_if_missing --max-list-items 15 ARGLIST
+add_if_missing --max-total-chunks 12 ARGLIST
+
+validate_targets ARGLIST
+
+ATTACH_VALUE="$(extract_flag_value --attach-thread ARGLIST || true)"
+TITLE_VALUE="$(extract_flag_value --title ARGLIST || true)"
+ESTIMATE_ONLY=0
+ALLOW_LARGE=0
+NO_CREATE_THREAD=0
+
+has_flag --estimate-only ARGLIST && ESTIMATE_ONLY=1 || true
+has_flag --allow-large ARGLIST && ALLOW_LARGE=1 || true
+has_flag --no-create-thread ARGLIST && NO_CREATE_THREAD=1 || true
+
+if (( ESTIMATE_ONLY == 0 && NO_CREATE_THREAD == 0 && ${#ATTACH_VALUE} == 0 && ALLOW_CREATE_THREAD == 0 )); then
+  echo "ClawBridge Guardrail: live runs without --attach-thread require --allow-create-thread." >&2
+  exit 1
+fi
+
+if (( ESTIMATE_ONLY == 0 && NO_CREATE_THREAD == 0 && ${#ATTACH_VALUE} == 0 && ${#TITLE_VALUE} == 0 )); then
+  echo "ClawBridge Guardrail: creating a new thread requires --title." >&2
+  exit 1
+fi
+
+RUNTIME_MS="$(extract_flag_value --max-runtime-ms ARGLIST || echo 120000)"
+if ! [[ "$RUNTIME_MS" =~ ^[0-9]+$ ]] || (( RUNTIME_MS <= 0 )); then
+  RUNTIME_MS=120000
+fi
+
+exec 9>"$LOCK_PATH"
+if ! flock -n 9; then
+  echo "ClawBridge Guardrail: another clawbridge run appears active (lock: $LOCK_PATH)." >&2
+  exit 1
+fi
+printf '{"pid":%s,"startedAt":%s,"cmd":"%s"}\n' "$$" "$(date +%s)" "${ARGLIST[*]}" > "$LOCK_PATH"
+trap 'rm -f "$LOCK_PATH"' EXIT
+
+{
+  echo "[$(date -u +'%Y-%m-%dT%H:%M:%SZ')] starting $SCRIPT_NAME"
+  echo "node $(basename "$BRIDGE_BIN") args: ${ARGLIST[*]}"
+  echo "runtime-ms: $RUNTIME_MS"
+} | tee -a "$LOG_PATH" >&2
+
+PREFLIGHT_OUTPUT=""
+if (( NO_PREFLIGHT == 0 )); then
+  PREFLIGHT_ARGS=("${ARGLIST[@]}")
+  if ! has_flag --estimate-only PREFLIGHT_ARGS; then
+    PREFLIGHT_ARGS+=("--estimate-only")
+  fi
+
+  PREFLIGHT_TMP="$(mktemp)"
+  if ! run_with_timeout "$RUNTIME_MS" "$NODE_BIN" "$BRIDGE_BIN" "${PREFLIGHT_ARGS[@]}" > "$PREFLIGHT_TMP" 2>>"$LOG_PATH"; then
+    echo "ClawBridge Guardrail: preflight failed. See $LOG_PATH" >&2
+    cat "$PREFLIGHT_TMP" >&2 || true
+    rm -f "$PREFLIGHT_TMP"
+    exit 1
+  fi
+
+  PREFLIGHT_OUTPUT="$(cat "$PREFLIGHT_TMP")"
+  rm -f "$PREFLIGHT_TMP"
+
+  PREFLIGHT_CHECK="$(printf '%s' "$PREFLIGHT_OUTPUT" | node -e '
+const fs = require("fs");
+const raw = fs.readFileSync(0, "utf8");
+const data = JSON.parse(raw);
+const total = data?.artifactSummary?.totalOutgoingMessages ?? 0;
+const exceeds = Boolean(data?.safety?.exceedsChunkCap);
+process.stdout.write(JSON.stringify({ total, exceeds }));
+')"
+
+  PREFLIGHT_TOTAL="$(printf '%s' "$PREFLIGHT_CHECK" | node -e 'const fs=require("fs"); const j=JSON.parse(fs.readFileSync(0,"utf8")); process.stdout.write(String(j.total));')"
+  PREFLIGHT_EXCEEDS="$(printf '%s' "$PREFLIGHT_CHECK" | node -e 'const fs=require("fs"); const j=JSON.parse(fs.readFileSync(0,"utf8")); process.stdout.write(String(j.exceeds));')"
+
+  echo "ClawBridge preflight: estimated outgoing messages=${PREFLIGHT_TOTAL}" | tee -a "$LOG_PATH" >&2
+
+  if (( ESTIMATE_ONLY == 1 )); then
+    printf '%s\n' "$PREFLIGHT_OUTPUT"
+    exit 0
+  fi
+
+  if [[ "$PREFLIGHT_EXCEEDS" == "true" && $ALLOW_LARGE -eq 0 ]]; then
+    echo "ClawBridge Guardrail: blocked live run because estimated outgoing messages (${PREFLIGHT_TOTAL}) exceed chunk budget. Re-run with --allow-large if intentional." >&2
+    printf '%s\n' "$PREFLIGHT_OUTPUT" >&2
+    exit 1
+  fi
+fi
+
+run_with_timeout "$RUNTIME_MS" "$NODE_BIN" "$BRIDGE_BIN" "${ARGLIST[@]}" 2>&1 | tee -a "$LOG_PATH"
+status=${PIPESTATUS[0]:-0}
+exit "$status"

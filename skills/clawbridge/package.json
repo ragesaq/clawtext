@@ -4,7 +4,7 @@
   "description": "OpenClaw skill: structured continuity and transfer for active work",
   "main": "index.js",
   "bin": {
-    "clawbridge": "bin/clawbridge.js"
+    "clawbridge": "bin/clawbridge-safe"
   },
   "scripts": {
     "help": "node bin/clawbridge.js help"

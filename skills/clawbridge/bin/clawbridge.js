@@ -263,36 +263,66 @@ function splitForDiscord(text, max = DISCORD_MAX_CHUNK) {
   return chunks;
 }
 
+function buildReadLimitFallbacks(limit) {
+  const requested = clampInt(limit, MAX_READ_LIMIT_DEFAULT, 1, MAX_READ_LIMIT_HARD_CAP);
+  const candidates = [requested, 120, 80, 40, 20, 10, 5, 1]
+    .filter((value) => value <= requested)
+    .concat([5, 1])
+    .filter((value) => value > 0);
+
+  return uniq(candidates.map(String)).map(Number).sort((a, b) => b - a);
+}
+
+function isRecoverableReadError(err) {
+  const msg = String(err?.message || '').toLowerCase();
+  return (
+    msg.includes('unterminated string') ||
+    msg.includes('expected double-quoted property name') ||
+    msg.includes('json at position') ||
+    msg.includes('no json object found') ||
+    msg.includes('timeout') ||
+    msg.includes('econnreset') ||
+    msg.includes('socket hang up')
+  );
+}
+
 function readMessages(sourceThreadId, limit) {
   const id = normalizeIncomingTarget(sourceThreadId);
-  const candidates = [id];
+  const targets = [id];
   if (!id.startsWith('channel:') && !id.startsWith('thread:')) {
-    candidates.unshift(`channel:${id}`);
+    targets.unshift(`channel:${id}`);
   }
 
+  const readLimits = buildReadLimitFallbacks(limit);
   let lastError = null;
-  let parsedMessages = [];
 
-  for (const target of candidates) {
-    try {
-      const resp = runOpenclaw([
-        'message', 'read',
-        '--channel', 'discord',
-        '--target', target,
-        '--limit', String(limit),
-        '--json',
-      ]);
+  for (const target of targets) {
+    for (let i = 0; i < readLimits.length; i += 1) {
+      const readLimit = readLimits[i];
+      try {
+        const resp = runOpenclaw([
+          'message', 'read',
+          '--channel', 'discord',
+          '--target', target,
+          '--limit', String(readLimit),
+          '--json',
+        ]);
 
-      assertCommandSuccess(resp, `read source messages (target=${target})`);
+        assertCommandSuccess(resp, `read source messages (target=${target}, limit=${readLimit})`);
 
-      const msgs = resp?.payload?.messages || resp?.messages || [];
-      parsedMessages = Array.isArray(msgs) ? msgs : [];
-      if (parsedMessages.length >= 0) {
+        const msgs = resp?.payload?.messages || resp?.messages || [];
+        const parsedMessages = Array.isArray(msgs) ? msgs : [];
+        if (readLimit !== limit) {
+          console.error(`ClawBridge: source read fallback succeeded at limit=${readLimit} (requested ${limit}).`);
+        }
         return parsedMessages;
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+        if (!isRecoverableReadError(lastError) || i === readLimits.length - 1) {
+          break;
+        }
+        console.error(`ClawBridge: source read failed at limit=${readLimit}; retrying with smaller batch.`);
       }
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      continue;
     }
   }
 
@@ -849,6 +879,11 @@ function main() {
   const artifactSummary = summarizeArtifacts(paths, artifacts, initMsg, mode);
   const exceedsChunkCap = artifactSummary.totalOutgoingMessages > maxTotalChunks;
 
+  let threadId = attachThread || null;
+  if (threadId) {
+    threadId = resolveDestinationTarget(threadId);
+  }
+
   if (estimateOnly) {
     clearTimeout(hardTimeout);
     lockCleanup();
@@ -858,7 +893,7 @@ function main() {
       estimateOnly: true,
       sourceThread,
       targetForum,
-      attachThread: attachThread || null,
+      attachThread: threadId || attachThread || null,
       safety: {
         maxTotalChunks,
         allowLarge,
@@ -883,11 +918,6 @@ function main() {
     throw new Error(
       `Blocked live send: estimated ${artifactSummary.totalOutgoingMessages} outgoing Discord messages exceeds max-total-chunks=${maxTotalChunks}. Re-run with --estimate-only to inspect or --allow-large to override.`
     );
-  }
-
-  let threadId = attachThread || null;
-  if (threadId) {
-    threadId = resolveDestinationTarget(threadId);
   }
 
   const createdThread = !threadId && !noCreateThread;
