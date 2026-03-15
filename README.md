@@ -1,6 +1,6 @@
 # ClawText 2.0 — Practical Memory & Continuity for OpenClaw
 
-**Version:** release-boundary v2.0 | **Status:** production-capable runtime with documented constraints | **Repo:** https://github.com/ragesaq/clawtext
+**Version:** 2.0 | **Status:** Production | **Repo:** https://github.com/ragesaq/clawtext
 
 ## The problem we’re solving
 
@@ -56,30 +56,6 @@ ClawText is intentionally opinionated:
 - **Agent-assisted where needed** — human review for risk-sensitive promotion/decisions.
 - **CLI/control-first** — if behavior matters, it should be inspectable and configurable.
 
-## What ClawText 2.0 can safely claim
-
-The repository defines a clear claim boundary for public positioning.
-
-### ✅ We can claim
-- plugin loads and works in OpenClaw
-- capture-to-memory pipeline is operating (capture → extract → daily memory/writeback)
-- retrieval/recall pipeline is active (ranking, merge, prompt injection)
-- continuity artifact generation is reliable (`handoff`, `full continuity`, `bootstrap`, backups, manifests)
-- operational learning loop works (capture → recurrence → review → promote → retrieve)
-- bounded continuity safety is enforced:
-  - preflight/estimate before runs
-  - chunk budget checks
-  - explicit oversized-run behavior unless override is used
-  - backup + source snapshot persisted with each continuity transfer
-
-### ⚠️ Important limits (intentional)
-- Existing-thread appends work when destination thread is valid and resolvable; stale/invalid IDs may fail.
-- ClawText owns context creation and continuity packaging, not all Discord transport semantics.
-- Relationship support is real but lightweight (not full graph-native retrieval).
-- Retrieval is operationally useful and improving; it is not mathematically perfect.
-
-For exact language: [`docs/CLAWTEXT_2_0_SUPPORTED_BEHAVIOR_AND_LIMITATIONS.md`](./docs/CLAWTEXT_2_0_SUPPORTED_BEHAVIOR_AND_LIMITATIONS.md)
-
 ## High-level architecture
 
 ClawText is organized as three operational lanes:
@@ -116,9 +92,7 @@ ClawText is designed to avoid a fragile single-store model. Files and determinis
 
 ## Product positioning against memory approaches
 
-> Short-form benchmark: this is directional, not a universal benchmark.
-
-| Approach | Strength | Trade-off | Why ClawText differs |
+| Approach | Strength | Trade-off | How ClawText differs |
 |---|---|---|---|
 | **OpenClaw default / basic note-based memory** | Simple integration and fast initial setup | weak continuity packaging and limited continuity tooling | Adds structured lanes + bounded continuity transfer + operational loop |
 | **Pure vector store RAG** | strong semantic similarity | can over-inject noise without guardrails and weak prompt governance | Adds ranking merge + prompt-safe gating + operational review controls |
@@ -185,7 +159,6 @@ A common pattern:
 
 Detailed fields and safe ranges are in:
 - [`docs/MEMORY_POLICY_TRIGGER_CONTRACT.md`](./docs/MEMORY_POLICY_TRIGGER_CONTRACT.md)
-- [`docs/CLAWTEXT_2_0_SUPPORTED_BEHAVIOR_AND_LIMITATIONS.md`](./docs/CLAWTEXT_2_0_SUPPORTED_BEHAVIOR_AND_LIMITATIONS.md)
 - [`docs/INTERACTION_OPS_MEMORY_CONTRACT.md`](./docs/INTERACTION_OPS_MEMORY_CONTRACT.md)
 
 ## Links for deeper reading
@@ -200,14 +173,12 @@ Detailed fields and safe ranges are in:
 
 | Version | What changed |
 |---|---|
-| **2.0 (claim boundary)** | Release-safe 2.0 claim boundary, continuity safety claims, and public positioning alignment |
-| **1.5.0** | operational learning cadence, relationship support, continuity safety hardening |
-| 1.4.0 | integrated knowledge ingest + memory lane consolidation |
-| 1.3.0 | working-memory improvements + plugin + policy controls |
-| 1.2.0 | tiered memory model and cluster rebuild/validation |
-| 1.1.0 | multi-source ingest and dedup pipeline |
-
-> Note: `2.0` here is a product boundary marker. Runtime package version is currently `1.5.0`.
+| **2.0** | Three-lane architecture, continuity transfer engine, operational learning loop, file-first safety model |
+| **1.5.0** | Relationship tracking, curated review cadence, continuity safety hardening |
+| 1.4.0 | Integrated knowledge ingest + memory lane consolidation |
+| 1.3.0 | Working-memory improvements + plugin + policy controls |
+| 1.2.0 | Tiered memory model and cluster rebuild/validation |
+| 1.1.0 | Multi-source ingest and dedup pipeline |
 
 ## Security and operating assumptions
 
