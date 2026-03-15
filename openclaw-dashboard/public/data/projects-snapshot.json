@@ -1,0 +1,343 @@
+{
+  "source": "collector-projects",
+  "updatedAt": "2026-03-15T05:08:29.760Z",
+  "groups": [
+    {
+      "name": "Platform / Core",
+      "count": 1
+    },
+    {
+      "name": "Dashboards / Operator UX",
+      "count": 1
+    },
+    {
+      "name": "Memory / Knowledge",
+      "count": 1
+    },
+    {
+      "name": "Integration / Bridge",
+      "count": 1
+    },
+    {
+      "name": "Infra / Security",
+      "count": 1
+    },
+    {
+      "name": "Hardware / VR",
+      "count": 1
+    },
+    {
+      "name": "Ops / Reliability",
+      "count": 1
+    }
+  ],
+  "totals": {
+    "count": 7,
+    "githubLinked": 5,
+    "stars": 0,
+    "openIssues": 0,
+    "openPulls": 0,
+    "recentAuthoredPulls": 0
+  },
+  "authoredPulls": {
+    "author": "ragesaq",
+    "total": 0,
+    "items": []
+  },
+  "projects": [
+    {
+      "slug": "openclaw",
+      "name": "OpenClaw",
+      "group": "Platform / Core",
+      "description": "Core gateway, agents, model routing, and platform runtime.",
+      "repoPath": "dev/openclaw",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/dev/openclaw",
+      "health": "healthy",
+      "local": {
+        "present": true,
+        "git": true,
+        "remoteUrl": "git@github.com:ragesaq/openclaw.git",
+        "version": "v2026.3.8",
+        "packageVersion": "2026.3.9",
+        "latestTag": "v2026.3.8",
+        "dirtyFiles": 0,
+        "lastCommit": {
+          "sha": "ea9dac4dd26bc04f1611277b8365f8e146c9011b",
+          "shortSha": "ea9dac4dd",
+          "committedAt": "2026-03-11T10:21:13+00:00",
+          "subject": "feat(models): expose OpenRouter billing data in --json output + defer all provider usage fetches"
+        }
+      },
+      "github": {
+        "linked": true,
+        "connected": false,
+        "owner": "ragesaq",
+        "repo": "openclaw",
+        "url": "https://github.com/ragesaq/openclaw",
+        "pullsUrl": "https://github.com/ragesaq/openclaw/pulls",
+        "issuesUrl": "https://github.com/ragesaq/openclaw/issues",
+        "error": "unavailable",
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "v2026.3.8",
+        "lastUpdatedAt": "2026-03-11T10:21:13+00:00",
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "clawdash",
+      "name": "ClawDash",
+      "group": "Dashboards / Operator UX",
+      "description": "Operator dashboard and control surface for OpenClaw.",
+      "repoPath": "openclaw-dashboard",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/openclaw-dashboard",
+      "health": "local-only",
+      "local": {
+        "present": true,
+        "git": false,
+        "remoteUrl": null,
+        "version": "0.1.0",
+        "packageVersion": "0.1.0",
+        "latestTag": null,
+        "dirtyFiles": 0,
+        "lastCommit": null
+      },
+      "github": {
+        "linked": false,
+        "connected": false,
+        "error": "not-linked",
+        "url": null,
+        "pullsUrl": null,
+        "issuesUrl": null,
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "0.1.0",
+        "lastUpdatedAt": null,
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "clawtext",
+      "name": "ClawText",
+      "group": "Memory / Knowledge",
+      "description": "Memory, ingest, learning, and retrieval substrate.",
+      "repoPath": "repo/clawtext",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/repo/clawtext",
+      "health": "healthy",
+      "local": {
+        "present": true,
+        "git": true,
+        "remoteUrl": "git@github-psiclawops:PsiClawOps/clawtext.git",
+        "version": "v1.5.0",
+        "packageVersion": "1.5.0",
+        "latestTag": "v1.5.0",
+        "dirtyFiles": 0,
+        "lastCommit": {
+          "sha": "4bdf53fb444d90e7293d465adf9a1408931c1555",
+          "shortSha": "4bdf53f",
+          "committedAt": "2026-03-15T04:38:35+00:00",
+          "subject": "Add repo-first project docs schema for ClawDash compatibility"
+        }
+      },
+      "github": {
+        "linked": true,
+        "connected": false,
+        "owner": "PsiClawOps",
+        "repo": "clawtext",
+        "url": "https://github.com/PsiClawOps/clawtext",
+        "pullsUrl": "https://github.com/PsiClawOps/clawtext/pulls",
+        "issuesUrl": "https://github.com/PsiClawOps/clawtext/issues",
+        "error": "unavailable",
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "v1.5.0",
+        "lastUpdatedAt": "2026-03-15T04:38:35+00:00",
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "clawbridge",
+      "name": "ClawBridge",
+      "group": "Integration / Bridge",
+      "description": "Discord/forum extraction and bridge tooling.",
+      "repoPath": "repo/clawbridge",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/repo/clawbridge",
+      "health": "dirty",
+      "local": {
+        "present": true,
+        "git": true,
+        "remoteUrl": "git@github-psiclawops:PsiClawOps/clawbridge.git",
+        "version": "0.9.0",
+        "packageVersion": "0.9.0",
+        "latestTag": null,
+        "dirtyFiles": 2,
+        "lastCommit": {
+          "sha": "ebc040f28998bcdc926c5e16c312ceb66cba1ecb",
+          "shortSha": "ebc040f",
+          "committedAt": "2026-03-12T05:57:07+00:00",
+          "subject": "chore: Add ClawHub metadata for v0.9.0"
+        }
+      },
+      "github": {
+        "linked": true,
+        "connected": false,
+        "owner": "PsiClawOps",
+        "repo": "clawbridge",
+        "url": "https://github.com/PsiClawOps/clawbridge",
+        "pullsUrl": "https://github.com/PsiClawOps/clawbridge/pulls",
+        "issuesUrl": "https://github.com/PsiClawOps/clawbridge/issues",
+        "error": "unavailable",
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "0.9.0",
+        "lastUpdatedAt": "2026-03-12T05:57:07+00:00",
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "clawsec",
+      "name": "ClawSec",
+      "group": "Infra / Security",
+      "description": "Security, validation, and hardening tooling.",
+      "repoPath": "repo/clawsec",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/repo/clawsec",
+      "health": "healthy",
+      "local": {
+        "present": true,
+        "git": true,
+        "remoteUrl": "git@github-psiclawops:PsiClawOps/clawsec.git",
+        "version": "1.0.0",
+        "packageVersion": "1.0.0",
+        "latestTag": null,
+        "dirtyFiles": 0,
+        "lastCommit": {
+          "sha": "8511caf6dd4984947cb622a7688a50877f9dd9ef",
+          "shortSha": "8511caf",
+          "committedAt": "2026-03-12T21:57:32+00:00",
+          "subject": "feat: add OpenClaw plugin scaffold for ClawSec"
+        }
+      },
+      "github": {
+        "linked": true,
+        "connected": false,
+        "owner": "PsiClawOps",
+        "repo": "clawsec",
+        "url": "https://github.com/PsiClawOps/clawsec",
+        "pullsUrl": "https://github.com/PsiClawOps/clawsec/pulls",
+        "issuesUrl": "https://github.com/PsiClawOps/clawsec/issues",
+        "error": "unavailable",
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "1.0.0",
+        "lastUpdatedAt": "2026-03-12T21:57:32+00:00",
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "rgcs",
+      "name": "RGCS",
+      "group": "Hardware / VR",
+      "description": "VR driver and overlay tooling.",
+      "repoPath": "rgcs",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/rgcs",
+      "health": "dirty",
+      "local": {
+        "present": true,
+        "git": true,
+        "remoteUrl": "git@github.com:ragesaq/RGCS.git",
+        "version": null,
+        "packageVersion": null,
+        "latestTag": null,
+        "dirtyFiles": 1,
+        "lastCommit": {
+          "sha": "71c7d8fcbace2014a63c4db725e2162ba81e6ea6",
+          "shortSha": "71c7d8f",
+          "committedAt": "2026-03-14T10:07:33+00:00",
+          "subject": "Add calibration watchdogs to prevent lingering drift sessions"
+        }
+      },
+      "github": {
+        "linked": true,
+        "connected": false,
+        "owner": "ragesaq",
+        "repo": "RGCS",
+        "url": "https://github.com/ragesaq/RGCS",
+        "pullsUrl": "https://github.com/ragesaq/RGCS/pulls",
+        "issuesUrl": "https://github.com/ragesaq/RGCS/issues",
+        "error": "unavailable",
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": null,
+        "lastUpdatedAt": "2026-03-14T10:07:33+00:00",
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    },
+    {
+      "slug": "clawlogix",
+      "name": "ClawLogix",
+      "group": "Ops / Reliability",
+      "description": "Restart control plane, drain orchestration, incident safety, and runaway mitigation for OpenClaw.",
+      "repoPath": "skills/clawlogix",
+      "absolutePath": "/home/lumadmin/.openclaw/workspace/skills/clawlogix",
+      "health": "local-only",
+      "local": {
+        "present": true,
+        "git": false,
+        "remoteUrl": null,
+        "version": "0.1.0",
+        "packageVersion": "0.1.0",
+        "latestTag": null,
+        "dirtyFiles": 0,
+        "lastCommit": null
+      },
+      "github": {
+        "linked": false,
+        "connected": false,
+        "error": "not-linked",
+        "url": null,
+        "pullsUrl": null,
+        "issuesUrl": null,
+        "recentAuthoredPulls": []
+      },
+      "headsUp": {
+        "version": "0.1.0",
+        "lastUpdatedAt": null,
+        "openIssues": null,
+        "openPulls": null,
+        "stars": null,
+        "latestReleaseTag": null,
+        "recentAuthoredPulls": 0
+      }
+    }
+  ]
+}

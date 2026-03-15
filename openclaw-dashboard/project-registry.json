@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "openclaw",
+    "displayName": "OpenClaw",
+    "group": "Platform / Core",
+    "repoPath": "dev/openclaw",
+    "description": "Core gateway, agents, model routing, and platform runtime."
+  },
+  {
+    "slug": "clawdash",
+    "displayName": "ClawDash",
+    "group": "Dashboards / Operator UX",
+    "repoPath": "openclaw-dashboard",
+    "description": "Operator dashboard and control surface for OpenClaw."
+  },
+  {
+    "slug": "clawtext",
+    "displayName": "ClawText",
+    "group": "Memory / Knowledge",
+    "repoPath": "repo/clawtext",
+    "description": "Memory, ingest, learning, and retrieval substrate."
+  },
+  {
+    "slug": "clawbridge",
+    "displayName": "ClawBridge",
+    "group": "Integration / Bridge",
+    "repoPath": "repo/clawbridge",
+    "description": "Discord/forum extraction and bridge tooling."
+  },
+  {
+    "slug": "clawsec",
+    "displayName": "ClawSec",
+    "group": "Infra / Security",
+    "repoPath": "repo/clawsec",
+    "description": "Security, validation, and hardening tooling."
+  },
+  {
+    "slug": "rgcs",
+    "displayName": "RGCS",
+    "group": "Hardware / VR",
+    "repoPath": "rgcs",
+    "description": "VR driver and overlay tooling."
+  },
+  {
+    "slug": "clawlogix",
+    "displayName": "ClawLogix",
+    "group": "Ops / Reliability",
+    "repoPath": "skills/clawlogix",
+    "description": "Restart control plane, drain orchestration, incident safety, and runaway mitigation for OpenClaw."
+  }
+]
