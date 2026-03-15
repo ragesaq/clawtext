@@ -23,8 +23,8 @@
     },
     "type": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
-      "description": "Event type in domain.entity.action format."
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*){2,}$",
+      "description": "Event type with at least three dot-separated segments (ex: domain.entity.action)."
     },
     "ts": {
       "type": "string",

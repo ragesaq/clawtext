@@ -19,6 +19,7 @@ Internal embedded build (not published).
 - Operator allowlist (policy: `approval.operators`)
 - Force mode from policy (`single_operator` or `two_person`)
 - Hybrid adapter (CLI-first with safe fallbacks)
+- Event envelope emission (`memory/operational/events.jsonl`) with v0 schema validation
 
 ## Adapter runtime
 By default `run restart ...` uses the hybrid adapter:
