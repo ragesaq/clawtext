@@ -103,3 +103,4 @@ After migration:
 1. Commit docs cleanup + this matrix.
 2. Push local runtime safety commits.
 3. Run one operational-lane trace and append findings to this document.
+4. Use `CLAWTEXT_2_0_RELEASE_DEFINITION.md` as the release boundary document for final technical wrap-up.
