@@ -1,0 +1,46 @@
+{
+  "name": "clawlogix-v1",
+  "enabled": true,
+  "version": "1.0.0",
+  "routing": {
+    "controlTarget": "main",
+    "announceTarget": "both",
+    "mainSurfaces": ["tui:main", "discord:dm:ragesaq"],
+    "fallbackSurface": "tui:main"
+  },
+  "approval": {
+    "requiredFor": ["normal", "urgent"],
+    "operators": ["ragesaq", "operator"],
+    "forceApprovalMode": "single_operator",
+    "allowedForceModes": ["single_operator", "two_person"],
+    "forcePhrase": "FORCE",
+    "approvalTimeoutMs": 600000
+  },
+  "drain": {
+    "mode": "until-idle",
+    "pollEveryMs": 2000,
+    "maxWaitMs": 900000,
+    "onTimeout": "require-human-decision",
+    "blockNewWorkDuringDrain": true
+  },
+  "emergency": {
+    "enabled": true,
+    "mode": "alert_and_pause_new_work",
+    "manualResumeDefault": true,
+    "autoForceAllowed": false
+  },
+  "autoAbortStuckRun": {
+    "enabled": true,
+    "policy": "A-strict",
+    "requiresExactlyOneStuckRun": true,
+    "requiresRunAgeMultiplier": 2,
+    "requiresNoProgressMultiplier": 2,
+    "minConfidence": 0.85,
+    "cooldownMs": 900000
+  },
+  "audit": {
+    "requestsPath": "memory/operational/restart-requests.jsonl",
+    "ledgerPath": "memory/operational/restart-ledger.jsonl",
+    "incidentsPath": "memory/operational/incidents.jsonl"
+  }
+}

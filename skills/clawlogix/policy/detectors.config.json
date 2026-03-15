@@ -1,0 +1,13 @@
+{
+  "mode": "alert_and_pause_new_work",
+  "manualResumeDefault": true,
+  "detectors": {
+    "retry_loop": { "enabled": true, "windowMs": 120000, "maxNearDuplicateRequests": 6, "similarityThreshold": 0.9 },
+    "prompt_amplification": { "enabled": true, "windowTurns": 6, "maxGrowthRatio": 2.2, "minPromptTokens": 1200 },
+    "spawn_storm": { "enabled": true, "windowMs": 120000, "maxSubagentSpawns": 10, "maxConcurrentSubagents": 8 },
+    "stuck_inflight": { "enabled": true, "maxRunAgeMs": 900000, "minNoProgressMs": 180000, "maxStuckRuns": 2 },
+    "token_burn_slope": { "enabled": true, "windowMs": 120000, "maxTokensPerMinute": 120000, "maxRequestsPerMinute": 25 },
+    "queue_explosion": { "enabled": true, "queueDepthThreshold": 100 },
+    "restart_loop": { "enabled": true, "windowMs": 600000, "maxRestarts": 3 }
+  }
+}

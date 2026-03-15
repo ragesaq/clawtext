@@ -1,0 +1,4 @@
+.state/
+dist/
+node_modules/
+memory/operational/*.jsonl
