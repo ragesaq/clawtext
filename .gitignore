@@ -29,6 +29,9 @@ memory/
 memory/extract-buffer.jsonl
 memory/extract-state.json
 
+# Local docs staging / export
+.clawdash-export/
+
 # Large binaries
 *.db
 *.sqlite
