@@ -49,7 +49,47 @@ Those layers are implemented through three core product lanes:
 | **Knowledge Ingest** | Normalize, deduplicate, and index docs/repos/threads/JSON sources | Broader context recall without bloat |
 | **Operational Learning** | Capture failures and promote stable guidance | Fewer repeated mistakes; growing agent wisdom |
 
-The result is a system that is bigger than simple memory lookup but still practical, reviewable, and bounded.
+The result is a system that is bigger than simple memory lookup while staying focused on the practical memory problems real agents actually have.
+
+---
+
+## What You Actually Get
+
+ClawText is designed to make agents more useful in the places where memory failure hurts the most.
+
+With ClawText, agents can:
+- **remember prior decisions** instead of asking the same questions again
+- **carry context across sessions and threads** instead of restarting from zero
+- **surface relevant docs, repos, and prior work automatically** when they matter
+- **learn from repeated failures and successful workflows** instead of losing those lessons to logs
+- **preserve structured handoffs and recovery artifacts** so work can continue cleanly on another surface or in another session
+
+This is the core memory story: not just storing more context, but making previously earned context usable again.
+
+---
+
+## The Layers at a Glance
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ L3 — Continuity Artifacts                                   │
+│ Handoffs, bootstrap packets, manifests, backups, file docs  │
+├──────────────────────────────────────────────────────────────┤
+│ L2 — Durable Memory                                         │
+│ Clustered/searchable memory, ingested knowledge,            │
+│ operational patterns, prior decisions, useful history       │
+├──────────────────────────────────────────────────────────────┤
+│ L1 — Hot Context                                            │
+│ Prompt-time working memory for the current task             │
+└──────────────────────────────────────────────────────────────┘
+```
+
+ClawText works from the inside out:
+- **L1** helps the current prompt stay grounded in the most relevant context
+- **L2** preserves the durable memory that makes later retrieval possible
+- **L3** preserves continuity when work has to move across sessions, threads, or recovery flows
+
+Together, those layers make ClawText feel less like a memory cache and more like a continuity system for real agent work.
 
 ---
 
