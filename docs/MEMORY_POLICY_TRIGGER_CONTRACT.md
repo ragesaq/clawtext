@@ -215,6 +215,8 @@ To preserve trust and signal quality, automatic behavior must respect these rule
 
 ## Relationship to existing ClawText lanes
 
+For interaction-surface execution events (Discord ops, future Clawback-native app ops, etc.), see [`INTERACTION_OPS_MEMORY_CONTRACT.md`](./INTERACTION_OPS_MEMORY_CONTRACT.md). That document defines how ClawText should observe and route external operation manifests without owning execution itself.
+
 This contract maps cleanly to the current architecture:
 
 - **Working lane** handles broad automatic capture and extraction source material

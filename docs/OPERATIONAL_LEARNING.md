@@ -35,7 +35,9 @@ The operational learning lane is no longer just a design draft. Current implemen
 - **user-discretion gated**: review approvals, promotion approvals, cadence approval when needed
 - **backend/admin only**: raw CLI plumbing
 
-See also: [`MEMORY_POLICY_TRIGGER_CONTRACT.md`](./MEMORY_POLICY_TRIGGER_CONTRACT.md) for the higher-level automatic memory contract that governs when ClawText should capture, retrieve, review, promote, or ask.
+See also:
+- [`MEMORY_POLICY_TRIGGER_CONTRACT.md`](./MEMORY_POLICY_TRIGGER_CONTRACT.md) for the higher-level automatic memory contract that governs when ClawText should capture, retrieve, review, promote, or ask.
+- [`INTERACTION_OPS_MEMORY_CONTRACT.md`](./INTERACTION_OPS_MEMORY_CONTRACT.md) for how external interaction-surface operations should feed ClawText's operational and continuity lanes.
 
 ### Activation / verification
 This lane depends on ClawText being loaded through the canonical install flows:
