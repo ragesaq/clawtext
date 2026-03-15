@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://psi-clawops.local/schemas/event-envelope.v0.schema.json",
+  "title": "Shared Event Envelope v0",
+  "description": "Common operational event envelope for OpenClaw ecosystem systems.",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "ts",
+    "schemaVersion",
+    "source",
+    "severity",
+    "status",
+    "payload"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Globally unique event id (example: evt_01j...)."
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
+      "description": "Event type in domain.entity.action format."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC occurrence timestamp."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^0\\.[0-9]+\\.[0-9]+$",
+      "description": "Envelope schema version."
+    },
+    "source": {
+      "type": "object",
+      "required": ["system", "component"],
+      "additionalProperties": false,
+      "properties": {
+        "system": { "type": "string", "minLength": 1 },
+        "component": { "type": "string", "minLength": 1 },
+        "instance": { "type": "string", "minLength": 1 }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["debug", "info", "low", "medium", "high", "critical"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "classified", "queued", "processing", "resolved", "suppressed", "archived"]
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dedupeKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "required": ["kind", "id"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "provider_request",
+            "incident",
+            "task",
+            "session",
+            "message",
+            "hook",
+            "cron_job",
+            "memory_batch",
+            "artifact",
+            "server"
+          ]
+        },
+        "id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "description": "Flat searchable tags.",
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string" },
+          { "type": "number" },
+          { "type": "boolean" }
+        ]
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific structured details.",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "kind": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": { "type": "string" },
+          "ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "retention": {
+      "type": "object",
+      "required": ["class"],
+      "properties": {
+        "class": {
+          "type": "string",
+          "enum": ["ephemeral", "standard", "important", "audit"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

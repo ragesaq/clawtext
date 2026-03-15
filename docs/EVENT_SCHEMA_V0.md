@@ -348,3 +348,45 @@ This gives ClawDash and ClawText a way to trace one chain.
 
 Adopt this event envelope first.
 Then define mappings from each subsystem into it before building specialized schemas.
+
+---
+
+## Acceptance hardening (v0)
+
+To reduce implementation uncertainty, v0 should include:
+
+1. Machine-validatable JSON Schema: `schemas/event-envelope.v0.schema.json`
+2. Canonical event-type registry: `docs/EVENT_TYPE_REGISTRY_V0.md`
+3. Explicit required vs optional envelope fields
+4. Schema versioning field (`schemaVersion`) for compatibility control
+5. Retention + redaction guardrails
+
+### Required fields (v0)
+
+- `id`
+- `type`
+- `ts`
+- `schemaVersion`
+- `source.system`
+- `source.component`
+- `severity`
+- `status`
+- `payload`
+
+### Optional fields (v0)
+
+- `source.instance`
+- `correlationId`
+- `dedupeKey`
+- `subject`
+- `labels`
+- `context`
+- `actions`
+- `links`
+- `retention`
+
+### Redaction guidance (v0)
+
+- Do not place secrets/tokens/credentials in `labels`.
+- Keep PII out of `labels`; prefer anonymized ids in `subject.id` or redacted `payload`.
+- Use `retention.class="audit"` for high-integrity operational records where dedupe suppression is disallowed.
