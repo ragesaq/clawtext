@@ -1,0 +1,83 @@
+name: clawtext-impact-check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate required lifecycle docs and policy
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          REQUIRED_FILES=(
+            "docs/NORTHSTAR.md"
+            "docs/PRD.md"
+            "docs/MILESTONES.md"
+            "docs/POST_BRIEF.md"
+            "docs/FLIGHT_CONTROL.md"
+            "docs/CHANGE_ROUTING.md"
+          )
+
+          ENFORCING_LABELS=("major-feature" "breaking-change" "milestone-delivery" "architecture-change" "execution-policy-change")
+          DOC_FILES_FOR_LABEL_POLICY=(
+            "docs/NORTHSTAR.md"
+            "docs/PRD.md"
+            "docs/MILESTONES.md"
+            "docs/POST_BRIEF.md"
+            "docs/FLIGHT_CONTROL.md"
+            "docs/CHANGE_ROUTING.md"
+            "docs/RETROFIT_REPORT.md"
+          )
+
+          for f in "${REQUIRED_FILES[@]}"; do
+            [[ -f "$f" ]] || { echo "❌ Missing required file: $f"; exit 1; }
+          done
+
+          requires_docs=false
+          for label in "${ENFORCING_LABELS[@]}"; do
+            if echo "$PR_LABELS_JSON" | grep -q "\"$label\""; then
+              requires_docs=true
+              break
+            fi
+          done
+
+          if [[ "$requires_docs" != "true" ]]; then
+            echo "No enforcing labels found. Baseline structure checks passed."
+            exit 0
+          fi
+
+          git fetch origin "$BASE_REF" --depth=1
+          CHANGED_FILES=$(git diff --name-only "origin/$BASE_REF...$HEAD_SHA")
+          docs_touched=false
+          for f in "${DOC_FILES_FOR_LABEL_POLICY[@]}"; do
+            if echo "$CHANGED_FILES" | grep -qx "$f"; then
+              docs_touched=true
+              break
+            fi
+          done
+
+          if [[ "$docs_touched" == "true" ]]; then
+            echo "Required lifecycle docs were updated. Passing."
+            exit 0
+          fi
+
+          if echo "${PR_BODY:-}" | grep -Eiq "no clawtext impact|no\s+clawtext\s+impact"; then
+            echo "Explicit 'No ClawText Impact' declaration present. Passing."
+            exit 0
+          fi
+
+          echo "❌ ClawText lifecycle policy violation: enforcing label present but no lifecycle docs were updated."
+          exit 1

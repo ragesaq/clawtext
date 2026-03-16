@@ -470,3 +470,20 @@ Address pre-release checklist (must-fix items) before announcement. Non-blocking
 **Retrofit locked: 2026-03-16**  
 **Assessor:** ClawText Northstar Review  
 **Confidence: HIGH**
+
+## Lifecycle retrofit delta (ClawTomation pass)
+
+This repo already had strong strategic and publication docs, but it lacked several lifecycle control layers:
+- no `docs/PRD.md`
+- no `docs/FLIGHT_CONTROL.md`
+- no explicit enforcement document
+- no change-routing document
+- no PR/CI lifecycle enforcement baseline
+
+These gaps matter because ClawText is no longer just being described for release; it is being finished inside a controlled project-delivery framework.
+
+### Retrofit recommendation
+- add lifecycle control docs
+- route remaining v2.0 hardening through milestones + Flight Control
+- use PRD as the executable definition for release hardening and finish work
+- add enforcement so future release claims stay aligned with supported behavior and evidence

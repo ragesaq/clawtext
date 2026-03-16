@@ -244,6 +244,23 @@ Clusters rebuild weekly (tunable). This means:
 
 ---
 
+
+## Lifecycle Canon
+
+ClawText is now being finished inside the ClawTomation lifecycle framework.
+
+Canonical lifecycle docs:
+- `docs/NORTHSTAR.md`
+- `docs/PRD.md`
+- `docs/MILESTONES.md`
+- `docs/FLIGHT_CONTROL.md`
+- `docs/POST_BRIEF.md`
+
+Supporting control docs:
+- `docs/ENFORCEMENT.md`
+- `docs/CHANGE_ROUTING.md`
+- `docs/RETROFIT_REPORT.md`
+
 ## Installation & Quick Start
 
 ### Install

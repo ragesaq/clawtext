@@ -426,3 +426,21 @@ These deliver value but are not required for 2.0:
 ---
 
 **Locked for v2.0: 2026-03-16**
+
+
+---
+
+## Lifecycle retrofit hardening
+
+### Added lifecycle control work
+- `docs/PRD.md` defines executable product-definition truth for ClawText finish work
+- `docs/FLIGHT_CONTROL.md` defines bounded-autonomy rules for remaining implementation/hardening
+- `docs/ENFORCEMENT.md` defines anti-drift expectations
+- `docs/CHANGE_ROUTING.md` defines how new operator guidance is routed
+- PR template + CI workflow establish lifecycle-aware review checks
+
+### Remaining finish-path priorities
+- verify promoted operational patterns are retrievable end-to-end
+- verify multi-agent memory isolation
+- verify continuity artifact consumption end-to-end
+- align package/release/public-story versioning clearly
