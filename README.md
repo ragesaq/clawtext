@@ -7,10 +7,10 @@
 [![npm](https://img.shields.io/npm/v/@openclaw/clawtext?label=%40openclaw%2Fclawtext&color=blue)](https://www.npmjs.com/package/@openclaw/clawtext)
 [![version](https://img.shields.io/badge/version-1.5.0-informational)](#install)
 [![OpenClaw Plugin](https://img.shields.io/badge/openclaw-plugin-blueviolet)](#install)
-[![Lanes](https://img.shields.io/badge/lanes-3-green)](#architecture--capabilities)
+[![Lanes](https://img.shields.io/badge/lanes-4-green)](#architecture--capabilities)
 [![Status](https://img.shields.io/badge/status-production-brightgreen)](#)
 
-🧠 **Working memory** &nbsp;·&nbsp; 📦 **Durable artifacts** &nbsp;·&nbsp; 🔁 **Continuity across sessions** &nbsp;·&nbsp; ⚙️ **Operational learning** &nbsp;·&nbsp; 🔍 **Hybrid retrieval**
+🧠 **Working memory** &nbsp;·&nbsp; 📦 **Durable artifacts** &nbsp;·&nbsp; 🔁 **Continuity across sessions** &nbsp;·&nbsp; ⚙️ **Operational learning** &nbsp;·&nbsp; 🌉 **ClawBridge transfer** &nbsp;·&nbsp; 🔍 **Hybrid retrieval**
 
 ---
 
@@ -32,46 +32,55 @@ Every LLM conversation is assembled at runtime. The model doesn't "remember" any
 | **Conversation history** | Current session messages only | ❌ resets on every new session |
 | **Prior context** | Past decisions, resolved problems, prior work | ❌ not populated by default |
 
-Ask an agent "what was Caesar's greatest military victory?" in a fresh session — it answers from training data. Ask it "what did we decide about the retry logic last week?" — the session boundary erased it. That third slot — prior context — is empty by default. Filling it is what separates an agent that continues from one that starts over.
+That empty third slot is where agent continuity breaks. Two questions show exactly how this plays out:
+
+| Question | What the LLM has | What happens |
+|---|---|---|
+| *"What was Caesar's greatest military victory?"* | Training data — general world knowledge | ✅ Answered correctly — no session context needed |
+| *"What did we decide about the retry logic last week?"* | Nothing — prior session is gone | ❌ No answer — the decision existed only in that session |
+
+The difference isn't intelligence. It's what's in that third slot. Filling it — automatically, reliably, without manual work — is the problem ClawText solves.
 
 ---
 
 ## How OpenClaw addresses context today
 
-OpenClaw directly addresses the first slot through a structured set of context guidance files injected at session start:
+Those two questions are a useful lens for understanding what OpenClaw's context system already handles well, and where the gap is.
 
-| File | What it fills in the prompt | How it's maintained |
-|---|---|---|
-| `SOUL.md` | Agent identity, voice, principles | Manually — rarely changes |
-| `USER.md` | User preferences, working style, commitments | Manually — updated occasionally |
-| `AGENT.md` | Task focus, project-level instructions | Manually — per project |
-| `MEMORY.md` | Key decisions, facts, curated patterns | Manually — as needed |
+OpenClaw injects a structured set of guidance files into every session:
 
-This is meaningful. The Caesar question gets a consistent, identity-aware answer every session. A well-maintained `MEMORY.md` means the retry logic decision can be there — if someone remembered to write it down.
+| File | What it contributes | Caesar question | Retry logic question |
+|---|---|---|---|
+| `SOUL.md` | Agent identity, voice, principles | ✅ Consistent, identity-aware answer | ✅ Same voice and reasoning style |
+| `USER.md` | User preferences, working style, commitments | ✅ Tailored to the user's context | ✅ Knows how the user thinks about decisions |
+| `AGENT.md` | Task focus, project-level instructions | ✅ Relevant if historical context is defined | ⚠️ Only if someone wrote the decision here |
+| `MEMORY.md` | Hand-curated decisions, facts, patterns | ✅ If someone added Caesar context manually | ⚠️ Only if someone remembered to write it down |
 
-The system is only as good as its last manual update. Prior session decisions don't surface unless someone captured them. Nothing grows or improves on its own.
+OpenClaw's guidance files are powerful for identity and preferences — they're always current because they're always maintained. But the retry logic decision? It lives in the prior session. If nobody manually captured it into `MEMORY.md`, that session boundary erased it.
+
+The system is only as strong as its last manual update.
 
 ---
 
 ## What ClawText adds
 
-That retry logic question — ClawText answers it without `MEMORY.md` ever being touched. The decision was captured automatically when it was made, scored, indexed, and stored. At prompt time, ClawText queries across everything and injects the most relevant results.
+ClawText answers the retry logic question without `MEMORY.md` ever being touched. The decision was captured automatically when it was made, scored, indexed, and stored. At prompt time, ClawText queries across everything and injects the most relevant results.
 
-| Prompt slot | Without ClawText | With ClawText |
+| Prompt slot | OpenClaw default | With ClawText |
 |---|---|---|
-| **System prompt** | OpenClaw config files (manual) | Same, plus auto-enriched operational guidance |
+| **System prompt** | Guidance files (manual) | Same, plus auto-enriched operational guidance |
 | **Conversation history** | Current session only | Current session only |
-| **Prior context** | `MEMORY.md` if manually updated | ✅ auto-retrieved from all prior sessions, ingested docs, and promoted patterns |
+| **Prior context** | `MEMORY.md` if manually updated | ✅ Auto-retrieved from all prior sessions, ingested docs, and promoted patterns |
 
-ClawText extends the OpenClaw memory model with three capabilities that don't exist in the default system:
+And it goes further. What happens when a session has been running for days and the thread is getting long? That working state — the live decisions, the active answers, the in-progress context — needs to move. ClawBridge packages the full working state and transfers it intact to a new thread, session, or surface. Not a summary. Not a copy of messages. The actual working context — knowledge, decisions, and answers as a unit — moves with the work.
 
-**Automatic capture** — context from real sessions is extracted, scored, and stored continuously. The agent earns memory without you maintaining it.
+| Question | OpenClaw default | With ClawText + ClawBridge |
+|---|---|---|
+| *"What was Caesar's greatest military victory?"* | ✅ Answered from training | ✅ Same — plus historically consistent with prior agent context |
+| *"What did we decide about the retry logic last week?"* | ❌ Session boundary erased it | ✅ Auto-retrieved from prior session capture |
+| *"We're starting a new thread — what did we establish?"* | ❌ Context lost at thread boundary | ✅ ClawBridge transferred the working state intact |
 
-**Semantic + hybrid retrieval** — at prompt time, ClawText searches all prior context using BM25 + semantic hybrid search and injects the most relevant results. The right context surfaces automatically, every session.
-
-**Operational learning** — repeated failures, successful patterns, and workflow insights accumulate over time. Agents inherit organizational wisdom automatically. Humans review and approve before anything becomes permanent.
-
-The `MEMORY.md` hand-curation workflow still works. ClawText builds on top of it — without replacing it.
+The `MEMORY.md` workflow still works. ClawText and ClawBridge build on top of it — without replacing it.
 
 ---
 
@@ -79,38 +88,41 @@ The `MEMORY.md` hand-curation workflow still works. ClawText builds on top of it
 
 > Automatic where it makes sense. Agent-led with user review where it doesn't. CLI available throughout.
 
-| Behavior | Mode | Implementation |
-|---|---|---|
-| Session context capture | 🤖 Automatic | Extraction cron every 20 min — no config, no intervention required |
-| Semantic index rebuild | 🤖 Automatic | Nightly at 2am UTC — full BM25 + semantic reindex |
-| Prior context injection | 🤖 Automatic | Every prompt, token-budgeted — no bloat |
-| Failure + pattern capture | 🤖 Automatic | On tool error — queued to operational learning lane |
-| External source ingest | 👤 Agent-led | You or an agent directs sources; CLI executes |
-| Memory promotion | 👤 Agent-led, user approves | Agent proposes candidates; nothing promotes silently |
-| `MEMORY.md` curation | 👤 Agent-led, user approves | Agent surfaces candidates; human approves changes |
-| Retrieval health check | 🖥️ CLI | `npm run operational:retrieval:health` |
-| Operational queue review | 🖥️ CLI | `openclaw run clawtext --operational` |
-| Ingest control | 🖥️ CLI | `openclaw run clawtext --ingest` |
+Every ClawText behavior falls into one of three operating modes. This isn't convention — it's the design contract that governs every feature decision:
 
-Nothing promotes to permanent memory without human approval. Everything is inspectable. This is non-negotiable and guides every feature decision.
+| Behavior | Mode | What runs | What it means in practice |
+|---|---|---|---|
+| Session context capture | 🤖 **Automatic** | Extraction cron every 20 min | Every session generates memory without any action from you. Decisions, patterns, and resolved problems enter the pipeline immediately. |
+| Semantic index rebuild | 🤖 **Automatic** | Nightly at 2am UTC | The full BM25 + semantic index rebuilds on a schedule. Retrieval quality improves as memory grows, without touching a config. |
+| Prior context injection | 🤖 **Automatic** | Every prompt, token-budgeted | The most relevant prior context surfaces at prompt time. If you've done the work before, the agent knows. No commands, no prompting. |
+| Failure + pattern capture | 🤖 **Automatic** | On every tool error | Tool failures, retries, and recovery paths are queued to the operational learning lane automatically. The system learns from mistakes without you logging them. |
+| External source ingest | 👤 **Agent-led** | On demand via CLI | You or an agent decides what external sources to bring in — repos, docs, threads, URLs. The agent runs the ingest; the result enters the same retrieval pipeline as everything else. |
+| Memory promotion | 👤 **Agent-led, you approve** | Review queue → approval | The agent identifies high-value candidates and proposes promotions. Nothing reaches permanent memory without your sign-off. The queue accumulates; you decide when to review. |
+| `MEMORY.md` curation | 👤 **Agent-led, you approve** | Agent surfaces candidates | The agent proposes additions to `MEMORY.md` based on what it's seen. You approve. The curated fast-path stays curated, not bloated. |
+| ClawBridge transfer | 👤 **Agent-led** | On demand via CLI | When work needs to move — new thread, new session, new agent — the agent runs ClawBridge to package and transfer the full working state. |
+| Retrieval health | 🖥️ **CLI** | `npm run operational:retrieval:health` | Inspect pipeline status, index freshness, and retrieval quality at any time. |
+| Operational queue | 🖥️ **CLI** | `openclaw run clawtext --operational` | Review, score, and act on the operational learning queue manually when needed. |
+| Ingest control | 🖥️ **CLI** | `openclaw run clawtext --ingest` | Direct ingest of specific sources outside of agent-led flows. |
+
+Nothing promotes to permanent memory without human approval. Everything is inspectable. This is non-negotiable.
 
 ---
 
 ## Architecture & Capabilities
 
-ClawText is built on three lanes. Each lane owns a distinct part of the memory lifecycle — capture, retrieval, and learning are separated by design so each can be tuned, inspected, and operated independently.
+ClawText is built on four lanes. Each owns a distinct part of the memory and continuity lifecycle — designed to be tuned, inspected, and operated independently.
 
 ### Lane 1 — Working Memory
 **capture → extract → index → inject**
 
 Every 20 minutes, the extraction cron pulls high-signal context from active sessions and stages it for indexing. Nightly, a full cluster rebuild reindexes everything using BM25 + semantic hybrid search. At every prompt build, the most relevant prior context is injected automatically — token-budgeted, no bloat.
 
-Structured handoff artifacts package active work so it can continue cleanly in another session, on another surface, or with another agent. Session context travels with the work.
+Prior decisions, resolved problems, and earned patterns surface in new sessions without any manual work.
 
 ### Lane 2 — Ingest
 **external sources → structured, searchable memory**
 
-Repos, markdown docs, URLs, JSON exports, and Discord thread transcripts can all be brought into the same retrieval pipeline as session-captured memory. Ingested content is indexed and becomes queryable alongside everything else — no separate lookup, no silos.
+Repos, markdown docs, URLs, JSON exports, and Discord thread transcripts enter the same retrieval pipeline as session-captured memory. Ingested content is indexed alongside everything else — no separate lookup, no silos. Anything worth knowing becomes queryable.
 
 ### Lane 3 — Operational Learning
 **failures and patterns → reusable organizational wisdom**
@@ -118,6 +130,15 @@ Repos, markdown docs, URLs, JSON exports, and Discord thread transcripts can all
 Tool failures, recovery workflows, and successful operational patterns are captured automatically on error. A review queue accumulates candidates with recurrence scoring — one-time failures don't surface, repeated patterns do. The agent proposes promotions; you approve; promoted patterns persist as permanent retrievable guidance for all future sessions.
 
 Teams stop re-learning the same lessons.
+
+### Lane 4 — ClawBridge
+**active working context → structured transfer → destination surfaces**
+
+When work needs to move — a thread grows too long, a session needs to continue somewhere else, a new agent takes over — ClawBridge packages the full working state and transfers it intact.
+
+This isn't a summary or a copy of messages. A ClawBridge packet carries the knowledge, decisions, and answers from an active session as a cohesive unit. Three artifacts are generated: a short human-readable summary, a full context packet for the next agent, and a bootstrap doc telling the next session exactly where to start and what not to re-derive.
+
+ClawText remembers durable knowledge. ClawBridge moves active context. Both are required for true continuity.
 
 ### Memory layers
 
@@ -130,7 +151,7 @@ Teams stop re-learning the same lessons.
 
 ---
 
-## Comparison
+## Where ClawText fits
 
 | Capability | OpenClaw default | ClawText | MemGPT | Zep | mem0 |
 |---|---|---|---|---|---|
@@ -140,6 +161,7 @@ Teams stop re-learning the same lessons.
 | Prompt-time auto-injection | ❌ | ✅ | ✅ | ⚠️ app-controlled | ✅ |
 | Operational learning lane | ❌ | ✅ | ❌ | ❌ | ❌ |
 | Human review before promotion | n/a | ✅ | ❌ | ❌ | ❌ |
+| Active context transfer (ClawBridge) | ❌ | ✅ | ❌ | ❌ | ❌ |
 | Structured session handoffs | ❌ | ✅ | ❌ | ❌ | ❌ |
 | External ingest (docs/repos/URLs) | ❌ | ✅ | ❌ | ⚠️ partial | ⚠️ partial |
 | File-first, auditable state | ✅ | ✅ | ❌ | ❌ | ❌ |
@@ -183,26 +205,43 @@ ClawText activates automatically from first run. No additional configuration req
 
 ---
 
-## Tuning
+## Tuning — automatic behaviors
 
-Every ClawText behavior ties to a specific knob. Here's the full map — what it controls, and when to move it:
+These knobs govern the pipeline that runs without any intervention. Adjusting them changes how aggressively ClawText captures and promotes context.
 
 | Knob | Default | Controls | Raise when | Lower when |
 |---|---|---|---|---|
-| `admissionConfidence` | `0.60` | Minimum confidence to promote a capture into L2 curated memory | L2 has too much noise | Useful context is being filtered out |
-| `admissionScore` | `0.80` | Minimum score for L1 hot cache admission | Hot cache is bloated or slow | Relevant context is missing from prompts |
-| Extraction cron interval | Every 20 min | How often session context is extracted and staged | Stable, low-activity sessions | High-volume sessions where recent context isn't arriving fast enough |
-| Cluster rebuild schedule | Nightly 2am UTC | How often the full BM25 + semantic index is rebuilt | Memory is stable and low-churn | Index feels stale mid-session |
+| `admissionConfidence` | `0.60` | Minimum confidence to admit a capture into L2 curated memory | L2 is noisy — low-quality captures are getting through | Good context is being dropped — relevant decisions aren't surfacing |
+| `admissionScore` | `0.80` | Minimum score for L1 hot cache admission | Hot cache is bloated or retrieval feels slow | Prompt context feels thin — relevant recent work isn't appearing |
+| Extraction cron interval | Every 20 min | How often session context is extracted and staged for indexing | Sessions are stable and low-volume | High-activity sessions where recent context needs to arrive faster |
+| Cluster rebuild schedule | Nightly 2am UTC | How often the full BM25 + semantic index is rebuilt | Memory is stable — rebuilds feel unnecessary | Index feels stale; retrieval misses recent captures |
+
+### Health check
+```bash
+npm run operational:retrieval:health    # pipeline status, index freshness, retrieval quality
+```
+
+---
+
+## Tuning — agent-led and manual
+
+These behaviors run on demand and involve judgment calls. The agent surfaces candidates and proposes actions; you make the call.
+
+| Behavior | How to trigger | What to decide |
+|---|---|---|
+| **Operational learning review** | `openclaw run clawtext --operational` | Review queued candidates, approve or dismiss promotions |
+| **Memory promotion** | Agent proposes during session | Approve or reject — nothing enters permanent memory without your sign-off |
+| **`MEMORY.md` curation** | Agent surfaces additions | Approve new entries — keeps the curated fast-path signal-dense, not bloated |
+| **Ingest** | `openclaw run clawtext --ingest` | Direct what external sources to bring in — repos, docs, threads, URLs |
+| **ClawBridge transfer** | Agent-led or CLI | Decide when work needs to move and where it should land |
 
 ### Operational learning threshold
 
-The operational learning lane promotes based on **recurrence** — a pattern that appears once doesn't surface for review. Patterns that repeat accumulate score until they cross the promotion threshold. This prevents one-off noise from ever reaching permanent memory.
+The operational learning lane promotes based on **recurrence**. A pattern that appears once stays in the queue. Patterns that repeat accumulate score. Only consistent, recurring patterns cross the promotion threshold — one-off noise never reaches permanent memory.
 
-### Health and queue status
-
+### Queue status
 ```bash
-npm run operational:retrieval:health       # retrieval pipeline status + index freshness
-openclaw run clawtext --operational:status  # operational learning queue summary
+openclaw run clawtext --operational:status    # review queue summary, recurrence counts
 ```
 
 ---
