@@ -4,9 +4,13 @@
 
 ---
 
+<div align="center">
+
 [![version](https://img.shields.io/badge/version-0.2.0-informational)](#install)
 [![OpenClaw Plugin](https://img.shields.io/badge/openclaw-plugin-blueviolet)](#install)
 [![Status](https://img.shields.io/badge/status-deploy--ready-yellow)](#)
+
+</div>
 
 🧠 **Working memory** &nbsp;·&nbsp; 📦 **Durable artifacts** &nbsp;·&nbsp; 🔁 **Continuity across sessions** &nbsp;·&nbsp; ⚙️ **Operational learning** &nbsp;·&nbsp; 🌉 **ClawBridge transfer** &nbsp;·&nbsp; 🔍 **Hybrid retrieval**
 
