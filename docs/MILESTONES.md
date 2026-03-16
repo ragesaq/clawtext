@@ -444,3 +444,5 @@ These deliver value but are not required for 2.0:
 - verify multi-agent memory isolation
 - verify continuity artifact consumption end-to-end
 - align package/release/public-story versioning clearly
+
+See detailed finish plan: `docs/RELEASE_HARDENING_PACKET.md`
