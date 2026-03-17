@@ -28,7 +28,12 @@
     "journal:restore": "node scripts/restore-context.mjs",
     "journal:restore:inject": "node scripts/restore-context.mjs --format inject",
     "journal:maintenance": "node scripts/journal-maintenance.mjs",
-    "journal:report": "node scripts/journal-maintenance.mjs --report-only"
+    "journal:report": "node scripts/journal-maintenance.mjs --report-only",
+    "restore:config": "node scripts/configure-restore.mjs",
+    "restore:config:deep": "node scripts/configure-restore.mjs --preset deep",
+    "restore:config:full": "node scripts/configure-restore.mjs --preset full",
+    "restore:config:off": "node scripts/configure-restore.mjs --preset off",
+    "restore:config:reset": "node scripts/configure-restore.mjs --reset"
   },
   "keywords": [
     "memory",

@@ -4,16 +4,43 @@ import os from 'os';
 
 const WORKSPACE = path.join(os.homedir(), '.openclaw/workspace');
 const JOURNAL_DIR = path.join(WORKSPACE, 'journal');
+const CONFIG_FILE = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'restore-config.json');
 
-// Only inject context if the most recent message is within this window
-const MAX_CONTEXT_AGE_MS = 8 * 60 * 60 * 1000; // 8 hours
-// How many messages to inject into bootstrap context
-const INJECT_LIMIT = 20;
-// Minimum messages before bothering to inject
-const MIN_MESSAGES = 3;
+// ── Defaults — all overridable via restore-config.json ───────────────────────
+const DEFAULTS = {
+  // How many messages to inject into bootstrap context
+  injectLimit: 20,
+  // Only inject if most recent message is within this many hours
+  maxContextAgeHours: 8,
+  // Minimum messages before bothering to inject
+  minMessages: 3,
+  // How many journal days to scan
+  lookbackDays: 2,
+  // Max bytes of content to inject (token budget guard)
+  // ~4 bytes/token; 8000 bytes ≈ 2000 tokens — safe for most models
+  // raise to 32000 for large context windows (e.g. 200k token models)
+  maxContentBytes: 8000,
+  // Per-message content preview cap (bytes)
+  previewCap: 300,
+  // Whether auto-restore is enabled at all
+  enabled: true,
+};
+
+function loadConfig(): typeof DEFAULTS {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      const overrides = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+      return { ...DEFAULTS, ...overrides };
+    }
+  } catch { /* fallthrough to defaults */ }
+  return { ...DEFAULTS };
+}
 
 // ── Read journal records for a channel from recent files ─────────────────────
-function readRecentJournalRecords(channelId: string, limitDays = 2): Array<Record<string, unknown>> {
+function readRecentJournalRecords(
+  channelId: string,
+  limitDays: number,
+): Array<Record<string, unknown>> {
   if (!fs.existsSync(JOURNAL_DIR)) return [];
 
   const files = fs.readdirSync(JOURNAL_DIR)
@@ -41,46 +68,65 @@ function readRecentJournalRecords(channelId: string, limitDays = 2): Array<Recor
   return records.sort((a, b) => (Number(a.ts) || 0) - (Number(b.ts) || 0));
 }
 
-// ── Format recent records as a compact context block ─────────────────────────
-function formatContextBlock(records: Array<Record<string, unknown>>, channelId: string): string {
+// ── Format records as a compact context block, respecting byte budget ─────────
+function formatContextBlock(
+  records: Array<Record<string, unknown>>,
+  channelId: string,
+  cfg: typeof DEFAULTS,
+): string {
   const messages = records.filter(r => r.type !== 'checkpoint');
   const checkpoints = records.filter(r => r.type === 'checkpoint');
   const lastCheckpoint = checkpoints[checkpoints.length - 1];
 
-  const recent = messages.slice(-INJECT_LIMIT);
-  if (recent.length < MIN_MESSAGES) return '';
+  // Start from the tail, accumulate until we hit the byte budget
+  const candidates = messages.slice(-cfg.injectLimit);
+  if (candidates.length < cfg.minMessages) return '';
 
-  const first = new Date(Number(recent[0].ts)).toISOString().replace('T', ' ').slice(0, 16);
-  const last = new Date(Number(recent[recent.length - 1].ts)).toISOString().replace('T', ' ').slice(0, 16);
-  const threadName = (recent.find(r => r.threadName) as Record<string, unknown> | undefined)?.threadName as string || channelId;
+  const threadName = (candidates.find(r => r.threadName) as Record<string, unknown> | undefined)
+    ?.threadName as string || channelId;
   const lastTopics = lastCheckpoint
     ? (lastCheckpoint.recentTopics as string[] || []).join(', ')
     : '';
 
-  const lines = [
+  // Budget-aware message selection: walk from newest backwards,
+  // stop when we'd exceed maxContentBytes
+  const selected: typeof candidates = [];
+  let bytesUsed = 0;
+  for (let i = candidates.length - 1; i >= 0; i--) {
+    const content = (candidates[i].content as string || '').trim();
+    const preview = content.length > cfg.previewCap
+      ? content.slice(0, cfg.previewCap) + '…'
+      : content;
+    bytesUsed += preview.length;
+    if (bytesUsed > cfg.maxContentBytes) break;
+    selected.unshift(candidates[i]);
+  }
+
+  if (selected.length < cfg.minMessages) return '';
+
+  const first = new Date(Number(selected[0].ts)).toISOString().replace('T', ' ').slice(0, 16);
+  const last = new Date(Number(selected[selected.length - 1].ts)).toISOString().replace('T', ' ').slice(0, 16);
+
+  const header = [
     `<!-- CLAWTEXT CONTEXT RESTORE: journal replay for ${threadName} -->`,
-    `<!-- ${recent.length} messages | ${first} → ${last} | channel: ${channelId} -->`,
-    lastTopics ? `<!-- Recent topics: ${lastTopics} -->` : '',
+    `<!-- ${selected.length} messages | ${first} → ${last} | channel: ${channelId} | budget: ${cfg.maxContentBytes}b -->`,
+    lastTopics ? `<!-- Recent topics: ${lastTopics} -->` : null,
     '',
     '**[Restored context from journal — recent conversation]**',
     '',
-  ];
+  ].filter(l => l !== null) as string[];
 
-  for (const rec of recent) {
+  const body: string[] = [];
+  for (const rec of selected) {
     const time = new Date(Number(rec.ts)).toISOString().replace('T', ' ').slice(0, 16);
     const arrow = rec.dir === 'in' ? '→' : '←';
     const who = (rec.sender || rec.from || (rec.dir === 'in' ? 'user' : 'agent')) as string;
     const content = (rec.content as string || '').trim();
-    const preview = content.length > 300 ? content.slice(0, 300) + '…' : content;
-    if (preview) {
-      lines.push(`[${time}] ${arrow} **${who}:** ${preview}`);
-    }
+    const preview = content.length > cfg.previewCap ? content.slice(0, cfg.previewCap) + '…' : content;
+    if (preview) body.push(`[${time}] ${arrow} **${who}:** ${preview}`);
   }
 
-  lines.push('');
-  lines.push('<!-- END CLAWTEXT CONTEXT RESTORE -->');
-
-  return lines.filter(l => l !== null).join('\n');
+  return [...header, ...body, '', '<!-- END CLAWTEXT CONTEXT RESTORE -->'].join('\n');
 }
 
 // ── Hook handler ──────────────────────────────────────────────────────────────
@@ -91,47 +137,44 @@ const handler = async (event: {
   context: Record<string, unknown>;
   messages: string[];
 }) => {
-  // Only on agent bootstrap
   if (event.type !== 'agent' || event.action !== 'bootstrap') return;
 
   try {
-    const ctx = event.context || {};
+    const cfg = loadConfig();
+    if (!cfg.enabled) return;
 
-    // Derive channel from session key or context
-    // Session key format: agent:channel-mini:discord:channel:<channelId>
+    const ctx = event.context || {};
     const sessionKey = event.sessionKey || '';
     let channelId = (ctx.channelId as string) || '';
 
+    // Derive channel from sessionKey if not in context
     if (!channelId && sessionKey.includes(':channel:')) {
       channelId = sessionKey.split(':channel:').pop() || '';
     }
     if (!channelId && sessionKey.includes(':topic:')) {
       channelId = sessionKey.split(':topic:').pop() || '';
     }
-
     if (!channelId || channelId === 'unknown') return;
 
-    const records = readRecentJournalRecords(channelId);
-    if (records.length < MIN_MESSAGES) return;
+    const records = readRecentJournalRecords(channelId, cfg.lookbackDays);
+    if (records.length < cfg.minMessages) return;
 
-    // Check if most recent message is fresh enough to be worth injecting
+    // Check freshness
     const lastMsg = records.filter(r => r.type !== 'checkpoint').slice(-1)[0];
     if (!lastMsg) return;
-    const age = Date.now() - Number(lastMsg.ts);
-    if (age > MAX_CONTEXT_AGE_MS) return;
+    const ageMs = Date.now() - Number(lastMsg.ts);
+    if (ageMs > cfg.maxContextAgeHours * 60 * 60 * 1000) return;
 
-    const contextBlock = formatContextBlock(records, channelId);
+    const contextBlock = formatContextBlock(records, channelId, cfg);
     if (!contextBlock) return;
 
-    // Push into the bootstrap messages array — OpenClaw injects these into
-    // the session context during startup
     event.messages.push(contextBlock);
 
     if (process.env.DEBUG_CLAWTEXT) {
-      console.log(`[clawtext-restore] injected ${records.length} journal records for channel ${channelId}`);
+      const totalBytes = contextBlock.length;
+      console.log(`[clawtext-restore] injected ${records.length} records, ${totalBytes} bytes for channel ${channelId}`);
     }
   } catch (err) {
-    // Never crash bootstrap
     if (process.env.DEBUG_CLAWTEXT) {
       console.error('[clawtext-restore] error:', err instanceof Error ? err.message : String(err));
     }
