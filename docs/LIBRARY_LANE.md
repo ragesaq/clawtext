@@ -526,5 +526,17 @@ The first seed entries now live in:
 - `docs/library/entries/project-status-clawtext.md`
 - `docs/library/entries/architecture-overview-clawtext.md`
 - `docs/library/entries/repo-map-clawtext.md`
+- `docs/library/entries/proxmox-9-1-start-here.md`
 
-These are example curated library records for ClawText itself. They are repo-stored dogfood examples, not the final runtime store.
+These are example curated library records for ClawText itself plus the first external-reference start-here entry. They are repo-stored dogfood examples, not the final runtime store.
+
+## 19. First external-reference collection target
+
+The first real external-reference collection target is:
+- **Proxmox VE official docs 9.1**
+
+Supporting planning artifacts:
+- `docs/library/collections/proxmox-official-docs-9.1.yaml`
+- `docs/library/entries/proxmox-9-1-start-here.md`
+- `docs/library/overlays/proxmox-our-environment.example.md`
+- `docs/LIBRARY_PROXMOX_9_1_COLLECTION_PLAN.md`

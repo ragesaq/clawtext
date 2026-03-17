@@ -1,0 +1,35 @@
+kind: library-collection
+slug: proxmox-official-docs-9-1
+title: Proxmox VE Official Documentation 9.1
+project: external-reference
+source_type: official-docs
+trust_level: official
+status: planned
+visibility: shared
+version: 9.1
+last_reviewed: 2026-03-17
+refresh_policy: manual
+retrieval_priority: high
+sources:
+  - url: https://pve.proxmox.com/pve-docs/
+    role: documentation-index
+  - url: https://pve.proxmox.com/pve-docs/pve-admin-guide.html
+    role: admin-guide-html
+  - url: https://www.proxmox.com/en/downloads/proxmox-virtual-environment/documentation/proxmox-ve-admin-guide-for-9-x
+    role: admin-guide-download-page
+topics:
+  - proxmox
+  - proxmox-ve
+  - virtualization
+  - kvm
+  - lxc
+  - zfs
+  - clustering
+intent:
+  - stable trusted reference corpus for Proxmox VE 9.1
+  - preferred retrieval base for reference-seeking Proxmox questions
+  - foundation for local overlays about our intended Proxmox environment
+notes:
+  - Use official Proxmox docs as the canonical upstream source set.
+  - Prefer the documentation index plus the admin guide as the initial ingestion target.
+  - Community/forum material should not outrank this collection when official docs cover the topic.
