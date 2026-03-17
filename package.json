@@ -23,7 +23,8 @@
     "eval:memory-evolution": "node scripts/eval-memory-evolution.mjs",
     "memory:report": "node scripts/memory-health-report.js",
     "library:ingest": "node scripts/library-ingest.mjs",
-    "library:index": "node scripts/library-index.mjs"
+    "library:index": "node scripts/library-index.mjs",
+    "library:smoke": "node scripts/library-retrieval-smoke.mjs"
   },
   "keywords": [
     "memory",
