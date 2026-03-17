@@ -11,6 +11,7 @@ export * from './slot-provider';
 export * from './budget-manager';
 export * from './context-pressure';
 export * from './prompt-compositor';
+export * from './providers/clawbridge-provider';
 
 function extractUserText(messages: unknown[] = []): string {
   if (!Array.isArray(messages) || messages.length === 0) {
