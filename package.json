@@ -37,7 +37,9 @@
     "restore:config:off": "node scripts/configure-restore.mjs --preset off",
     "restore:config:reset": "node scripts/configure-restore.mjs --reset",
     "optimize:report": "node scripts/optimization-report.mjs",
-    "optimize:report:last": "node scripts/optimization-report.mjs --last 10"
+    "optimize:report:last": "node scripts/optimization-report.mjs --last 10",
+    "discord:backfill": "node scripts/discord-backfill.mjs",
+    "discord:backfill:dry": "node scripts/discord-backfill.mjs --dry-run --verbose"
   },
   "keywords": [
     "memory",

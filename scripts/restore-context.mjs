@@ -134,12 +134,13 @@ function formatSummary(records, channelId) {
   ];
 
   for (const rec of records) {
+    if (rec.type === 'checkpoint') continue; // skip checkpoint metadata records
     const time = new Date(rec.ts).toISOString().replace('T', ' ').slice(0, 16);
     const arrow = rec.dir === 'in' ? '→' : '←';
     const who = rec.sender || rec.from || (rec.dir === 'in' ? 'user' : 'agent');
-    const preview = rec.content.length > 500
-      ? rec.content.slice(0, 500) + '…'
-      : rec.content;
+    const content = rec.content || '';
+    const preview = content.length > 500 ? content.slice(0, 500) + '…' : content;
+    if (!preview.trim()) continue;
     lines.push(`**[${time}] ${arrow} ${who}:**`);
     lines.push(preview);
     lines.push('');
