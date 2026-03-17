@@ -5,6 +5,7 @@ import os from 'os';
 const WORKSPACE = path.join(os.homedir(), '.openclaw/workspace');
 const STATE_DIR = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'ingest');
 const BUFFER_FILE = path.join(STATE_DIR, 'extract-buffer.jsonl');
+const JOURNAL_DIR = path.join(WORKSPACE, 'journal');
 
 /**
  * ClawText Auto-Extract Hook
@@ -74,9 +75,13 @@ const handler = async (event) => {
 
     const from = ctx.from || ctx.to || 'unknown';
     const rawLog = isRawLog(content);
+    const nowMs = Date.now();
+    const sessionId = ctx.sessionId || ctx.conversationId || ctx.groupId || null;
+    const threadName = ctx.threadName || ctx.groupSubject || ctx.conversationLabel || null;
+    const sender = ctx.senderLabel || ctx.sender || from;
 
     const record = {
-      ts: Date.now(),
+      ts: nowMs,
       dir: event.action === 'sent' ? 'out' : 'in',
       from,
       channel: ctx.channelId || 'unknown',
@@ -86,13 +91,38 @@ const handler = async (event) => {
       ...(rawLog ? { _raw_log: true } : {}),
     };
 
-    if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
+    // Journal record — richer, permanent, never pruned
+    const journalRecord = {
+      ts: nowMs,
+      iso: new Date(nowMs).toISOString(),
+      dir: event.action === 'sent' ? 'out' : 'in',
+      sender,
+      channel: ctx.channelId || 'unknown',
+      sessionId,
+      threadName,
+      content: content.slice(0, 8000),
+      ...(rawLog ? { _raw_log: true } : {}),
+    };
 
-    // Append to buffer (fire-and-forget, no await to stay fast)
-    const line = JSON.stringify(record) + '\n';
-    fs.appendFile(BUFFER_FILE, line, (err) => {
+    if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
+    if (!fs.existsSync(JOURNAL_DIR)) fs.mkdirSync(JOURNAL_DIR, { recursive: true });
+
+    const today = new Date(nowMs).toISOString().slice(0, 10);
+    const journalFile = path.join(JOURNAL_DIR, `${today}.jsonl`);
+
+    // Append to extract buffer (fire-and-forget)
+    const bufferLine = JSON.stringify(record) + '\n';
+    fs.appendFile(BUFFER_FILE, bufferLine, (err) => {
       if (err && process.env.DEBUG_CLAWTEXT) {
         console.error('[clawtext-extract] buffer write error:', err.message);
+      }
+    });
+
+    // Append to permanent journal (fire-and-forget, separate file)
+    const journalLine = JSON.stringify(journalRecord) + '\n';
+    fs.appendFile(journalFile, journalLine, (err) => {
+      if (err && process.env.DEBUG_CLAWTEXT) {
+        console.error('[clawtext-extract] journal write error:', err.message);
       }
     });
   } catch (err) {

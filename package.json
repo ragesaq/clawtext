@@ -24,7 +24,9 @@
     "memory:report": "node scripts/memory-health-report.js",
     "library:ingest": "node scripts/library-ingest.mjs",
     "library:index": "node scripts/library-index.mjs",
-    "library:smoke": "node scripts/library-retrieval-smoke.mjs"
+    "library:smoke": "node scripts/library-retrieval-smoke.mjs",
+    "journal:restore": "node scripts/restore-context.mjs",
+    "journal:restore:inject": "node scripts/restore-context.mjs --format inject"
   },
   "keywords": [
     "memory",
@@ -46,7 +48,11 @@
     "typescript": "^5.3.0"
   },
   "openclaw": {
-    "extensions": ["./dist/index.js"],
-    "skills": ["./docs"]
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "skills": [
+      "./docs"
+    ]
   }
 }
