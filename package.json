@@ -26,7 +26,9 @@
     "library:index": "node scripts/library-index.mjs",
     "library:smoke": "node scripts/library-retrieval-smoke.mjs",
     "journal:restore": "node scripts/restore-context.mjs",
-    "journal:restore:inject": "node scripts/restore-context.mjs --format inject"
+    "journal:restore:inject": "node scripts/restore-context.mjs --format inject",
+    "journal:maintenance": "node scripts/journal-maintenance.mjs",
+    "journal:report": "node scripts/journal-maintenance.mjs --report-only"
   },
   "keywords": [
     "memory",
