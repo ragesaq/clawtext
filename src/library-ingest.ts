@@ -6,6 +6,7 @@ import {
   loadLibraryCollectionManifest,
   type LibraryCollectionManifest,
 } from './library';
+import { ClawTextLibraryIndex } from './library-index';
 import {
   getClawTextLibraryCollectionsDir,
   getClawTextLibraryIndexesDir,
@@ -184,6 +185,9 @@ export class ClawTextLibraryIngest {
       path.join(indexesDir, `${manifest.slug}.index.json`),
       JSON.stringify(collectionIndex, null, 2),
     );
+
+    const indexer = new ClawTextLibraryIndex(this.workspacePath);
+    indexer.build();
 
     return {
       collection: manifest.slug,

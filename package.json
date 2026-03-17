@@ -22,7 +22,8 @@
     "breadcrumb:log": "node scripts/log-memory-evolution-breadcrumb.mjs",
     "eval:memory-evolution": "node scripts/eval-memory-evolution.mjs",
     "memory:report": "node scripts/memory-health-report.js",
-    "library:ingest": "node scripts/library-ingest.mjs"
+    "library:ingest": "node scripts/library-ingest.mjs",
+    "library:index": "node scripts/library-index.mjs"
   },
   "keywords": [
     "memory",
