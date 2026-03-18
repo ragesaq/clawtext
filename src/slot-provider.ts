@@ -4,6 +4,7 @@ export type ContextSlotSource =
   | 'library'
   | 'clawbridge'
   | 'topic-anchor'
+  | 'operator-recall-anchor'
   | 'recent-history'
   | 'mid-history'
   | 'deep-history'

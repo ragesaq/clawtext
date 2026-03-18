@@ -123,6 +123,7 @@ export class Clawptimizer {
       system: 1,
       memory: 0.92,
       'topic-anchor': 0.96,
+      'operator-recall-anchor': 1,
       library: 0.88,
       journal: 0.82,
       'recent-history': 0.8,

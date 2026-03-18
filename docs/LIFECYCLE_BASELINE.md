@@ -49,6 +49,6 @@ last_updated: 2026-03-17
 
 ## Notes / exceptions
 - ClawText is the sole public PsiClawOps repo.
-- Pre-existing governance docs (NORTHSTAR, PRD, MILESTONES, FLIGHT_CONTROL, POST_BRIEF) retained as-is — rich pre-ClawTomation content.
-- NORTHSTAR.md does not yet have ClawTomation YAML front matter (project_structure field) — retained in original format, no breaking change.
+- Pre-existing governance docs (NORTHSTAR, PRD, MILESTONES, FLIGHT_CONTROL, POST_BRIEF) retained with rich pre-ClawTomation content.
+- NORTHSTAR.md now carries YAML front matter while preserving its richer ClawText-native body structure.
 - Enforcement mode: private-stealth (github-hard blocked by GitHub plan).

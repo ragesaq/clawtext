@@ -108,12 +108,74 @@ function parsePromptSections(prompt: string): Array<{ title: string; content: st
 
 function priorityForSource(source: ContextSlotSource): number {
   const ordering: Record<string, number> = {
-    system: 10, memory: 20, 'topic-anchor': 25, library: 30, clawbridge: 40,
-    'recent-history': 50, 'mid-history': 60, 'deep-history': 70,
-    'decision-tree': 80, journal: 90, 'cross-session': 100,
-    'situational-awareness': 110, custom: 120,
+    system: 10,
+    'operator-recall-anchor': 15,
+    memory: 20,
+    'topic-anchor': 25,
+    library: 30,
+    clawbridge: 40,
+    'recent-history': 50,
+    'mid-history': 60,
+    'deep-history': 70,
+    'decision-tree': 80,
+    journal: 90,
+    'cross-session': 100,
+    'situational-awareness': 110,
+    custom: 120,
   };
   return ordering[source] ?? 999;
+}
+
+function extractOperatorRecallAnchor(userMessage: string): string | null {
+  const text = userMessage.trim();
+  if (!text) return null;
+
+  const signals: string[] = [];
+  const lowered = text.toLowerCase();
+
+  const phraseChecks: Array<[RegExp, string]> = [
+    [/\byou forgot\b/i, 'explicit continuity complaint: "you forgot"'],
+    [/\bwe talked about\b/i, 'explicit continuity cue: "we talked about"'],
+    [/\bearlier in the thread\b/i, 'explicit thread continuity cue'],
+    [/\bin the thread we were posting in\b/i, 'explicit thread reference'],
+    [/\bit talked about\b/i, 'explicit prior-content pointer'],
+    [/\bwe went over this\b/i, 'explicit prior discussion pointer'],
+  ];
+
+  for (const [pattern, label] of phraseChecks) {
+    if (pattern.test(text)) signals.push(label);
+  }
+
+  const snowflakes = [...text.matchAll(/\b\d{17,20}\b/g)].map((m) => m[0]);
+  if (snowflakes.length > 0) {
+    signals.push(`referenced message/thread IDs: ${snowflakes.slice(0, 3).join(', ')}`);
+  }
+
+  const inlineCode = [...text.matchAll(/`([^`]+)`/g)].map((m) => m[1].trim()).filter(Boolean);
+  if (inlineCode.length > 0) {
+    signals.push(`inline technical anchors: ${inlineCode.slice(0, 4).join(', ')}`);
+  }
+
+  const pathMatches = [...text.matchAll(/(?:\/[-\w./]+|[-\w.]+\.(?:conf|json|yaml|yml|md|ts|js))/g)]
+    .map((m) => m[0])
+    .filter(Boolean);
+  if (pathMatches.length > 0) {
+    signals.push(`path/config anchors: ${pathMatches.slice(0, 4).join(', ')}`);
+  }
+
+  const keywordAnchors = ['dfree', 'samba', 'time machine', 'mount failed', 'fruit:time machine'];
+  const matchedKeywords = keywordAnchors.filter((term) => lowered.includes(term));
+  if (matchedKeywords.length > 0) {
+    signals.push(`keyword anchors: ${matchedKeywords.join(', ')}`);
+  }
+
+  if (signals.length === 0) return null;
+
+  return [
+    '## Operator Recall Anchor',
+    ...signals.map((line) => `- ${line}`),
+    `- user cue: ${text}`,
+  ].join('\n');
 }
 
 function runClawptimization(
@@ -160,6 +222,29 @@ function runClawptimization(
   });
 
   compositor.register(new TopicAnchorProvider({ workspacePath: WORKSPACE }));
+
+  const userMessage = extractUserText(messages);
+  const recallAnchor = extractOperatorRecallAnchor(userMessage);
+  if (recallAnchor) {
+    const anchorBytes = Buffer.byteLength(recallAnchor, 'utf8');
+    const recallProvider: SlotProvider = {
+      id: 'operator-recall-anchor',
+      source: 'operator-recall-anchor',
+      priority: priorityForSource('operator-recall-anchor'),
+      available: () => true,
+      fill: () => [{
+        id: 'Operator Recall Anchor',
+        source: 'operator-recall-anchor',
+        content: recallAnchor,
+        score: 1,
+        bytes: anchorBytes,
+        included: false,
+        reason: 'explicit user continuity cue',
+      }],
+      prunable: false,
+    };
+    compositor.register(recallProvider);
+  }
 
   const bySource = new Map<ContextSlotSource, Array<{ title: string; content: string; source: ContextSlotSource }>>();
   for (const section of parsed) {
