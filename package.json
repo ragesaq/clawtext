@@ -31,6 +31,7 @@
     "journal:restore:inject": "node scripts/restore-context.mjs --format inject",
     "journal:maintenance": "node scripts/journal-maintenance.mjs",
     "journal:report": "node scripts/journal-maintenance.mjs --report-only",
+    "journal:reindex": "node scripts/journal-reindex.mjs",
     "restore:config": "node scripts/configure-restore.mjs",
     "restore:config:deep": "node scripts/configure-restore.mjs --preset deep",
     "restore:config:full": "node scripts/configure-restore.mjs --preset full",
