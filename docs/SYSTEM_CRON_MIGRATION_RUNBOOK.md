@@ -68,7 +68,26 @@ The remaining fallback OpenClaw cron job (`clawtext-journal-commit`, currently d
 
 This maps to GPT-5.4-mini in the current OpenClaw model alias policy.
 
+## Install / update
+
+```bash
+npm run systemd:install
+```
+
+What it does:
+- copies repo unit templates into `~/.config/systemd/user/`
+- runs `systemctl --user daemon-reload`
+- enables and starts the 3 ClawText timers
+
 ## Verification commands
+
+```bash
+npm run systemd:status
+```
+
+Direct systemd checks:
+
+> Note: the `.service` units are **oneshot** jobs, so a healthy state after completion is usually `ActiveState=inactive` and `SubState=dead` with `Result=success`. The timers are the long-lived active units.
 
 ```bash
 systemctl --user list-timers --all 'clawtext-*' --no-pager
@@ -93,7 +112,18 @@ systemctl --user start clawtext-operational-maintenance.service
 
 OpenClaw cron jobs were disabled, not deleted.
 
-Rollback steps:
+Fast rollback:
+
+```bash
+npm run systemd:rollback
+```
+
+What it does:
+1. disables the 3 user timers
+2. re-enables the prior OpenClaw jobs
+3. prints the current `openclaw cron list`
+
+Manual rollback steps:
 1. Disable user timers:
    ```bash
    systemctl --user disable --now clawtext-extract-buffer.timer clawtext-daily-cluster-rebuild.timer clawtext-operational-maintenance.timer
