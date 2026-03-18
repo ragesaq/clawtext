@@ -18,7 +18,7 @@ last_updated: 2026-03-17
 - Blade path: none
 
 ## ClawTomation baseline status
-- Framework version: 2026-03-18.c
+- Framework version: 2026-03-18.d
 - Baseline version: 2026-03-17.a
 - Last sync date: 2026-03-18
 - Sync result: partially-synced-needs-github-settings
