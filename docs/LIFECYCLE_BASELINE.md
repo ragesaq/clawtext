@@ -3,37 +3,37 @@ doc: LIFECYCLE_BASELINE
 version: 0.2.0
 status: active
 owner: PsiClawOps
-last_updated: 2026-03-17
+last_updated: 2026-03-19
 ---
 
 # Lifecycle Baseline — ClawText
 
 ## Repo identity
+- Blade path (if monorepo-blade): none
+- Repo topology: standalone-repo
+- Project type: skill
+- Governance structure: standalone
 - Ancestors (if child): none
 - Project name: clawtext
 - GitHub identity profile: psiclawops
 - Repo state: attach
-- Project structure: standalone
-- Ancestors: none (root standalone)
-- Blade path: none
 
 ## ClawTomation baseline status
-- Framework version: 2026-03-18.d
+- Profile: code-build
+- Framework version: 2026-03-18.e
 - Baseline version: 2026-03-17.a
-- Last sync date: 2026-03-18
-- Sync result: partially-synced-needs-github-settings
+- Last sync date: 2026-03-19
+- Sync result: synced
 
 ## Installed modules
+- Model policy: no
+- Security scanning: no
 - Core lifecycle docs: yes
 - Enforcement stack: yes
 - Output artifact discipline: yes
 - Workstream clearinghouse: no
 - Master/child coordination: no
 - Private stealth hooks: yes
-- Model policy: yes
-  - policy doc: docs/MODEL_POLICY.md (inherited from ClawTomation framework)
-  - model_policy_version: 1.0.0
-  - tuning telemetry: heartbeat model_used + role_invoked fields
 
 ## GitHub settings status
 - Conversation resolution required: no

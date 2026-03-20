@@ -37,6 +37,10 @@ export const DEFAULT_SLOT_CONFIGS: Record<ContextSlotSource, SlotConfig> = {
   clawbridge: { ratio: 0.08, policy: 'if-present', enabled: true },
   'topic-anchor': { ratio: 0.1, policy: 'if-bound', enabled: true },
   'operator-recall-anchor': { ratio: 0.02, policy: 'always-include-if-triggered', minBytes: 512, enabled: true },
+  'retrieval-warning': { ratio: 0.025, policy: 'always-include-if-triggered', minBytes: 448, enabled: true },
+  advisor: { ratio: 0.03, policy: 'if-present', minBytes: 256, enabled: true },
+  'session-matrix': { ratio: 0.04, policy: 'if-present', minBytes: 320, enabled: true },
+  extraction: { ratio: 0.02, policy: 'if-present', minBytes: 256, enabled: true },
   'recent-history': { ratio: 0.12, policy: 'always-include', enabled: true },
   'mid-history': { ratio: 0.15, policy: 'scored-select', enabled: true },
   'deep-history': { ratio: 0.08, policy: 'decision-only', enabled: true },
@@ -50,7 +54,11 @@ export const DEFAULT_SLOT_CONFIGS: Record<ContextSlotSource, SlotConfig> = {
 const OVERFLOW_PRIORITY: ContextSlotSource[] = [
   'mid-history',
   'memory',
+  'retrieval-warning',
   'library',
+  'session-matrix',
+  'extraction',
+  'advisor',
   'deep-history',
 ];
 

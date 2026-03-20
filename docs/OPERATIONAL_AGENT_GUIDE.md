@@ -217,6 +217,32 @@ npm run operational:report
 
 ## Example Agent Workflows
 
+### Fast-path: False-empty memory retrieval
+
+If memory appears empty **but you have reason to believe files/index already exist**, check for retrieval-path failure before assuming the memory is missing.
+
+**Named pattern:** `recovery-pattern.gateway.memory-false-empty-on-sync-failure`
+
+**What it looks like:**
+- `memory_search` returns empty or feels context-blind
+- recent `memory/*.md` files exist
+- sqlite/vector index exists
+- logs or CLI output may show `memory sync failed` / `fetch failed`
+- runtime/config version drift may be present
+
+**First response sequence:**
+1. `openclaw status`
+2. verify runtime version is current / not behind config
+3. run a direct search smoke test:
+   ```bash
+   openclaw memory search "openclaw ios xcode build"
+   ```
+4. look for sync/search transport errors
+5. restart gateway/runtime before concluding memory content is missing
+
+**Why this matters:**
+This failure mode can impersonate a true "no results" state even when the memory data and index are healthy.
+
 ### Workflow 1: Debugging an Error
 
 ```bash

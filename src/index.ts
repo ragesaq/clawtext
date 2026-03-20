@@ -8,6 +8,9 @@ import type { ClawptimizationConfig, ContextSlotSource } from './clawptimization
 import { PromptCompositor } from './prompt-compositor';
 import type { SlotProvider, ContextSlot } from './slot-provider';
 import { TopicAnchorProvider } from './providers/topic-anchor-provider';
+import { AdvisorProvider } from './providers/advisor-provider';
+import { SessionMatrixProvider } from './providers/session-matrix-provider';
+import { ExtractionProvider } from './providers/extraction-provider';
 import { stripInjectedContext } from './injected-context';
 
 export { ClawTextInjectionPlugin, ClawTextRAG };
@@ -34,6 +37,17 @@ export * from './providers/cross-session-provider';
 export * from './providers/situational-awareness-provider';
 export * from './providers/clawbridge-provider';
 export * from './providers/topic-anchor-provider';
+export * from './providers/advisor-provider';
+export * from './providers/session-matrix-provider';
+export * from './slots/index';
+export * from './slots/advisor';
+export * from './slots/sessionMatrix';
+export * from './integrations/index';
+export * from './permissions/index';
+export * from './record/index';
+export * from './fleet/index';
+export * from './peer/index';
+export * from './extraction/index';
 
 const WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
 const OPT_CONFIG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
@@ -110,8 +124,11 @@ function priorityForSource(source: ContextSlotSource): number {
   const ordering: Record<string, number> = {
     system: 10,
     'operator-recall-anchor': 15,
+    'retrieval-warning': 18,
     memory: 20,
     'topic-anchor': 25,
+    advisor: 28,
+    'session-matrix': 29,
     library: 30,
     clawbridge: 40,
     'recent-history': 50,
@@ -178,6 +195,40 @@ function extractOperatorRecallAnchor(userMessage: string): string | null {
   ].join('\n');
 }
 
+function extractRetrievalWarning(userMessage: string): string | null {
+  const text = userMessage.trim();
+  if (!text) return null;
+
+  const lowered = text.toLowerCase();
+  const complaintPatterns = [
+    /memory[_\s-]*search.*(?:empty|nothing|blank|fail|failed)/i,
+    /search.*(?:empty|nothing|blank).*(?:memory|context)/i,
+    /major memory gap/i,
+    /couldn'?t find recent conversation context/i,
+    /memory (?:was|is) returning empty/i,
+    /context retention.*(?:broken|missing|empty)/i,
+    /fetch failed/i,
+    /sync failed/i,
+  ];
+
+  const matched = complaintPatterns.some((pattern) => pattern.test(text));
+  if (!matched) return null;
+
+  return [
+    '## Retrieval Warning',
+    '- Suspected false-empty memory retrieval.',
+    '- Named pattern: recovery-pattern.gateway.memory-false-empty-on-sync-failure',
+    '- Do not assume missing memory content just because retrieval looks empty.',
+    '- First response sequence:',
+    '  1. run `openclaw status`',
+    '  2. verify runtime version is not behind config expectations',
+    '  3. run a direct search smoke test',
+    '  4. inspect for `memory sync failed` / `fetch failed`',
+    '  5. restart gateway/runtime before blaming files or index',
+    `- user cue: ${text}`,
+  ].join('\n');
+}
+
 function runClawptimization(
   prompt: string,
   messages: unknown[],
@@ -222,6 +273,9 @@ function runClawptimization(
   });
 
   compositor.register(new TopicAnchorProvider({ workspacePath: WORKSPACE }));
+  compositor.register(new AdvisorProvider({ workspacePath: WORKSPACE }));
+  compositor.register(new SessionMatrixProvider({ workspacePath: WORKSPACE }));
+  compositor.register(new ExtractionProvider({ workspacePath: WORKSPACE }));
 
   const userMessage = extractUserText(messages);
   const recallAnchor = extractOperatorRecallAnchor(userMessage);
@@ -244,6 +298,28 @@ function runClawptimization(
       prunable: false,
     };
     compositor.register(recallProvider);
+  }
+
+  const retrievalWarning = extractRetrievalWarning(userMessage);
+  if (retrievalWarning) {
+    const warningBytes = Buffer.byteLength(retrievalWarning, 'utf8');
+    const warningProvider: SlotProvider = {
+      id: 'retrieval-warning',
+      source: 'retrieval-warning',
+      priority: priorityForSource('retrieval-warning'),
+      available: () => true,
+      fill: () => [{
+        id: 'Retrieval Warning',
+        source: 'retrieval-warning',
+        content: retrievalWarning,
+        score: 1,
+        bytes: warningBytes,
+        included: false,
+        reason: 'suspected false-empty memory retrieval',
+      }],
+      prunable: false,
+    };
+    compositor.register(warningProvider);
   }
 
   const bySource = new Map<ContextSlotSource, Array<{ title: string; content: string; source: ContextSlotSource }>>();

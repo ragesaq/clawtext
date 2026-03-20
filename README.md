@@ -6,7 +6,7 @@
 
 <div align="center">
 
-[![version](https://img.shields.io/badge/version-0.3.0-informational)](#install)
+[![version](https://img.shields.io/badge/version-0.4.0-informational)](#install)
 [![OpenClaw Plugin](https://img.shields.io/badge/openclaw-plugin-blueviolet)](#install)
 [![Status](https://img.shields.io/badge/status-deploy--ready-yellow)](#)
 
@@ -158,6 +158,12 @@ This keeps upstream truth, local operating reality, and operational lessons sepa
 | **L3 — Searchable archive** | Daily notes, ingested docs, full session history | Indexed | Permanent |
 | **L4 — Intake / staging** | Raw captures, review queue, scoring candidates | — | Transient |
 
+### Boundaries and integrations
+
+ClawText core owns reusable memory capabilities: retrieval, continuity, operational learning, slot contracts, session/advisor primitives, and template expansion.
+
+Host-specific behavior belongs in adapter modules, not core. See [`docs/BOUNDARIES.md`](./docs/BOUNDARIES.md).
+
 ### Lane 6 — Clawptimization *(v0.3.0)*
 **score → compose → prune → audit**
 
@@ -176,6 +182,56 @@ The prompt compositor. Instead of dumping everything into context and hoping it 
 | **CrossSessionAwareness** | Journal-scanned multi-channel situational context |
 
 Every decision is logged and auditable. Nothing is lost — pruned content is always recoverable from the journal. The agent never knows less, it just stores smarter.
+
+### Reflect *(v0.4.0)*
+**memories → LLM synthesis → compressed context**
+
+Instead of injecting raw memory dumps, Reflect passes retrieved memories through a fast LLM call (Gemini 3 Flash Preview via OpenRouter) that synthesizes them into 2–3 sentences of coherent context. The main model receives a clean, factual summary — not a pile of bullet points.
+
+Reflect is automatic — it triggers on memory retrieval, caches results for 1 hour, and falls back gracefully when the API is unavailable. Telemetry is logged to `state/clawtext/prod/reflect/telemetry.jsonl` with per-call latency, cost estimates, and cache hit tracking. A Prometheus metrics endpoint (`getPrometheusMetrics()`) is included for future ClawMon integration.
+
+| Knob | Default | What it controls |
+|---|---|---|
+| `enabled` | `true` | Toggle reflect on/off |
+| `trigger` | `auto` | `auto` or `on-demand` |
+| `model` | `gemini-3-flash-preview` | OpenRouter model slug |
+| `budget` | `low` | Output tokens: low=100, medium=200, high=400 |
+
+### Permission Model — Context Access Control *(v0.4.0)*
+**4-layer hierarchical memory access control**
+
+Who can read from memory. Who can write. What model processes their recalls. Whether they can see across sessions.
+
+```
+Global Defaults → Role → Vault Override → User Override
+```
+
+Each layer overrides the previous. Most specific wins. API: `resolvePermissions({ userId, vaultId })` → full resolved permission set with layer provenance.
+
+### Record — Transaction Journal *(v0.4.0)*
+**append-only log with hash chain integrity**
+
+Every state-changing event is a transaction. `appendTransaction()` adds to the JSONL log, links to the previous entry's hash, and updates the sequence index. `verifyChain()` validates the entire history hasn't been tampered with. Foundation for multi-node replication.
+
+### Fleet Command — Node Registry *(v0.4.0)*
+**cluster awareness for multi-node deployments**
+
+Each ClawText node knows its peers, their capabilities, and current replication state. `upsertNode()`, `recordHeartbeat()`, `sweepStaleNodes()`, `getFleetStatus()`. Built for the "RAID of Claws" replication vision.
+
+### Peer Protocol *(v0.4.0)*
+**push/pull transaction sync between nodes**
+
+`syncWithPeers()` — compares sequence positions with all online peers, pulls missing transactions, pushes any they're behind on. `handleInboundPush()` validates incoming transactions (idempotent) and replays them locally. Server-side handler stubs included for HTTP integration.
+
+### ClawCouncil Integration Helper *(v0.4.0)*
+**packages ClawText context for advisor sessions**
+
+`renderCouncilContext({ sessionId, query, memories })` → structured payload containing advisor context block, session matrix block, and synthesized memory (via Reflect when enabled). `renderCouncilPromptBlock()` expands a template string with `{{memory.context}}`, `{{advisor.context}}`, `{{session.context}}` tokens. ClawText = data layer; ClawCouncil = orchestration.
+
+### IaC CLI — Plan / Apply / Validate *(v0.4.0)*
+**Terraform-style configuration management**
+
+`iacCLI(['plan'])` shows the current resource inventory (roles, strategies, fleet nodes). `iacCLI(['validate'])` verifies all config files, chain integrity, and fleet registration. `iacCLI(['apply', '--auto-approve'])` applies pending changes. `iacCLI(['status'])` shows live resource state across Record, Fleet, and Permissions.
 
 ---
 
@@ -197,6 +253,11 @@ Every decision is logged and auditable. Nothing is lost — pruned content is al
 | External ingest (docs/repos/URLs) | ❌ | ✅ | ❌ | ⚠️ partial | ⚠️ partial |
 | File-first, auditable state | ✅ | ✅ | ❌ | ❌ | ❌ |
 | OpenClaw-native plugin | ✅ | ✅ | ❌ | ❌ | ❌ |
+| LLM-mediated memory synthesis (Reflect) | ❌ | ✅ | ❌ | ❌ | ⚠️ partial |
+| Permission-controlled memory access | ❌ | ✅ 4-layer CAC | ❌ | ⚠️ basic | ⚠️ basic |
+| Transaction journal with hash chain | ❌ | ✅ Record | ❌ | ❌ | ❌ |
+| Multi-node fleet registry | ❌ | ✅ Fleet Command | ❌ | ❌ | ❌ |
+| Council advisor context packaging | ❌ | ✅ ClawCouncil helper | ❌ | ❌ | ❌ |
 
 ---
 
@@ -210,7 +271,11 @@ Paste this into your agent:
 Install and configure the ClawText plugin for OpenClaw.
 Run: openclaw plugins install github:PsiClawOps/clawtext
 Then verify: openclaw plugins list, openclaw hooks list, openclaw cron list
-Confirm the extraction cron and before_prompt_build hook are both active.
+Before finalizing, interview me about:
+- whether deterministic ClawText maintenance should stay in OpenClaw cron or move to system cron/systemd timers
+- whether extract-buffer should stay at 30m or tighten to 20m
+- whether Discord history should use prefetch only, or prefetch + backfill + journal reindex
+Confirm the extraction path, retrieval path, and Discord history plan before reporting done.
 If anything is missing, fix it before reporting done.
 ```
 
@@ -291,3 +356,11 @@ openclaw run clawtext --operational:status    # review queue summary, recurrence
 - [`docs/LIBRARY_LANE_INTEGRATION_SPEC.md`](docs/LIBRARY_LANE_INTEGRATION_SPEC.md) — technical integration plan for collections, overlays, indexing, and retrieval
 - [`docs/LIBRARY_AGENT_IMPORT_WORKFLOW.md`](docs/LIBRARY_AGENT_IMPORT_WORKFLOW.md) — agent-led workflow for turning natural-language library import requests into structured collection ingest
 - `npm run library:smoke` — quick validation that Library Lane outranks general memory for reference-style queries
+
+### v0.4.0 specs
+- [`docs/REFLECT_SPEC.md`](docs/REFLECT_SPEC.md) — LLM-mediated recall: design, config, telemetry, Prometheus export
+- [`docs/PERMISSION_MODEL.md`](docs/PERMISSION_MODEL.md) — Context Access Control: 4-layer resolver, fields, resolution order
+- [`docs/RECORD_SPEC.md`](docs/RECORD_SPEC.md) — transaction journal schema, hash chain, replication protocol
+- [`docs/FLEET_COMMAND_SPEC.md`](docs/FLEET_COMMAND_SPEC.md) — node registry, heartbeat protocol, failure scenarios
+- [`docs/IAC_SPEC.md`](docs/IAC_SPEC.md) — plan/apply/validate workflow, config resource types
+- [`docs/TOPIC_EXTRACTION_SPEC.md`](docs/TOPIC_EXTRACTION_SPEC.md) — topic-based extraction routing, strategy definitions
