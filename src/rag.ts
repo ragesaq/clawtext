@@ -436,7 +436,7 @@ export class ClawTextRAG {
    * Supports time-aware filtering ("last week", "since 2026-03-01", etc.)
    * Query is cleaned of gateway noise before search to improve recall accuracy.
    */
-  findRelevantMemories(query: string, projectKeywords: string[] = []): Memory[] {
+  findRelevantMemories(query: string, projectKeywords: string[] = [], agentId?: string): Memory[] {
     if (!this.config.enabled || !query) return [];
 
     // Clean query of gateway noise before searching
@@ -466,6 +466,14 @@ export class ClawTextRAG {
 
       cluster.memories.forEach(memory => {
         if (memory.confidence >= this.config.minConfidence) {
+          // Agent identity filtering (Phase 1: Decoherence Hardening)
+          if (agentId) {
+            const vis = (memory as any).visibility ?? 'shared';
+            const memAgentId = (memory as any).agentId;
+            if (vis === 'private' && memAgentId !== agentId) return; // filter private memories from other agents
+            if (vis === 'cross-agent' && (memory as any).targetAgent !== agentId) return; // filter directed memories not for us
+            // 'shared' and 'council' visibility pass through
+          }
           candidates.push({ ...memory, provenanceKind: 'memory', provenanceLabel: memory.project || 'memory' });
         }
       });
@@ -623,14 +631,15 @@ export class ClawTextRAG {
   injectMemories(
     systemPrompt: string,
     query: string,
-    projectKeywords: string[] = []
+    projectKeywords: string[] = [],
+    agentId?: string,
   ): { prompt: string; injected: number; tokens: number } {
     if (this.config.injectMode === 'off') {
       return { prompt: systemPrompt, injected: 0, tokens: 0 };
     }
 
     const cleanedQuery = cleanQueryForSearch(query);
-    const memories = this.findRelevantMemories(cleanedQuery, projectKeywords);
+    const memories = this.findRelevantMemories(cleanedQuery, projectKeywords, agentId);
     if (memories.length === 0) {
       return { prompt: systemPrompt, injected: 0, tokens: 0 };
     }

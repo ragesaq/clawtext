@@ -37,6 +37,7 @@ export const DEFAULT_SLOT_CONFIGS: Record<ContextSlotSource, SlotConfig> = {
   clawbridge: { ratio: 0.08, policy: 'if-present', enabled: true },
   'topic-anchor': { ratio: 0.1, policy: 'if-bound', enabled: true },
   'operator-recall-anchor': { ratio: 0.02, policy: 'always-include-if-triggered', minBytes: 512, enabled: true },
+  'identity-anchor': { ratio: 0.02, policy: 'always-include-if-triggered', minBytes: 256, enabled: true },
   'retrieval-warning': { ratio: 0.025, policy: 'always-include-if-triggered', minBytes: 448, enabled: true },
   advisor: { ratio: 0.03, policy: 'if-present', minBytes: 256, enabled: true },
   'session-matrix': { ratio: 0.04, policy: 'if-present', minBytes: 320, enabled: true },

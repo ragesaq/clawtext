@@ -54,17 +54,19 @@ export class ClawTextInjectionPlugin {
     userMessage: string;
     sessionId?: string;
     model?: string;
+    agentId?: string;
   }): Promise<{ systemPrompt: string; injectionStats?: any }> {
     try {
       // Auto-detect projects from message + system prompt
       const combinedText = context.userMessage + ' ' + context.systemPrompt;
       const projectKeywords = this.detectProjectKeywords(combinedText);
 
-      // Inject memories
+      // Inject memories (pass agentId for multi-agent scoping)
       const { prompt, injected, tokens } = this.rag.injectMemories(
         context.systemPrompt,
         context.userMessage,
-        projectKeywords
+        projectKeywords,
+        context.agentId,
       );
 
       if (injected > 0) {

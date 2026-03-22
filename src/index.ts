@@ -12,12 +12,15 @@ import { AdvisorProvider } from './providers/advisor-provider';
 import { SessionMatrixProvider } from './providers/session-matrix-provider';
 import { ExtractionProvider } from './providers/extraction-provider';
 import { stripInjectedContext } from './injected-context';
+import { isMultiAgentMode } from './agent-identity';
+import { extractIdentityAnchorContent } from './slots/identity-anchor-provider';
 
 export { ClawTextInjectionPlugin, ClawTextRAG };
 export { cleanQueryForSearch } from './rag';
 export * from './library';
 export * from './library-index';
 export * from './library-ingest';
+export * from './agent-identity';
 export * from './runtime-paths';
 export * from './session-topic-map';
 export * from './topic-anchor';
@@ -124,6 +127,7 @@ function priorityForSource(source: ContextSlotSource): number {
   const ordering: Record<string, number> = {
     system: 10,
     'operator-recall-anchor': 15,
+    'identity-anchor': 16,
     'retrieval-warning': 18,
     memory: 20,
     'topic-anchor': 25,
@@ -276,6 +280,31 @@ function runClawptimization(
   compositor.register(new AdvisorProvider({ workspacePath: WORKSPACE }));
   compositor.register(new SessionMatrixProvider({ workspacePath: WORKSPACE }));
   compositor.register(new ExtractionProvider({ workspacePath: WORKSPACE }));
+
+  // Identity anchor — always-on in multi-agent mode, no-op in single-agent
+  if (isMultiAgentMode(WORKSPACE)) {
+    const identityContent = extractIdentityAnchorContent(WORKSPACE);
+    if (identityContent) {
+      const idBytes = Buffer.byteLength(identityContent, 'utf8');
+      const identityProvider: SlotProvider = {
+        id: 'identity-anchor',
+        source: 'identity-anchor',
+        priority: priorityForSource('identity-anchor'),
+        available: () => true,
+        fill: () => [{
+          id: 'Identity Anchor',
+          source: 'identity-anchor',
+          content: identityContent,
+          score: 1,
+          bytes: idBytes,
+          included: false,
+          reason: 'agent identity reinforcement',
+        }],
+        prunable: false,
+      };
+      compositor.register(identityProvider);
+    }
+  }
 
   const userMessage = extractUserText(messages);
   const recallAnchor = extractOperatorRecallAnchor(userMessage);
@@ -492,6 +521,7 @@ export default {
         const ragResult = await plugin.onBeforePromptBuild({
           systemPrompt,
           userMessage,
+          agentId: ctx?.agentId,
         });
 
         const promptAfterRag = ragResult?.systemPrompt || systemPrompt;

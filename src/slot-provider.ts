@@ -5,6 +5,7 @@ export type ContextSlotSource =
   | 'clawbridge'
   | 'topic-anchor'
   | 'operator-recall-anchor'
+  | 'identity-anchor'
   | 'retrieval-warning'
   | 'advisor'
   | 'session-matrix'
