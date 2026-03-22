@@ -8,6 +8,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import HotMemoryCache, { type CacheableMemory } from './hot-cache.js';
+import { isMultiAgentMode, getDefaultVisibility, loadMultiAgentConfig, resolveAgentIdentity } from './agent-identity.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -137,10 +138,10 @@ export class ClawTextMemory {
       body: content,
       relations: { supersedes: [], related: [], derivedFrom: [] },
       metadata: options.metadata || {},
-      // Multi-agent fields
-      agentId: options.agentId || null,
+      // Multi-agent fields — auto-populate from config when not explicitly set
+      agentId: options.agentId || this._resolveCurrentAgentId(),
       agentName: options.agentName || null,
-      visibility: options.visibility || 'shared',
+      visibility: options.visibility || this._resolveDefaultVisibility(),
       targetAgent: options.targetAgent || null,
       // Session continuity
       sessionId: options.sessionId || null,
@@ -289,6 +290,37 @@ export class ClawTextMemory {
       .filter(w => w.length > 3 && !common.includes(w));
     
     return [...new Set(words)].slice(0, 10);
+  }
+
+  /**
+   * Resolve current agent ID from environment/config.
+   * Used at write-time to auto-populate agentId on new memories.
+   */
+  private _resolveCurrentAgentId(): string | null {
+    try {
+      const workspacePath = path.join(this.memoriesDir, '..', '..');
+      const config = loadMultiAgentConfig(workspacePath);
+      if (!config.enabled) return null;
+      const identity = resolveAgentIdentity(workspacePath, config);
+      return identity.agentId !== 'default' ? identity.agentId : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Resolve default visibility based on multi-agent mode.
+   * In multi-agent mode: 'private' (opt-in to sharing)
+   * In single-agent mode: 'shared' (backward compat)
+   */
+  private _resolveDefaultVisibility(): 'shared' | 'private' | 'cross-agent' {
+    try {
+      const workspacePath = path.join(this.memoriesDir, '..', '..');
+      const config = loadMultiAgentConfig(workspacePath);
+      return getDefaultVisibility(config) as 'shared' | 'private' | 'cross-agent';
+    } catch {
+      return 'shared';
+    }
   }
 
   private async _refreshClusters(): Promise<void> {

@@ -93,12 +93,27 @@ export function loadMultiAgentConfig(workspacePath: string): ClawTextMultiAgentC
   // Check env vars first (explicit override)
   const envEnabled = process.env.CLAWTEXT_MULTIAGENT_ENABLED;
   const envVisibility = process.env.CLAWTEXT_DEFAULT_VISIBILITY;
+  const envAgentId = process.env.CLAWTEXT_AGENT_ID;
+  const envAgentRole = process.env.CLAWTEXT_AGENT_ROLE;
+  const envAgentName = process.env.CLAWTEXT_AGENT_NAME;
   
   if (envEnabled === 'true') {
-    return {
+    const config: ClawTextMultiAgentConfig = {
       enabled: true,
       defaultVisibility: (envVisibility as any) || 'private',
     };
+    
+    // Build explicit identity from env vars if provided
+    if (envAgentId) {
+      config.agentIdentity = {
+        agentId: envAgentId,
+        agentRole: (envAgentRole as any) || 'worker',
+        agentName: envAgentName || envAgentId,
+        workspacePath,
+      };
+    }
+    
+    return config;
   }
 
   // Strategy: Walk up from workspace until we find openclaw.json
