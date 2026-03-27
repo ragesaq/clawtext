@@ -2,6 +2,10 @@
 
 **Durable memory and proactive context protection for OpenClaw agents — so your agents keep what matters and lose what doesn't.**
 
+ClawText is a standalone context management system — it protects memory, decisions, and high-value content from naive compression regardless of how you define your agents. Any OpenClaw agent benefits from smarter context management.
+
+But context protection is only half the problem. The other half is defining what's worth protecting in the first place. The [Agentic Cognitive Architecture](https://github.com/psiclawops/aca-internal) provides the structured identity layer: six files that define who an agent is, what it does, and what it refuses to do. Together, they form a stack — the architecture defines the agent, and ClawText keeps it intact. Each works independently. Both together is an architectural approach to agent quality, not a one-off improvement.
+
 ---
 
 <div align="center">
