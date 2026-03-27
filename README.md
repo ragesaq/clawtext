@@ -193,9 +193,7 @@ Most approaches to context management treat the prompt as a data structure to be
 
 **ClawText isn't an optimization algorithm. It's a cognitive environment that keeps agents from collapsing back to the training weights.**
 
-Every LLM has a gravitational center: the generic baseline encoded in its training data. Under context pressure, agents revert to that baseline — your specialized reviewer becomes a generic assistant. ClawText's tiered compression exists to maintain the differentiation that produces innovative, high-quality output. Not just for one response, but across the entire working lifetime of an agent.
-
-For multi-agent systems, this is the difference between genuine diverse analysis and an echo chamber of the same model talking to itself.
+Every LLM has a gravitational center: the generic baseline encoded in its training data. Under context pressure, agents revert to that baseline — your specialized reviewer becomes a generic assistant. ClawText's tiered compression exists to maintain the differentiation that produces comprehensive, high-quality work. An architect agent produces a design; a security agent on a different model finds the shortcomings the architect couldn't see; a documentation agent catches imprecision both missed. Each perspective is novel because each agent maintains a structurally different lens. If those agents decohere to the same baseline, they converge on the same blind spots — and the system degrades in exactly the ways nobody caught.
 
 The slot compositor classifies every piece of context and makes content-aware compression decisions:
 
