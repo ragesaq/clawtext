@@ -2,7 +2,7 @@
   "id": "clawtext",
   "name": "ClawText",
   "description": "Automatic working-memory retrieval, prompt injection, and operational learning hooks for OpenClaw.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "hooks": [
     "./hooks/clawtext-optimize",
     "./hooks/clawtext-prune",
@@ -11,6 +11,36 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
-    "properties": {}
+    "properties": {
+      "sessionIntelligence": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "workspacePath": { "type": "string" },
+          "defaultTokenBudget": { "type": "number" },
+          "summarizationModel": { "type": "string" },
+          "compactor": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "summarizationModel": { "type": "string" },
+              "maxSummarizationsPerHour": { "type": "number" },
+              "freshTailSize": { "type": "number" },
+              "leafBatchSize": { "type": "number" }
+            }
+          },
+          "compactionTrigger": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "pressureThreshold": { "type": "number" },
+              "minMessages": { "type": "number" },
+              "cooldownMs": { "type": "number" }
+            }
+          }
+        }
+      }
+    }
   }
 }

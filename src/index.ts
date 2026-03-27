@@ -531,15 +531,17 @@ function isSessionIntelligenceEnabled(config: unknown): boolean {
     plugins?: {
       entries?: {
         clawtext?: {
-          sessionIntelligence?: {
-            enabled?: unknown;
+          config?: {
+            sessionIntelligence?: {
+              enabled?: unknown;
+            };
           };
         };
       };
     };
   };
 
-  return root.plugins?.entries?.clawtext?.sessionIntelligence?.enabled === true;
+  return root.plugins?.entries?.clawtext?.config?.sessionIntelligence?.enabled === true;
 }
 
 function resolveSessionIntelligenceConfig(config: unknown): SessionIntelligenceConfig {
@@ -560,15 +562,17 @@ function resolveSessionIntelligenceConfig(config: unknown): SessionIntelligenceC
     plugins?: {
       entries?: {
         clawtext?: {
-          sessionIntelligence?: {
-            workspacePath?: unknown;
-            summarizationModel?: unknown;
-            defaultTokenBudget?: unknown;
-            compactor?: {
+          config?: {
+            sessionIntelligence?: {
+              workspacePath?: unknown;
               summarizationModel?: unknown;
-              maxSummarizationsPerHour?: unknown;
-              freshTailSize?: unknown;
-              leafBatchSize?: unknown;
+              defaultTokenBudget?: unknown;
+              compactor?: {
+                summarizationModel?: unknown;
+                maxSummarizationsPerHour?: unknown;
+                freshTailSize?: unknown;
+                leafBatchSize?: unknown;
+              };
             };
           };
         };
@@ -576,7 +580,7 @@ function resolveSessionIntelligenceConfig(config: unknown): SessionIntelligenceC
     };
   };
 
-  const si = root.plugins?.entries?.clawtext?.sessionIntelligence;
+  const si = root.plugins?.entries?.clawtext?.config?.sessionIntelligence;
   if (!si) return base;
 
   const configuredCompactor = si.compactor;
