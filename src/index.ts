@@ -15,6 +15,8 @@ import { stripInjectedContext } from './injected-context';
 import { isMultiAgentMode } from './agent-identity';
 import { extractIdentityAnchorContent } from './slots/identity-anchor-provider';
 import { wrapWithAgentScope } from './providers/agent-scoped-provider';
+import { registerSessionIntelligenceEngine } from './session-intelligence';
+import type { SessionIntelligenceConfig } from './session-intelligence';
 
 export { ClawTextInjectionPlugin, ClawTextRAG };
 export { cleanQueryForSearch } from './rag';
@@ -55,6 +57,7 @@ export * from './record/index';
 export * from './fleet/index';
 export * from './peer/index';
 export * from './extraction/index';
+export * from './session-intelligence';
 
 const WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
 const OPT_CONFIG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
@@ -490,6 +493,63 @@ function getAutomationSkipReason(ctx: any, userMessage: string): string | null {
   return null;
 }
 
+function isSessionIntelligenceEnabled(config: unknown): boolean {
+  if (!config || typeof config !== 'object') return false;
+
+  const root = config as {
+    plugins?: {
+      entries?: {
+        clawtext?: {
+          sessionIntelligence?: {
+            enabled?: unknown;
+          };
+        };
+      };
+    };
+  };
+
+  return root.plugins?.entries?.clawtext?.sessionIntelligence?.enabled === true;
+}
+
+function resolveSessionIntelligenceConfig(config: unknown): SessionIntelligenceConfig {
+  const base: SessionIntelligenceConfig = {
+    workspacePath: WORKSPACE,
+    summarizationModel: 'anthropic/claude-haiku-4-5',
+    defaultTokenBudget: 128_000,
+  };
+
+  if (!config || typeof config !== 'object') return base;
+
+  const root = config as {
+    plugins?: {
+      entries?: {
+        clawtext?: {
+          sessionIntelligence?: {
+            workspacePath?: unknown;
+            summarizationModel?: unknown;
+            defaultTokenBudget?: unknown;
+          };
+        };
+      };
+    };
+  };
+
+  const si = root.plugins?.entries?.clawtext?.sessionIntelligence;
+  if (!si) return base;
+
+  return {
+    workspacePath: typeof si.workspacePath === 'string' && si.workspacePath.trim().length > 0
+      ? si.workspacePath
+      : base.workspacePath,
+    summarizationModel: typeof si.summarizationModel === 'string' && si.summarizationModel.trim().length > 0
+      ? si.summarizationModel
+      : base.summarizationModel,
+    defaultTokenBudget: typeof si.defaultTokenBudget === 'number' && Number.isFinite(si.defaultTokenBudget) && si.defaultTokenBudget > 0
+      ? si.defaultTokenBudget
+      : base.defaultTokenBudget,
+  };
+}
+
 export default {
   id: "clawtext",
   name: "ClawText",
@@ -501,6 +561,17 @@ export default {
     properties: {},
   },
   register(api: any) {
+    if (isSessionIntelligenceEnabled(api?.config)) {
+      try {
+        registerSessionIntelligenceEngine(api, resolveSessionIntelligenceConfig(api?.config));
+      } catch (err) {
+        logPluginDiagnostic({
+          type: 'session-intelligence-register-error',
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    }
+
     const plugin = new ClawTextInjectionPlugin();
 
     api.on(
