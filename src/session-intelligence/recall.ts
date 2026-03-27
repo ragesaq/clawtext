@@ -4,8 +4,7 @@ import type { DatabaseSync } from 'node:sqlite';
 
 const DEFAULT_LIMIT = 10;
 const MAX_SNIPPET_LENGTH = 300;
-// Default resolved at call time from config.workspacePath when not explicitly passed.
-// This constant is a fallback only — callers should pass libraryEntriesDir explicitly.
+// Fallback only. Callers should pass config.libraryEntriesDir for deterministic resolution.
 const DEFAULT_LIBRARY_ENTRIES_DIR = path.join(
   process.env['OPENCLAW_WORKSPACE'] ?? path.join(process.env['HOME'] ?? '', '.openclaw', 'workspace'),
   'state', 'clawtext', 'prod', 'library', 'entries',
@@ -70,6 +69,14 @@ function normalizeTypes(types?: RecallHitType[]): RecallHitType[] {
   }
 
   return unique.size > 0 ? [...unique] : allTypes;
+}
+
+function resolveLibraryEntriesDir(libraryEntriesDir?: string): string {
+  if (typeof libraryEntriesDir === 'string' && libraryEntriesDir.trim().length > 0) {
+    return libraryEntriesDir;
+  }
+
+  return DEFAULT_LIBRARY_ENTRIES_DIR;
 }
 
 export function search(params: {
@@ -183,7 +190,7 @@ export function search(params: {
   }
 
   if (types.includes('library_entry')) {
-    const libraryEntriesDir = params.libraryEntriesDir ?? DEFAULT_LIBRARY_ENTRIES_DIR;
+    const libraryEntriesDir = resolveLibraryEntriesDir(params.libraryEntriesDir);
     const lowerQuery = query.toLowerCase();
 
     if (fs.existsSync(libraryEntriesDir)) {
@@ -343,7 +350,7 @@ export function describe(params: {
       return null;
     }
 
-    const libraryEntriesDir = params.libraryEntriesDir ?? DEFAULT_LIBRARY_ENTRIES_DIR;
+    const libraryEntriesDir = resolveLibraryEntriesDir(params.libraryEntriesDir);
     if (!fs.existsSync(libraryEntriesDir)) return null;
 
     const filePath = path.resolve(libraryEntriesDir, filename);
@@ -419,6 +426,7 @@ export function expand(params: {
   db: DatabaseSync;
   conversationId: number;
   summaryId: number;
+  libraryEntriesDir?: string;
 }): ExpandResult | null {
   const summaryExists = params.db
     .prepare('SELECT id FROM summaries WHERE id = ? AND conversation_id = ? LIMIT 1')

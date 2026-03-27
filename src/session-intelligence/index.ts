@@ -5,6 +5,7 @@
  * ClawText's main plugin registration path.
  */
 
+import path from 'node:path';
 import { createSessionIntelligenceEngine } from './engine';
 import type { SessionIntelligenceConfig } from './types';
 
@@ -18,7 +19,14 @@ export function registerSessionIntelligenceEngine(
   api: ContextEngineRegistrationApi,
   config: SessionIntelligenceConfig,
 ): void {
-  api.registerContextEngine(ENGINE_ID, () => createSessionIntelligenceEngine(config));
+  const libraryEntriesDir = config.workspacePath
+    ? path.join(config.workspacePath, 'state', 'clawtext', 'prod', 'library', 'entries')
+    : undefined;
+
+  api.registerContextEngine(
+    ENGINE_ID,
+    () => createSessionIntelligenceEngine({ ...config, libraryEntriesDir }),
+  );
 }
 
 export { createSessionIntelligenceEngine };

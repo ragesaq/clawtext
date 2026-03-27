@@ -9,7 +9,7 @@
 
 import type { DatabaseSync } from 'node:sqlite';
 
-const LATEST_SCHEMA_VERSION = 7;
+const LATEST_SCHEMA_VERSION = 8;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -191,6 +191,17 @@ function applyVersion7Migration(db: DatabaseSync): void {
   `);
 }
 
+function applyVersion8Migration(db: DatabaseSync): void {
+  const columns = db
+    .prepare('PRAGMA table_info(payload_refs)')
+    .all() as Array<{ name: string }>;
+
+  const hasStoragePath = columns.some((column) => column.name === 'storage_path');
+  if (!hasStoragePath) {
+    db.exec('ALTER TABLE payload_refs ADD COLUMN storage_path TEXT');
+  }
+}
+
 export function migrate(db: DatabaseSync): void {
   createBaseSchema(db);
 
@@ -262,6 +273,14 @@ export function migrate(db: DatabaseSync): void {
     db
       .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
       .run(7, nowIso());
+    version = 7;
+  }
+
+  if (version < 8) {
+    applyVersion8Migration(db);
+    db
+      .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
+      .run(8, nowIso());
   }
 }
 

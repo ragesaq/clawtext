@@ -54,6 +54,7 @@ export type CompactionTriggerConfig = {
 
 export type SessionIntelligenceConfig = {
   workspacePath: string;
+  libraryEntriesDir?: string;
   defaultTokenBudget?: number;
   compactor?: Partial<CompactorConfig>;
   compactionTrigger?: Partial<CompactionTriggerConfig>;
