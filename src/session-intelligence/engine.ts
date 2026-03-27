@@ -1,5 +1,5 @@
 /**
- * Session Intelligence context engine (Walk 3).
+ * Session Intelligence context engine (Walk 4).
  *
  * Implements OpenClaw ContextEngine lifecycle with SQLite-backed message
  * persistence, ACA identity kernel/overlay lanes, deterministic recent-history
@@ -103,6 +103,7 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
   const workspacePath = path.resolve(config.workspacePath);
   const db: DatabaseSync = openDatabase(workspacePath);
   const conversationIdBySession = new Map<string, number>();
+  const compactionInProgress = new Set<string>();
   const compactorConfig = resolveCompactorConfig(config.compactor);
   const triggerConfig = resolveTriggerConfig(config.compactionTrigger);
   const summarizationTracker = new SummarizationTracker(compactorConfig.maxSummarizationsPerHour);
@@ -212,7 +213,6 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
         persistMessageParts(db, messageId, params.message);
       });
 
-      const messageCount = getMessageCount(db, conversationId);
       const currentTokenCount = estimatePressureFromDb(conversationId);
 
       const triggerResult = evaluateTrigger({
@@ -224,19 +224,27 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
       });
 
       if (triggerResult.shouldCompact) {
-        const pressureRatio = tokenBudget > 0 ? currentTokenCount / tokenBudget : 0;
-        console.log(
-          `[${ENGINE_ID}] Compaction trigger detected: ${triggerResult.reason} (pressure: ${Math.round(pressureRatio * 100)}%)`,
-        );
-
-        recordCompactionEvent({
-          db,
-          conversationId,
-          triggerReason: triggerResult.reason,
-          pressureBefore: pressureRatio,
-          messagesBefore: messageCount,
-          outcome: 'skipped',
-        });
+        if (compactionInProgress.has(params.sessionId)) {
+          console.log(`[${ENGINE_ID}] Auto-compaction skipped: already in progress for session ${params.sessionId}`);
+        } else {
+          const sessionFile = '';
+          void (async () => {
+            compactionInProgress.add(params.sessionId);
+            try {
+              await compact({
+                sessionId: params.sessionId,
+                sessionFile,
+                compactionTarget: 'threshold',
+              });
+            } catch (error) {
+              console.warn(
+                `[${ENGINE_ID}] Auto-compaction error: ${error instanceof Error ? error.message : String(error)}`,
+              );
+            } finally {
+              compactionInProgress.delete(params.sessionId);
+            }
+          })();
+        }
       }
 
       return { ingested: true };
@@ -386,8 +394,19 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     customInstructions?: string;
     legacyParams?: Record<string, unknown>;
   }): Promise<CompactResult> {
+    let conversationId: number | null = null;
+    const tokenBudget = resolveTokenBudget(params.tokenBudget ?? config.defaultTokenBudget);
+
     try {
-      const conversationId = getOrCreateConversationId(params.sessionId);
+      conversationId = getOrCreateConversationId(params.sessionId);
+
+      const effectiveSessionFile = params.sessionFile && params.sessionFile.trim().length > 0
+        ? params.sessionFile
+        : null;
+
+      if (effectiveSessionFile === null) {
+        console.log(`[${ENGINE_ID}] compact() running without session file for session ${params.sessionId}`);
+      }
 
       if (!kernelSlotsPresent(db, conversationId)) {
         console.warn(`[${ENGINE_ID}] compact() refused: identity_kernel slot missing. Run bootstrap() first.`);
@@ -402,7 +421,6 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
         };
       }
 
-      const tokenBudget = resolveTokenBudget(params.tokenBudget ?? config.defaultTokenBudget);
       const pressureBeforeTokens =
         typeof params.currentTokenCount === 'number' && Number.isFinite(params.currentTokenCount)
           ? params.currentTokenCount
@@ -426,7 +444,7 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
         recordCompactionEvent({
           db,
           conversationId,
-          triggerReason: params.force ? 'forced' : 'threshold',
+          triggerReason: params.force ? 'forced' : (params.compactionTarget ?? 'threshold'),
           pressureBefore: tokenBudget > 0 ? pressureBeforeTokens / tokenBudget : 0,
           messagesBefore,
           outcome: 'success',
@@ -435,11 +453,25 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
 
       return result;
     } catch (error) {
-      console.warn(`[${ENGINE_ID}] compact failed: ${error instanceof Error ? error.message : String(error)}`);
+      if (typeof conversationId === 'number') {
+        const pressureBeforeTokens = estimatePressureFromDb(conversationId);
+        const messagesBefore = getMessageCount(db, conversationId);
+
+        recordCompactionEvent({
+          db,
+          conversationId,
+          triggerReason: params.force ? 'forced' : (params.compactionTarget ?? 'threshold'),
+          pressureBefore: pressureBeforeTokens / resolveTokenBudget(config.defaultTokenBudget),
+          messagesBefore,
+          outcome: 'failed',
+        });
+      }
+
+      console.warn(`[${ENGINE_ID}] compact() failed: ${error instanceof Error ? error.message : String(error)}`);
       return {
         ok: false,
         compacted: false,
-        reason: 'compaction_error',
+        reason: 'compact_error',
       };
     }
   }
@@ -496,7 +528,7 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     info: {
       id: ENGINE_ID,
       name: 'ClawText Session Intelligence',
-      version: '0.3.0-walk3',
+      version: '0.4.0-walk4',
       ownsCompaction: true,
     },
     bootstrap,
