@@ -49,10 +49,25 @@ export type MessagePartRow = {
   metadata: string | null;
 };
 
+export type CompactionTriggerConfig = {
+  // Fraction of token budget at which compaction is triggered automatically
+  // Default: 0.75 (compact when 75% of budget consumed)
+  pressureThreshold: number;
+
+  // Minimum number of messages before compaction is eligible
+  // Default: 10
+  minMessages: number;
+
+  // Cooldown between automatic compactions (milliseconds)
+  // Default: 60_000 (1 minute)
+  cooldownMs: number;
+};
+
 export type SessionIntelligenceConfig = {
   workspacePath: string;
   defaultTokenBudget?: number;
   compactor?: Partial<CompactorConfig>;
+  compactionTrigger?: Partial<CompactionTriggerConfig>;
   summarizationApi?: {
     complete(model: string, prompt: string): Promise<string>;
   };

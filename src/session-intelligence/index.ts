@@ -24,4 +24,5 @@ export function registerSessionIntelligenceEngine(
 export { createSessionIntelligenceEngine };
 export { loadAcaFiles, buildKernelContent, buildOverlayContent } from './aca';
 export { upsertStateSlot, getStateSlot, getAllStateSlots, kernelSlotsPresent } from './state-slots';
+export { evaluateTrigger, recordCompactionEvent, resolveTriggerConfig } from './trigger';
 export type { SessionIntelligenceConfig };

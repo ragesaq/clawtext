@@ -4,11 +4,12 @@
  * Walk 1a initialized foundational persistence tables.
  * Walk 1b adds summary DAG tables and message summarized-state tracking.
  * Walk 2 adds ACA state-slot persistence for identity protection lanes.
+ * Walk 3 adds compaction event persistence for threshold/cooldown logic.
  */
 
 import type { DatabaseSync } from 'node:sqlite';
 
-const LATEST_SCHEMA_VERSION = 3;
+const LATEST_SCHEMA_VERSION = 4;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -125,6 +126,25 @@ function applyVersion3Migration(db: DatabaseSync): void {
   `);
 }
 
+function applyVersion4Migration(db: DatabaseSync): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS compaction_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversation_id INTEGER NOT NULL REFERENCES conversations(id),
+      triggered_at TEXT NOT NULL,
+      trigger_reason TEXT NOT NULL,
+      pressure_before REAL,
+      pressure_after REAL,
+      messages_before INTEGER,
+      messages_after INTEGER,
+      summary_node_id INTEGER,
+      outcome TEXT NOT NULL
+    )
+  `);
+
+  db.exec('CREATE INDEX IF NOT EXISTS idx_compaction_events_conversation ON compaction_events(conversation_id, triggered_at DESC, id DESC);');
+}
+
 export function migrate(db: DatabaseSync): void {
   createBaseSchema(db);
 
@@ -164,6 +184,14 @@ export function migrate(db: DatabaseSync): void {
     db
       .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
       .run(3, nowIso());
+    version = 3;
+  }
+
+  if (version < 4) {
+    applyVersion4Migration(db);
+    db
+      .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
+      .run(4, nowIso());
   }
 }
 

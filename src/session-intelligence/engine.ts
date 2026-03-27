@@ -1,5 +1,5 @@
 /**
- * Session Intelligence context engine (Walk 2).
+ * Session Intelligence context engine (Walk 3).
  *
  * Implements OpenClaw ContextEngine lifecycle with SQLite-backed message
  * persistence, ACA identity kernel/overlay lanes, deterministic recent-history
@@ -24,6 +24,12 @@ import { runCompaction, resolveCompactorConfig, SummarizationTracker } from './c
 import { openDatabase, withTransaction } from './db';
 import { estimateTokens, persistMessage, persistMessageParts } from './ingest';
 import { getStateSlot, kernelSlotsPresent, upsertStateSlot } from './state-slots';
+import {
+  evaluateTrigger,
+  getMessageCount,
+  recordCompactionEvent,
+  resolveTriggerConfig,
+} from './trigger';
 import type { SessionIntelligenceConfig } from './types';
 
 const ENGINE_ID = 'clawtext-session-intelligence';
@@ -98,6 +104,7 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
   const db: DatabaseSync = openDatabase(workspacePath);
   const conversationIdBySession = new Map<string, number>();
   const compactorConfig = resolveCompactorConfig(config.compactor);
+  const triggerConfig = resolveTriggerConfig(config.compactionTrigger);
   const summarizationTracker = new SummarizationTracker(compactorConfig.maxSummarizationsPerHour);
 
   function getOrCreateConversationId(sessionId: string): number {
@@ -145,6 +152,18 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     return messages.reduce<number>((sum, message) => sum + estimateTokens(messageToText(message)), 0);
   }
 
+  function estimatePressureFromDb(conversationId: number): number {
+    const row = db
+      .prepare(
+        `SELECT COALESCE(SUM(CASE WHEN token_count IS NOT NULL THEN token_count ELSE length(content) / 4 END), 0) AS total
+           FROM messages
+          WHERE conversation_id = ?`,
+      )
+      .get(conversationId) as { total: number | null };
+
+    return typeof row.total === 'number' ? row.total : 0;
+  }
+
   async function bootstrap(params: { sessionId: string; sessionFile: string }): Promise<BootstrapResult> {
     try {
       const conversationId = getOrCreateConversationId(params.sessionId);
@@ -185,11 +204,40 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
   async function ingest(params: { sessionId: string; message: unknown; isHeartbeat?: boolean }): Promise<IngestResult> {
     try {
       const conversationId = getOrCreateConversationId(params.sessionId);
+      const tokenBudget = resolveTokenBudget(config.defaultTokenBudget);
+
       withTransaction(db, () => {
         const index = nextMessageIndex(conversationId);
         const messageId = persistMessage(db, conversationId, params.message, index, params.isHeartbeat === true);
         persistMessageParts(db, messageId, params.message);
       });
+
+      const messageCount = getMessageCount(db, conversationId);
+      const currentTokenCount = estimatePressureFromDb(conversationId);
+
+      const triggerResult = evaluateTrigger({
+        db,
+        conversationId,
+        currentTokenCount,
+        tokenBudget,
+        triggerConfig,
+      });
+
+      if (triggerResult.shouldCompact) {
+        const pressureRatio = tokenBudget > 0 ? currentTokenCount / tokenBudget : 0;
+        console.log(
+          `[${ENGINE_ID}] Compaction trigger detected: ${triggerResult.reason} (pressure: ${Math.round(pressureRatio * 100)}%)`,
+        );
+
+        recordCompactionEvent({
+          db,
+          conversationId,
+          triggerReason: triggerResult.reason,
+          pressureBefore: pressureRatio,
+          messagesBefore: messageCount,
+          outcome: 'skipped',
+        });
+      }
 
       return { ingested: true };
     } catch (error) {
@@ -354,7 +402,14 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
         };
       }
 
-      return await runCompaction(
+      const tokenBudget = resolveTokenBudget(params.tokenBudget ?? config.defaultTokenBudget);
+      const pressureBeforeTokens =
+        typeof params.currentTokenCount === 'number' && Number.isFinite(params.currentTokenCount)
+          ? params.currentTokenCount
+          : estimatePressureFromDb(conversationId);
+      const messagesBefore = getMessageCount(db, conversationId);
+
+      const result = await runCompaction(
         db,
         config.summarizationApi,
         conversationId,
@@ -362,10 +417,23 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
         summarizationTracker,
         {
           force: params.force,
-          tokenBudget: params.tokenBudget ?? config.defaultTokenBudget,
-          currentTokenCount: params.currentTokenCount,
+          tokenBudget,
+          currentTokenCount: pressureBeforeTokens,
         },
       );
+
+      if (result.ok && result.compacted) {
+        recordCompactionEvent({
+          db,
+          conversationId,
+          triggerReason: params.force ? 'forced' : 'threshold',
+          pressureBefore: tokenBudget > 0 ? pressureBeforeTokens / tokenBudget : 0,
+          messagesBefore,
+          outcome: 'success',
+        });
+      }
+
+      return result;
     } catch (error) {
       console.warn(`[${ENGINE_ID}] compact failed: ${error instanceof Error ? error.message : String(error)}`);
       return {
@@ -428,7 +496,7 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     info: {
       id: ENGINE_ID,
       name: 'ClawText Session Intelligence',
-      version: '0.2.0-walk2',
+      version: '0.3.0-walk3',
       ownsCompaction: true,
     },
     bootstrap,
