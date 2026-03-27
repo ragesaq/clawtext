@@ -55,4 +55,16 @@ export {
   detectConsumption,
   DECAY_WINDOWS,
 } from './tool-tracker';
+export {
+  hashContent,
+  toFileUri,
+  looksLikeFilePath,
+  extractFilePath,
+  insertResourceVersion,
+  getLatestResourceVersion,
+  computeDelta,
+  processFileRead,
+  buildResourceToken,
+} from './resource-versions';
+export type { DeltaType } from './resource-versions';
 export type { SessionIntelligenceConfig };

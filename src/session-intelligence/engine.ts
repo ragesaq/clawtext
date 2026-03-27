@@ -26,6 +26,7 @@ import { openDatabase, withTransaction } from './db';
 import { estimateTokens, persistMessage, persistMessageParts } from './ingest';
 import { buildPressureReading, computePressureSignals } from './pressure';
 import { runNoiseSweep, runToolDecay } from './proactive-pass';
+import { extractFilePath, processFileRead } from './resource-versions';
 import { DECAY_WINDOWS, detectCallType, detectConsumption, insertToolCallMeta } from './tool-tracker';
 import { extractStateFromMessage } from './state-extraction';
 import { getStateSlot, kernelSlotsPresent, upsertStateSlot } from './state-slots';
@@ -262,8 +263,13 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
 
         if (contentType === 'tool_result') {
           const storedMessage = db
-            .prepare('SELECT role, content, token_count FROM messages WHERE id = ? LIMIT 1')
-            .get(messageId) as { role: string; content: string; token_count: number | null } | undefined;
+            .prepare('SELECT role, content, token_count, truncated_payload_ref FROM messages WHERE id = ? LIMIT 1')
+            .get(messageId) as {
+            role: string;
+            content: string;
+            token_count: number | null;
+            truncated_payload_ref: string | null;
+          } | undefined;
 
           if (storedMessage) {
             const callType = detectCallType(storedMessage.content, storedMessage.role);
@@ -280,6 +286,29 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
               turnNumber: index,
               decayEligibleTurn,
             });
+
+            if (callType === 'read') {
+              const filePath = extractFilePath(storedMessage.content);
+              if (typeof filePath === 'string' && filePath.length > 0) {
+                const resourceVersion = processFileRead(
+                  db,
+                  params.sessionId,
+                  filePath,
+                  storedMessage.content,
+                  index,
+                  storedMessage.truncated_payload_ref ?? undefined,
+                );
+
+                if (
+                  typeof resourceVersion.parentId === 'number'
+                  && (resourceVersion.delta === 'unchanged' || resourceVersion.delta === 'small')
+                ) {
+                  console.log(
+                    `[${ENGINE_ID}] File read version tracked: message=${messageId} uri=${resourceVersion.resourceUri} delta=${resourceVersion.delta} ratio=${resourceVersion.deltaRatio.toFixed(4)} turn=${resourceVersion.turn}`,
+                  );
+                }
+              }
+            }
 
             const consumptionWindow = 5;
             const scanAfterTurn = Math.max(-1, index - consumptionWindow);

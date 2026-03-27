@@ -9,7 +9,7 @@
 
 import type { DatabaseSync } from 'node:sqlite';
 
-const LATEST_SCHEMA_VERSION = 10;
+const LATEST_SCHEMA_VERSION = 11;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -250,6 +250,26 @@ function applyVersion10Migration(db: DatabaseSync): void {
   db.exec('CREATE INDEX IF NOT EXISTS idx_tool_call_meta_message ON tool_call_meta(message_id);');
 }
 
+function applyVersion11Migration(db: DatabaseSync): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS resource_versions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversation_id TEXT NOT NULL,
+      resource_uri TEXT NOT NULL,
+      parent_id INTEGER,
+      content_hash TEXT NOT NULL,
+      ref_id TEXT,
+      delta TEXT,
+      delta_ratio REAL,
+      turn INTEGER NOT NULL,
+      source_action TEXT,
+      created_at TEXT NOT NULL
+    )
+  `);
+
+  db.exec('CREATE INDEX IF NOT EXISTS idx_resource_versions_uri ON resource_versions(conversation_id, resource_uri)');
+}
+
 export function migrate(db: DatabaseSync): void {
   createBaseSchema(db);
 
@@ -345,6 +365,14 @@ export function migrate(db: DatabaseSync): void {
     db
       .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
       .run(10, nowIso());
+    version = 10;
+  }
+
+  if (version < 11) {
+    applyVersion11Migration(db);
+    db
+      .prepare('INSERT INTO schema_version (version, applied_at) VALUES (?, ?)')
+      .run(11, nowIso());
   }
 }
 
