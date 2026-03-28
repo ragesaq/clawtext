@@ -40,9 +40,9 @@ type ParsedSection = {
   source: ContextSlotSource;
 };
 
-const WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
-const CONFIG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
-const OPT_LOG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimization-log.jsonl');
+const DEFAULT_WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
+const CONFIG_PATH = path.join(DEFAULT_WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
+const OPT_LOG_PATH = path.join(DEFAULT_WORKSPACE, 'state', 'clawtext', 'prod', 'optimization-log.jsonl');
 
 function logDiagnostic(entry: Record<string, unknown>): void {
   try {
@@ -235,6 +235,10 @@ const handler = async (
     return;
   }
 
+  // Resolve per-agent workspace from context (fixes identity bleed across agents)
+  const workspace = ctx.workspaceDir || DEFAULT_WORKSPACE;
+  logDiagnostic({ type: 'workspace-resolve', workspaceDir: ctx.workspaceDir || null, agentId: ctx.agentId || null, resolved: workspace, channel: ctx.messageChannel });
+
   const promptForComposition = stripInjectedContext(prompt);
   const parsed = parsePromptSections(promptForComposition);
   if (parsed.length === 0) {
@@ -243,14 +247,14 @@ const handler = async (
   }
 
   const now = Date.now();
-  const optimizer = new Clawptimizer(WORKSPACE, config);
+  const optimizer = new Clawptimizer(workspace, config);
   const compositor = new PromptCompositor({
     enabled: config.enabled,
     strategy: config.strategy,
     minScore: config.minScore,
     preserveReasons: config.preserveReasons,
     logDecisions: false,
-    workspacePath: WORKSPACE,
+    workspacePath: workspace,
     budget: {
       contextWindowTokens: config.budget?.contextWindowTokens ?? 160_000,
       budgetRatio: config.budget?.budgetRatio,
@@ -259,7 +263,7 @@ const handler = async (
     },
   });
 
-  compositor.register(new TopicAnchorProvider({ workspacePath: WORKSPACE }));
+  compositor.register(new TopicAnchorProvider({ workspacePath: workspace }));
 
   const bySource = new Map<ContextSlotSource, ParsedSection[]>();
   for (const section of parsed) {

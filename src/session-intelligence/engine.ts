@@ -11,7 +11,6 @@ import type { DatabaseSync } from 'node:sqlite';
 import type {
   AssembleResult,
   CompactResult,
-  ContextEngine,
   IngestResult,
 } from 'openclaw/plugin-sdk/context-engine';
 import {
@@ -30,6 +29,8 @@ import { extractFilePath, processFileRead } from './resource-versions.js';
 import { associateResourceWithSlots } from './slot-associations.js';
 import { DECAY_WINDOWS, detectCallType, detectConsumption, insertToolCallMeta } from './tool-tracker';
 import { extractStateFromMessage } from './state-extraction';
+import { search, describe, expand } from './recall';
+import type { RecallHitType } from './recall';
 import { getStateSlot, kernelSlotsPresent, upsertStateSlot } from './state-slots';
 import {
   evaluateTrigger,
@@ -125,7 +126,7 @@ function estimateStoredMessageTokens(row: StoredMessage): number {
   return estimateTokens(row.content);
 }
 
-export function createSessionIntelligenceEngine(config: SessionIntelligenceConfig): ContextEngine {
+export function createSessionIntelligenceEngine(config: SessionIntelligenceConfig) {
   const workspacePath = path.resolve(config.workspacePath);
   const db: DatabaseSync = openDatabase(workspacePath);
   const conversationIdBySession = new Map<string, number>();
@@ -758,5 +759,42 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     prepareSubagentSpawn,
     onSubagentEnded,
     dispose,
+    _recall: {
+      search(
+        sessionId: string,
+        query: string,
+        limit?: number,
+        types?: RecallHitType[],
+      ): import('./recall').SearchResult {
+        try {
+          const conversationId = getOrCreateConversationId(sessionId);
+          return search({ db, conversationId, query, limit, types, libraryEntriesDir: config.libraryEntriesDir });
+        } catch {
+          return { hits: [], totalFound: 0, queryMs: 0 };
+        }
+      },
+      describe(sessionId: string, id: string): import('./recall').DescribeResult | null {
+        try {
+          const conversationId = getOrCreateConversationId(sessionId);
+          return describe({ db, conversationId, id, libraryEntriesDir: config.libraryEntriesDir });
+        } catch {
+          return null;
+        }
+      },
+      expand(sessionId: string, targetId: string): import('./recall').ExpandResult | null {
+        try {
+          const conversationId = getOrCreateConversationId(sessionId);
+          return expand({
+            db,
+            conversationId,
+            targetId,
+            workspacePath: config.workspacePath,
+            libraryEntriesDir: config.libraryEntriesDir,
+          });
+        } catch {
+          return null;
+        }
+      },
+    },
   };
 }

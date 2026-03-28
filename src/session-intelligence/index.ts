@@ -11,9 +11,17 @@ import type { SessionIntelligenceConfig } from './types';
 
 const ENGINE_ID = 'clawtext-session-intelligence';
 
+// Module-level registry so tool factories can access recall methods after engine creation
+type SIEngineWithRecall = ReturnType<typeof createSessionIntelligenceEngine>;
+const _siEngineRegistry = new Map<string, SIEngineWithRecall>();
+
 type ContextEngineRegistrationApi = {
   registerContextEngine: (id: string, factory: () => unknown) => void;
 };
+
+export function getRegisteredSIEngine(): SIEngineWithRecall | undefined {
+  return _siEngineRegistry.get(ENGINE_ID);
+}
 
 export function registerSessionIntelligenceEngine(
   api: ContextEngineRegistrationApi,
@@ -25,7 +33,11 @@ export function registerSessionIntelligenceEngine(
 
   api.registerContextEngine(
     ENGINE_ID,
-    () => createSessionIntelligenceEngine({ ...config, libraryEntriesDir }),
+    () => {
+      const engine = createSessionIntelligenceEngine({ ...config, libraryEntriesDir });
+      _siEngineRegistry.set(ENGINE_ID, engine);
+      return engine;
+    },
   );
 }
 

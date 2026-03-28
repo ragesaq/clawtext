@@ -15,7 +15,8 @@ import { stripInjectedContext } from './injected-context';
 import { isMultiAgentMode } from './agent-identity';
 import { extractIdentityAnchorContent } from './slots/identity-anchor-provider';
 import { wrapWithAgentScope } from './providers/agent-scoped-provider';
-import { registerSessionIntelligenceEngine } from './session-intelligence';
+import { Type } from '@sinclair/typebox';
+import { registerSessionIntelligenceEngine, getRegisteredSIEngine } from './session-intelligence';
 import type { SessionIntelligenceConfig } from './session-intelligence';
 
 export { ClawTextInjectionPlugin, ClawTextRAG };
@@ -693,6 +694,68 @@ export default {
     if (isSessionIntelligenceEnabled(api?.config)) {
       try {
         registerSessionIntelligenceEngine(api, resolveSessionIntelligenceConfig(api?.config));
+
+        // Register SI recall tools
+        api.registerTool((ctx: any): any => {
+          const engine = getRegisteredSIEngine() as any;
+          if (!engine?._recall) return null;
+          return {
+            name: 'si_search',
+            description: 'Search session history for messages, summaries, state slots, and library entries matching a query. Returns ranked hits with snippets. Use to find prior context beyond the current window.',
+            parameters: Type.Object({
+              query: Type.String({ description: 'Keyword or phrase to search for' }),
+              limit: Type.Optional(Type.Number({ description: 'Max results (default 10)' })),
+              types: Type.Optional(Type.Array(
+                Type.Union([
+                  Type.Literal('message'),
+                  Type.Literal('summary'),
+                  Type.Literal('state_slot'),
+                  Type.Literal('library_entry'),
+                ]),
+                { description: 'Filter by result type' },
+              )),
+            }),
+            execute: async (_toolCallId: string, params: any) => {
+              const sessionId = ctx.sessionId ?? ctx.sessionKey ?? 'default';
+              const result = engine._recall.search(sessionId, params.query, params.limit, params.types);
+              return { result };
+            },
+          };
+        });
+
+        api.registerTool((ctx: any): any => {
+          const engine = getRegisteredSIEngine() as any;
+          if (!engine?._recall) return null;
+          return {
+            name: 'si_describe',
+            description: 'Get the full content of a specific session history item by its id (from si_search hits). Use to read the complete text of a message, summary, state slot, or library entry.',
+            parameters: Type.Object({
+              id: Type.String({ description: 'Item id from a prior si_search result (e.g. msg-42, sum-7, slot-identity_kernel, lib-myfile.md)' }),
+            }),
+            execute: async (_toolCallId: string, params: any) => {
+              const sessionId = ctx.sessionId ?? ctx.sessionKey ?? 'default';
+              const result = engine._recall.describe(sessionId, params.id);
+              return { result };
+            },
+          };
+        });
+
+        api.registerTool((ctx: any): any => {
+          const engine = getRegisteredSIEngine() as any;
+          if (!engine?._recall) return null;
+          return {
+            name: 'si_expand',
+            description: 'Expand a summary node or payload reference to recover the original messages or file content. Use when si_search returns a summary or payload ref and you need the underlying detail.',
+            parameters: Type.Object({
+              target_id: Type.String({ description: 'Summary id (e.g. sum-7) or payload ref id to expand' }),
+            }),
+            execute: async (_toolCallId: string, params: any) => {
+              const sessionId = ctx.sessionId ?? ctx.sessionKey ?? 'default';
+              const result = engine._recall.expand(sessionId, params.target_id);
+              return { result };
+            },
+          };
+        });
       } catch (err) {
         logPluginDiagnostic({
           type: 'session-intelligence-register-error',

@@ -3,9 +3,9 @@ import os from 'os';
 import path from 'path';
 import { DEFAULT_CLAWPTIMIZATION_CONFIG, Clawptimizer, } from '../../src/clawptimization.ts';
 import { PromptCompositor } from '../../src/prompt-compositor.ts';
-const WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
-const CONFIG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
-const OPT_LOG_PATH = path.join(WORKSPACE, 'state', 'clawtext', 'prod', 'optimization-log.jsonl');
+const DEFAULT_WORKSPACE = path.join(os.homedir(), '.openclaw', 'workspace');
+const CONFIG_PATH = path.join(DEFAULT_WORKSPACE, 'state', 'clawtext', 'prod', 'optimize-config.json');
+const OPT_LOG_PATH = path.join(DEFAULT_WORKSPACE, 'state', 'clawtext', 'prod', 'optimization-log.jsonl');
 function logDiagnostic(entry) {
     try {
         const dir = path.dirname(OPT_LOG_PATH);
@@ -167,20 +167,23 @@ const handler = async (event, ctx) => {
             logDiagnostic({ type: 'skip', reason: 'empty-prompt', channel: ctx.messageChannel });
             return;
         }
+        // Resolve per-agent workspace from context (fixes identity bleed across agents)
+        const workspace = ctx.workspaceDir || DEFAULT_WORKSPACE;
+        logDiagnostic({ type: 'workspace-resolve', workspaceDir: ctx.workspaceDir || null, agentId: ctx.agentId || null, resolved: workspace, channel: ctx.messageChannel });
         const parsed = parsePromptSections(prompt);
         if (parsed.length === 0) {
             logDiagnostic({ type: 'skip', reason: 'no-sections', channel: ctx.messageChannel, promptLength: prompt.length });
             return;
         }
         const now = Date.now();
-        const optimizer = new Clawptimizer(WORKSPACE, config);
+        const optimizer = new Clawptimizer(workspace, config);
         const compositor = new PromptCompositor({
             enabled: config.enabled,
             strategy: config.strategy,
             minScore: config.minScore,
             preserveReasons: config.preserveReasons,
             logDecisions: false,
-            workspacePath: WORKSPACE,
+            workspacePath: workspace,
             budget: {
                 contextWindowTokens: config.budget?.contextWindowTokens ?? 160000,
                 budgetRatio: config.budget?.budgetRatio,
