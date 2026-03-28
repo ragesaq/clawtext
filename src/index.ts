@@ -722,7 +722,33 @@ export default {
   register(api: any) {
     if (isSessionIntelligenceEnabled(api?.config)) {
       try {
-        registerSessionIntelligenceEngine(api, resolveSessionIntelligenceConfig(api?.config));
+        const workspaceResolver = (sessionId: string): string => {
+          try {
+            const stateFile = path.join(DEFAULT_WORKSPACE, 'state', 'clawtext', 'runtime', 'agent-session-state.json');
+            if (fs.existsSync(stateFile)) {
+              const state = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
+              const sessions = state?.sessionsByKey ?? {};
+              for (const [key, val] of Object.entries(sessions)) {
+                if ((val as any)?.sessionId === sessionId) {
+                  // Extract agentId from session key (format: agent:<agentId>:...)
+                  const parts = key.split(':');
+                  if (parts[0] === 'agent' && parts[1]) {
+                    const agentId = parts[1];
+                    const resolved = resolveWorkspaceForSession(undefined, agentId, api as any);
+                    return resolved.workspacePath;
+                  }
+                }
+              }
+            }
+          } catch {
+            // ignore
+          }
+          return DEFAULT_WORKSPACE;
+        };
+
+        const siConfig = resolveSessionIntelligenceConfig(api?.config);
+        siConfig.workspaceResolver = workspaceResolver;
+        registerSessionIntelligenceEngine(api, siConfig);
 
         // Register SI recall tools
         api.registerTool((ctx: any): any => {

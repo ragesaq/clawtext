@@ -206,8 +206,12 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     try {
       const conversationId = getOrCreateConversationId(params.sessionId);
 
-      if (typeof config.workspacePath === 'string' && config.workspacePath.trim().length > 0) {
-        const aca = loadAcaFiles(workspacePath);
+      const resolvedWorkspacePath = typeof config.workspaceResolver === 'function'
+        ? config.workspaceResolver(params.sessionId)
+        : (typeof config.workspacePath === 'string' && config.workspacePath.trim().length > 0 ? config.workspacePath : null);
+
+      if (resolvedWorkspacePath) {
+        const aca = loadAcaFiles(resolvedWorkspacePath);
 
         if (!allKernelFilesPresent(aca)) {
           if (aca.kernelMissing.length === 3) {
@@ -219,14 +223,14 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
 
         const kernelContent = buildKernelContent(aca.kernel);
         upsertStateSlot(db, conversationId, 'identity_kernel', kernelContent, {
-          loadedFrom: workspacePath,
+          loadedFrom: resolvedWorkspacePath,
           isPinned: true,
         });
 
         const overlayContent = buildOverlayContent(aca.overlay);
         if (overlayContent.length > 0) {
           upsertStateSlot(db, conversationId, 'active_overlay', overlayContent, {
-            loadedFrom: workspacePath,
+            loadedFrom: resolvedWorkspacePath,
             isPinned: false,
           });
         }

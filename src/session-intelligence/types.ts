@@ -61,6 +61,9 @@ export type SessionIntelligenceConfig = {
   summarizationApi?: {
     complete(model: string, prompt: string): Promise<string>;
   };
+  /** Optional per-session workspace resolver. If provided, bootstrap uses this
+   *  to load the correct ACA identity files for each agent session. */
+  workspaceResolver?: (sessionId: string) => string;
 };
 
 export type ConversationState = {
