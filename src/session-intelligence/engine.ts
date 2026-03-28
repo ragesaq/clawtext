@@ -243,6 +243,11 @@ export function createSessionIntelligenceEngine(config: SessionIntelligenceConfi
     try {
       const conversationId = getOrCreateConversationId(params.sessionId);
 
+      // Auto-bootstrap if identity_kernel slot is absent (handles sessions active before engine started)
+      if (!kernelSlotsPresent(db, conversationId)) {
+        await bootstrap({ sessionId: params.sessionId, sessionFile: '' });
+      }
+
       withTransaction(db, () => {
         const index = nextMessageIndex(conversationId);
         const classifiedContentType = classifyMessage(params.message);
