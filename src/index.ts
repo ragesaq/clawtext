@@ -577,37 +577,19 @@ function isSessionIntelligenceEnabled(config: unknown): boolean {
 function resolveSessionIntelligenceConfig(config: unknown): SessionIntelligenceConfig {
   const summarizationApi: NonNullable<SessionIntelligenceConfig['summarizationApi']> = {
     async complete(_model: string, prompt: string): Promise<string> {
-      const envApiKey = process.env.OPENROUTER_API_KEY;
-      let configApiKey: string | undefined;
-
-      try {
-        const configFile = path.join(os.homedir(), '.openclaw', 'openclaw.json');
-        if (fs.existsSync(configFile)) {
-          const raw = fs.readFileSync(configFile, 'utf-8');
-          const cfg = JSON.parse(raw);
-          const key = cfg?.env?.vars?.OPENROUTER_API_KEY;
-          if (typeof key === 'string' && key.length > 0 && !key.startsWith('${')) {
-            configApiKey = key;
-          }
-        }
-      } catch {
-        // ignore, fall through to env fallback
-      }
-
-      const apiKey = envApiKey ?? configApiKey ?? process.env.OPENROUTER_MANAGEMENT_KEY;
-      if (!apiKey) throw new Error('[SI] No OPENROUTER_API_KEY for summarization');
-
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      // Uses copilot-local proxy (GitHub Copilot backend) — gemini-3-flash-preview with thinking disabled.
+      // thinking disabled is intentional: reasoning budget on a background summarization task is wasteful.
+      const response = await fetch('http://127.0.0.1:4141/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'openai/gpt-5.4-mini',
+          model: 'gemini-3-flash-preview',
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 2048,
           temperature: 0.3,
+          thinking: { type: 'disabled' },
         }),
       });
 
